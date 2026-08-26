@@ -48,7 +48,14 @@ class VerificationInjection(BaseModel):
 # l'invention d'une action hors de ce vocabulaire.
 
 Action = Literal[
-    # Le profil et le corpus permettent de conclure.
+    # Une question factuelle sur le corpus (une formation, une comparaison...),
+    # sans recommandation personnalisée à produire — trouvé nécessaire en
+    # évaluant le système (EVAL) : sans cette valeur, une question purement
+    # factuelle ("qu'est-ce que IGGLIA ?") forçait `recommandation` par
+    # défaut, ce qui déclenchait à tort la consultation du modèle ML sur un
+    # profil vide et une escalade absurde par confiance quasi nulle.
+    "information",
+    # Le profil et le corpus permettent de recommander un parcours personnalisé.
     "recommandation",
     # Le profil est trop incomplet pour recommander de façon fiable (§9 du
     # sujet : « poser des questions lorsqu'une information importante manque »).

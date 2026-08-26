@@ -233,6 +233,108 @@ def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, pr
     assert "analyser_profil_ml" not in resultat.outils_utilises
 
 
+# --- Cohérence entre la prose et le classement du modèle (AGT-7) -------------
+
+
+def _decision_avec_classement(explication: str, **overrides) -> RecommandationDecision:
+    """Décision où le modèle place IGGLIA en tête, ESIIA loin derrière."""
+    return _decision_type(
+        parcours_recommandes=[
+            {"parcours": "IGGLIA", "score_adequation": 0.54, "justification": "x"},
+            {"parcours": "ESIIA", "score_adequation": 0.11, "justification": "x"},
+        ],
+        confiance=0.54,
+        explication=explication,
+        **overrides,
+    )
+
+
+def _simuler_agent_ayant_appele_le_modele(monkeypatch, decision: RecommandationDecision):
+    """Fait réellement passer l'agent par `analyser_profil_ml` dans sa boucle.
+
+    Indispensable ici : sans cet appel effectif, la consultation forcée
+    (`_forcer_consultation_du_modele_ml`) remplacerait `parcours_recommandes`
+    par le classement réel du modèle sur le profil de test, et le contrôle de
+    cohérence porterait alors sur un classement que le test ne maîtrise pas.
+    """
+    reponses = iter(
+        [_reponse_appel_outil("analyser_profil_ml"), _reponse_finale(decision)]
+    )
+    monkeypatch.setattr("src.agent.llm_call_with_tools", lambda *a, **k: next(reponses))
+    monkeypatch.setattr("src.agent.executer_outil", _executer_outil_factice)
+
+
+def test_prose_qui_omet_le_parcours_le_mieux_classe_est_signalee(monkeypatch, profil):
+    """Le cas réel, reproduit 2 fois sur 2 : le classement place IGGLIA en
+    tête mais la prose annonce ESIIA."""
+    decision = _decision_avec_classement(
+        "Le modèle recommande en priorité le parcours ESIIA, qui combine "
+        "électronique et intelligence artificielle."
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-10")
+
+    assert "[Contrôle automatique]" in resultat.explication
+    assert "IGGLIA en tête" in resultat.explication
+    # Les scores eux-mêmes restent intacts : seule la narration avait dérivé.
+    assert resultat.parcours_recommandes[0].parcours == "IGGLIA"
+    assert resultat.action == "recommandation"
+
+
+def test_prose_coherente_n_est_pas_annotee(monkeypatch, profil):
+    decision = _decision_avec_classement(
+        "Le modèle place IGGLIA en tête, devant ESIIA."
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-11")
+
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
+def test_comparaison_citant_un_autre_parcours_d_abord_n_est_pas_un_faux_positif(
+    monkeypatch, profil
+):
+    """« contrairement à ESIIA, IGGLIA convient mieux » cite ESIIA en premier
+    sans rien contredire : c'est l'omission du parcours recommandé qui trahit
+    une dérive, pas son rang de citation."""
+    decision = _decision_avec_classement(
+        "Contrairement à ESIIA, plus orienté électronique, IGGLIA correspond "
+        "mieux à ce profil."
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-12")
+
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
+def test_prose_sans_aucun_parcours_nomme_n_est_pas_annotee(monkeypatch, profil):
+    """Une explication qui ne nomme aucun parcours ne contredit rien."""
+    decision = _decision_avec_classement(
+        "Ce profil scientifique ouvre plusieurs possibilités en informatique."
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-13")
+
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
+def test_mot_francais_contenant_un_sigle_ne_declenche_pas_le_controle(monkeypatch, profil):
+    """« emploi » contient « EMP » : sans frontière de mot, toute prose
+    parlant d'emploi serait signalée à tort."""
+    decision = _decision_avec_classement(
+        "IGGLIA offre de bonnes perspectives d'emploi pour un employeur du secteur."
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-14")
+
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
 # --- Test réseau : vérifie la boucle contre l'API Gemini réelle -------------
 
 

@@ -14,10 +14,11 @@ Deux couches, complémentaires plutôt que redondantes :
 Un même corpus source (site ISPM, brochures) alimente typiquement les deux :
 le contenu brut devient des `DocumentSource` pour le RAG, et les faits qu'on
 en extrait (quel parcours enseigne quelle matière, prépare à quel métier)
-peuplent les modèles structurés ci-dessous. Le registre de traçabilité des
-sources (URL, date de consultation, statut officiel/institutionnel/externe —
-DATA-2) n'est pas encore modélisé : `source_id` sur `DocumentSource` est le
-point d'accroche prévu pour l'ajouter sans tout redéfinir.
+peuplent les modèles structurés ci-dessous. Le champ `source_id`, porté par
+`DocumentSource`, `Mention` et `Parcours`, référence une entrée du registre
+de traçabilité des sources (`src.sources.EntreeRegistreSource`, DATA-2) — voir
+`src.sources.verifier_provenance()` pour le contrôle qui s'assure qu'aucune
+entrée ne pointe vers une source inexistante.
 
 Tous les chargeurs tolèrent un fichier absent (liste vide) : le corpus n'est
 pas encore collecté à ce stade du projet, mais l'API doit pouvoir démarrer
@@ -62,29 +63,35 @@ def charger_corpus(
 class Mention(BaseModel):
     id: str
     nom: str
-    niveau: str  # ex. "Licence", "Master"
+    niveau: str  # ex. "Licence", "Master", ou une description si plusieurs niveaux s'enchaînent
     diplome: str | None = None
+    # Identifiant vers une entrée du registre des sources (DATA-2).
+    source_id: str | None = None
 
 
 class Matiere(BaseModel):
     id: str
     nom: str
+    source_id: str | None = None
 
 
 class Competence(BaseModel):
     id: str
     nom: str
+    source_id: str | None = None
 
 
 class Prerequis(BaseModel):
     id: str
     description: str
+    source_id: str | None = None
 
 
 class Metier(BaseModel):
     id: str
     nom: str
     secteur: str | None = None
+    source_id: str | None = None
 
 
 class Parcours(BaseModel):
@@ -100,6 +107,8 @@ class Parcours(BaseModel):
     debouches: list[str] = []  # identifiants de Metier
     # Autres parcours accessibles en passerelle (§3 du sujet).
     passerelles: list[str] = []
+    # Identifiant vers une entrée du registre des sources (DATA-2).
+    source_id: str | None = None
 
 
 class CorpusFormations(BaseModel):

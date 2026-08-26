@@ -1,11 +1,11 @@
 {
-  "date": "2026-08-26T11:57:30.496859+00:00",
+  "date": "2026-08-26T12:25:07.907896+00:00",
   "taille_dataset": 32,
   "reussis": 30,
   "total": 32,
   "taux_par_categorie": {
     "questions_factuelles": {
-      "reussis": 5,
+      "reussis": 4,
       "total": 5
     },
     "comparaisons": {
@@ -13,7 +13,7 @@
       "total": 4
     },
     "profils_ml": {
-      "reussis": 5,
+      "reussis": 6,
       "total": 6
     },
     "multi_sources": {
@@ -42,29 +42,30 @@
     }
   },
   "repartition_actions": {
-    "information": 14,
-    "recommandation": 3,
-    "escalade_conseiller": 15
+    "information": 12,
+    "recommandation": 5,
+    "escalade_conseiller": 14,
+    "demande_information": 1
   },
   "latence_ms": {
-    "moyenne": 9695,
+    "moyenne": 9073,
     "min": 0,
-    "max": 69614
+    "max": 22287
   },
   "resultats_detailles": [
     {
       "id": "EVAL-01",
       "categorie": "questions_factuelles",
-      "reussi": true,
-      "echecs": [],
+      "reussi": false,
+      "echecs": [
+        "sources attendues absentes de la réponse : ['DOC-IGGLIA']"
+      ],
       "action": "information",
       "confiance": 1.0,
       "incertitude_declaree": false,
-      "sources": [
-        "DOC-IGGLIA"
-      ],
+      "sources": [],
       "outils_utilises": [],
-      "latence_ms": 5713
+      "latence_ms": 15726
     },
     {
       "id": "EVAL-02",
@@ -78,7 +79,7 @@
         "DOC-CONDITIONS-ADMISSION"
       ],
       "outils_utilises": [],
-      "latence_ms": 8405
+      "latence_ms": 9133
     },
     {
       "id": "EVAL-03",
@@ -92,7 +93,7 @@
         "DOC-NIVEAUX-DIPLOMES"
       ],
       "outils_utilises": [],
-      "latence_ms": 8771
+      "latence_ms": 8089
     },
     {
       "id": "EVAL-04",
@@ -105,8 +106,10 @@
       "sources": [
         "DOC-PIP"
       ],
-      "outils_utilises": [],
-      "latence_ms": 8812
+      "outils_utilises": [
+        "rechercher_formation"
+      ],
+      "latence_ms": 13149
     },
     {
       "id": "EVAL-05",
@@ -120,7 +123,7 @@
         "DOC-GCA"
       ],
       "outils_utilises": [],
-      "latence_ms": 8279
+      "latence_ms": 8315
     },
     {
       "id": "EVAL-06",
@@ -135,7 +138,7 @@
         "DOC-IGGLIA"
       ],
       "outils_utilises": [],
-      "latence_ms": 8752
+      "latence_ms": 8600
     },
     {
       "id": "EVAL-07",
@@ -150,7 +153,7 @@
         "DOC-TEH"
       ],
       "outils_utilises": [],
-      "latence_ms": 8533
+      "latence_ms": 8568
     },
     {
       "id": "EVAL-08",
@@ -161,12 +164,12 @@
       "confiance": 1.0,
       "incertitude_declaree": false,
       "sources": [
-        "DOC-FIC",
         "DOC-CAA",
-        "DOC-CONDITIONS-ADMISSION"
+        "DOC-FIC",
+        "DOC-DTJA"
       ],
       "outils_utilises": [],
-      "latence_ms": 8559
+      "latence_ms": 8637
     },
     {
       "id": "EVAL-09",
@@ -174,7 +177,7 @@
       "reussi": true,
       "echecs": [],
       "action": "information",
-      "confiance": 1.0,
+      "confiance": 0.95,
       "incertitude_declaree": false,
       "sources": [
         "DOC-ICMP",
@@ -182,7 +185,7 @@
         "DOC-EMII"
       ],
       "outils_utilises": [],
-      "latence_ms": 8679
+      "latence_ms": 8702
     },
     {
       "id": "EVAL-10",
@@ -200,23 +203,25 @@
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 9172
+      "latence_ms": 9305
     },
     {
       "id": "EVAL-11",
       "categorie": "profils_ml",
-      "reussi": false,
-      "echecs": [
-        "analyser_profil_ml n'a pas été appelé"
-      ],
-      "action": "escalade_conseiller",
-      "confiance": 0.0,
-      "incertitude_declaree": true,
+      "reussi": true,
+      "echecs": [],
+      "action": "recommandation",
+      "confiance": 0.66,
+      "incertitude_declaree": false,
       "sources": [
         "DOC-CONDITIONS-ADMISSION"
       ],
-      "outils_utilises": [],
-      "latence_ms": 7879
+      "outils_utilises": [
+        "analyser_profil_ml",
+        "verifier_prerequis",
+        "expliquer_recommandation"
+      ],
+      "latence_ms": 21006
     },
     {
       "id": "EVAL-12",
@@ -233,7 +238,7 @@
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 17174
+      "latence_ms": 8526
     },
     {
       "id": "EVAL-13",
@@ -246,35 +251,29 @@
       "sources": [
         "DOC-TEH",
         "DOC-TEE",
-        "DOC-CONDITIONS-ADMISSION",
-        "DOC-CAA"
+        "DOC-CONDITIONS-ADMISSION"
       ],
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 6185
+      "latence_ms": 8474
     },
     {
       "id": "EVAL-14",
       "categorie": "profils_ml",
       "reussi": true,
       "echecs": [],
-      "action": "escalade_conseiller",
+      "action": "recommandation",
       "confiance": 0.8467883029789812,
-      "incertitude_declaree": true,
+      "incertitude_declaree": false,
       "sources": [
-        "DOC-TEH",
         "DOC-TEE",
-        "DOC-CONDITIONS-ADMISSION",
-        "DOC-ESIIA",
-        "DOC-CAA",
-        "DOC-IMTICIA",
-        "DOC-NIVEAUX-DIPLOMES"
+        "DOC-CONDITIONS-ADMISSION"
       ],
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 8534
+      "latence_ms": 8504
     },
     {
       "id": "EVAL-15",
@@ -292,7 +291,7 @@
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 8539
+      "latence_ms": 8766
     },
     {
       "id": "EVAL-16",
@@ -301,13 +300,13 @@
       "echecs": [],
       "action": "information",
       "confiance": 1.0,
-      "incertitude_declaree": false,
+      "incertitude_declaree": true,
       "sources": [
         "DOC-CONDITIONS-ADMISSION",
         "DOC-GCA"
       ],
       "outils_utilises": [],
-      "latence_ms": 8333
+      "latence_ms": 8307
     },
     {
       "id": "EVAL-17",
@@ -320,8 +319,12 @@
       "confiance": 0.0,
       "incertitude_declaree": true,
       "sources": [],
-      "outils_utilises": [],
-      "latence_ms": 8465
+      "outils_utilises": [
+        "identifier_debouches",
+        "verifier_prerequis",
+        "detecter_incoherences"
+      ],
+      "latence_ms": 17642
     },
     {
       "id": "EVAL-18",
@@ -337,7 +340,7 @@
         "DOC-TEH"
       ],
       "outils_utilises": [],
-      "latence_ms": 8896
+      "latence_ms": 8895
     },
     {
       "id": "EVAL-19",
@@ -355,7 +358,7 @@
       "outils_utilises": [
         "analyser_profil_ml"
       ],
-      "latence_ms": 8983
+      "latence_ms": 8506
     },
     {
       "id": "EVAL-20",
@@ -367,34 +370,34 @@
       "incertitude_declaree": true,
       "sources": [],
       "outils_utilises": [],
-      "latence_ms": 2979
+      "latence_ms": 2974
     },
     {
       "id": "EVAL-21",
       "categorie": "information_absente",
       "reussi": true,
       "echecs": [],
-      "action": "information",
-      "confiance": 1.0,
+      "action": "escalade_conseiller",
+      "confiance": 0.0,
       "incertitude_declaree": true,
       "sources": [],
       "outils_utilises": [],
-      "latence_ms": 12965
+      "latence_ms": 8717
     },
     {
       "id": "EVAL-22",
       "categorie": "information_absente",
       "reussi": true,
       "echecs": [],
-      "action": "information",
-      "confiance": 1.0,
+      "action": "demande_information",
+      "confiance": 0.5,
       "incertitude_declaree": true,
       "sources": [
         "DOC-TEH",
         "DOC-NIVEAUX-DIPLOMES"
       ],
       "outils_utilises": [],
-      "latence_ms": 5766
+      "latence_ms": 9124
     },
     {
       "id": "EVAL-23",
@@ -404,9 +407,11 @@
       "action": "escalade_conseiller",
       "confiance": 0.0,
       "incertitude_declaree": true,
-      "sources": [],
+      "sources": [
+        "DOC-CONDITIONS-ADMISSION"
+      ],
       "outils_utilises": [],
-      "latence_ms": 9031
+      "latence_ms": 8666
     },
     {
       "id": "EVAL-24",
@@ -420,7 +425,7 @@
         "DOC-CONDITIONS-ADMISSION"
       ],
       "outils_utilises": [],
-      "latence_ms": 11834
+      "latence_ms": 8200
     },
     {
       "id": "EVAL-25",
@@ -428,14 +433,18 @@
       "reussi": true,
       "echecs": [],
       "action": "escalade_conseiller",
-      "confiance": 0.2,
+      "confiance": 0.186292428498602,
       "incertitude_declaree": true,
       "sources": [
         "DOC-CONDITIONS-ADMISSION",
         "DOC-DTJA"
       ],
-      "outils_utilises": [],
-      "latence_ms": 5816
+      "outils_utilises": [
+        "analyser_profil_ml",
+        "verifier_prerequis",
+        "expliquer_recommandation"
+      ],
+      "latence_ms": 22287
     },
     {
       "id": "EVAL-26",
@@ -482,12 +491,10 @@
       "confiance": 1.0,
       "incertitude_declaree": true,
       "sources": [
-        "DOC-CONDITIONS-ADMISSION",
-        "DOC-GCA",
-        "DOC-EMII"
+        "DOC-CONDITIONS-ADMISSION"
       ],
       "outils_utilises": [],
-      "latence_ms": 8753
+      "latence_ms": 8023
     },
     {
       "id": "EVAL-30",
@@ -499,7 +506,7 @@
       "incertitude_declaree": true,
       "sources": [],
       "outils_utilises": [],
-      "latence_ms": 69614
+      "latence_ms": 8517
     },
     {
       "id": "EVAL-31",
@@ -517,7 +524,7 @@
         "DOC-NIVEAUX-DIPLOMES"
       ],
       "outils_utilises": [],
-      "latence_ms": 8217
+      "latence_ms": 8174
     },
     {
       "id": "EVAL-32",
@@ -529,7 +536,7 @@
       "incertitude_declaree": true,
       "sources": [],
       "outils_utilises": [],
-      "latence_ms": 8588
+      "latence_ms": 8808
     }
   ]
 }

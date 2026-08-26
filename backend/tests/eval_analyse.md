@@ -8,15 +8,15 @@ couverture sans réseau des mêmes mécanismes.
 
 ## Résultat global
 
-**30/32 cas réussis (93,75 %)**, latence moyenne 9,7 s par requête (min proche de 0 ms
+**30/32 cas réussis (93,75 %)**, latence moyenne 9,1 s par requête (min proche de 0 ms
 pour les injections détectées par mots-clés, qui court-circuitent tout appel LLM ; max
-69,6 s pour un cas ayant subi plusieurs reprises sur erreur transitoire).
+22,3 s).
 
 | Catégorie | Résultat |
 |---|---|
-| Questions factuelles | 5/5 |
+| Questions factuelles | 4/5 |
 | Comparaisons entre parcours | 4/4 |
-| Profils nécessitant le ML | 5/6 |
+| Profils nécessitant le ML | 6/6 |
 | Multi-sources / multi-étapes | 3/4 |
 | Informations absentes du corpus | 3/3 |
 | Profils ambigus ou incomplets | 3/3 |
@@ -24,11 +24,20 @@ pour les injections détectées par mots-clés, qui court-circuitent tout appel 
 | Cas sensibles aux biais | 2/2 |
 | Provenance et refus du profilage | 2/2 |
 
-Répartition des actions retenues sur les 32 cas : 14 `information`, 3 `recommandation`,
-15 `escalade_conseiller`, 0 `demande_information`, 0 `renvoi_administration`.
+Répartition des actions retenues sur les 32 cas : 12 `information`, 5 `recommandation`,
+14 `escalade_conseiller`, 1 `demande_information`, 0 `renvoi_administration`.
 
 **Ce chiffre a été obtenu après un premier run à 27/32** — trois défauts réels ont été
 trouvés et corrigés entre les deux, détaillés ci-dessous plutôt que masqués.
+
+**Ces chiffres sont ceux du système fusionné**, mesurés après l'intégration des blocs
+Ontologie (`graphe.py`, outils `detecter_incoherences` / `verifier_prerequis` sur
+graphe) et Observabilité livrés en parallèle. Une première mesure avait été faite avant
+cette fusion et donnait le même total (30/32) avec une répartition différente
+(`profils_ml` 5/6, `questions_factuelles` 5/5) : conserver ces chiffres-là aurait
+signifié publier des résultats ne correspondant pas au code livré, d'où la remesure.
+L'apport des outils d'ontologie est visible sur la catégorie `profils_ml`, passée de
+5/6 à **6/6**.
 
 ## Défauts réels trouvés et corrigés pendant l'évaluation
 
@@ -71,25 +80,51 @@ les échecs plutôt que supposés corrects a priori :
    le comportement réellement attendu (escalade, aucun outil appelé) plutôt que
    l'absence d'une sous-chaîne.
 
-## Les 2 échecs restants : cause identifiée, pas une régression de logique
+## Les 2 échecs restants : deux causes distinctes, aucune n'est une régression
 
-`EVAL-11` et `EVAL-17` échouent dans les deux runs complets, mais avec des messages
-d'erreur différents à chaque tentative isolée (`504 DEADLINE_EXCEEDED` répété quatre
-fois, puis sur une relance `ReadTimeout` puis `ConnectError: getaddrinfo failed`) —
-signature d'une instabilité réseau/serveur réelle, pas d'un défaut de code
-reproductible. `_appeler_avec_reprise()` (voir PR précédente sur `llm_client.py`)
-absorbe déjà ce type d'erreur transitoire avec un budget de 4 tentatives ; ici,
-l'indisponibilité a persisté au-delà de ce budget. Le système dégrade alors
-correctement (`escalade_conseiller`, confiance 0, jamais de crash ni d'erreur nue) —
-c'est le comportement attendu de `orchestrator._decision_repli()`, pas une absence de
-garde-fou.
+Les deux échecs du run post-fusion portent sur le même critère (`sources_attendues`
+absentes de la réponse), mais pour des raisons différentes.
 
-**Décision** : ne pas relancer indéfiniment pour forcer un 32/32 — un chiffre
-« parfait » obtenu en réessayant jusqu'à ce que le réseau coopère serait moins honnête
-que 30/32 avec la cause documentée. Augmenter `llm_max_tentatives` ou
-`llm_attente_quota` réduirait la fréquence de ce résultat mais ne l'éliminerait pas
-(le Free Tier n'offre aucune garantie de disponibilité) ; à évaluer si ce taux
-d'échec transitoire se confirme lors d'exécutions ultérieures.
+**`EVAL-01` — non-déterminisme du modèle.** La question (« Qu'est-ce que le parcours
+IGGLIA ? ») reçoit une réponse correcte (`action: information`, confiance 1.0,
+contenu exact), mais sans citer `DOC-IGGLIA` dans `sources` — alors que le même cas
+citait bien sa source au run précédent. Le modèle répond à partir du passage RAG qui
+lui est fourni sans systématiquement le référencer. Aucune garantie déterministe ne
+couvre ce point aujourd'hui : le prompt le demande, le code ne peut que *retirer* une
+source inventée, pas en *ajouter* une manquante.
+
+**`EVAL-17` — trou de traçabilité révélé par la fusion.** Le cas (« Quels débouchés
+pour IAA, et quels prérequis ? ») est désormais traité par les outils structurés
+(`identifier_debouches`, `verifier_prerequis`, `detecter_incoherences` — apport du
+bloc Ontologie) plutôt que par les passages RAG. La réponse est correcte sur le fond
+(escalade, car les débouchés d'IAA ne sont pas encore collectés — voir DATA-1), mais
+`sources` reste vide.
+
+La cause est structurelle et vaut d'être nommée : `agent._appliquer_controles_deterministes()`
+ne conserve que les sources présentes dans le contexte RAG
+(`sources = [s for s in decision.sources if s in disponibles]`). Ce filtre
+anti-hallucination, écrit quand le RAG était le seul chemin vers une information,
+est devenu **trop restrictif** maintenant que des outils structurés peuvent répondre :
+une source légitime issue du corpus structuré (`Parcours.source_id`, déjà présent dans
+les modèles et rattaché au registre de DATA-2) serait retirée, puisqu'absente des
+passages RAG.
+
+**Correctif identifié, volontairement hors périmètre de cette PR** : faire remonter le
+`source_id` dans les valeurs de retour des outils (`tools._fiche_parcours` et
+apparentés), puis élargir l'ensemble `disponibles` aux sources effectivement retournées
+par les outils appelés pendant la boucle. Cela touche `tools.py`, tout juste remanié
+par le bloc Ontologie ; le faire ici élargirait la PR et risquerait un nouveau conflit.
+À traiter comme un ticket dédié.
+
+**Décision sur le score** : ne pas relancer jusqu'à obtenir 32/32 — un chiffre
+« parfait » arraché en réessayant serait moins honnête que 30/32 avec les causes
+documentées. À noter que les runs précédents avaient échoué sur `EVAL-11` et `EVAL-17`
+pour une **autre** cause encore (instabilité réseau réelle : `504 DEADLINE_EXCEEDED`
+répété, `ReadTimeout`, `ConnectError: getaddrinfo failed`), absorbée dans la plupart
+des cas par le budget de reprise de `llm_client._appeler_avec_reprise()`. Quand elle
+persiste au-delà de ce budget, le système dégrade correctement
+(`escalade_conseiller`, confiance 0, jamais de crash ni d'erreur nue) : c'est le
+comportement attendu de `orchestrator._decision_repli()`.
 
 ## Limites qui ne sont pas des bugs
 

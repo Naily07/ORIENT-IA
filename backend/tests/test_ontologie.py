@@ -39,8 +39,12 @@ def test_relation_inconnue_est_rejetee():
 
 def test_relations_depuis_parcours_ne_retourne_que_les_relations_sources():
     relations = relations_depuis("Parcours")
-    assert len(relations) == 4
+    assert relations  # le Parcours est le pivot du graphe : jamais vide
     assert all(r.source == "Parcours" for r in relations)
+    # Les quatre relations du §12 dont Parcours est la source, nommées plutôt
+    # que comptées : un compte brut casse à chaque ajout au schéma sans rien
+    # dire de ce qui compte réellement.
+    assert {"enseigne", "developpe", "prepareA", "necessite"} <= {r.relation for r in relations}
 
 
 def test_relations_depuis_entite_sans_relation_sortante():

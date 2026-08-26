@@ -78,6 +78,12 @@ class Matiere(BaseModel):
 class Competence(BaseModel):
     id: str
     nom: str
+    # Identifiants de Metier (relation `estRequisePour` du schéma d'ontologie,
+    # voir src.ontologie) : quels métiers exigent explicitement cette
+    # compétence. Comme Parcours.debouches, une liste d'identifiants plutôt
+    # qu'un objet imbriqué — c'est directement ce dont src.graphe a besoin
+    # pour peupler cette relation (ONTO-2).
+    metiers_requis: list[str] = []
     source_id: str | None = None
 
 

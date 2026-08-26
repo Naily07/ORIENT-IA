@@ -73,6 +73,13 @@ def profil():
 
 
 def test_reponse_finale_immediate_sans_appel_d_outil(monkeypatch, profil):
+    """Le modèle recommande directement, sans le moindre appel d'outil : le
+    code force malgré tout la consultation du modèle ML avant de conclure
+    (voir test_recommandation_sans_outil_ml_est_corrigee ci-dessous pour le
+    détail de ce garde-fou). L'`action` finale n'est volontairement pas
+    testée ici : elle dépend de la confiance du vrai modèle sur ce profil
+    minimal, ce n'est pas ce que ce test vérifie (pas de boucle infinie, pas
+    d'erreur sur une réponse finale immédiate)."""
     decision = _decision_type()
     monkeypatch.setattr(
         "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
@@ -80,8 +87,7 @@ def test_reponse_finale_immediate_sans_appel_d_outil(monkeypatch, profil):
 
     resultat = run_agent("Quel parcours pour moi ?", profil, None, "trace-1")
 
-    assert resultat.action == "recommandation"
-    assert resultat.outils_utilises == []
+    assert resultat.outils_utilises == ["analyser_profil_ml"]
 
 
 def test_boucle_avec_un_appel_d_outil_puis_reponse_finale(monkeypatch, profil):
@@ -128,8 +134,14 @@ def test_sources_absentes_du_contexte_sont_retirees(monkeypatch, profil):
 
 
 def test_confiance_faible_force_l_escalade(monkeypatch, profil):
+    # `analyser_profil_ml` déjà dans outils_utilises : on isole ici le seul
+    # comportement testé (seuil de confiance), sans déclencher en plus le
+    # garde-fou qui recalculerait la confiance à partir du vrai modèle.
     decision = _decision_type(
-        action="recommandation", confiance=0.2, incertitude_declaree=False
+        action="recommandation",
+        confiance=0.2,
+        incertitude_declaree=False,
+        outils_utilises=["analyser_profil_ml"],
     )
     monkeypatch.setattr(
         "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
@@ -143,7 +155,9 @@ def test_confiance_faible_force_l_escalade(monkeypatch, profil):
 
 def test_outils_utilises_reflete_les_appels_reels(monkeypatch, profil):
     """Le modèle peut prétendre avoir utilisé un outil dans sa sortie JSON :
-    seul ce que le code a réellement exécuté doit apparaître."""
+    seul ce que le code a réellement exécuté doit apparaître. `verifier_prerequis`
+    n'est pas `analyser_profil_ml` : le garde-fou de consultation du modèle ML
+    (testé isolément plus bas) s'ajoute donc à la liste réelle."""
     decision = _decision_type(outils_utilises=["outil_invente_par_le_modele"])
     reponses = iter(
         [
@@ -156,7 +170,32 @@ def test_outils_utilises_reflete_les_appels_reels(monkeypatch, profil):
 
     resultat = run_agent("Question", profil, None, "trace-6")
 
-    assert resultat.outils_utilises == ["verifier_prerequis"]
+    assert resultat.outils_utilises == ["verifier_prerequis", "analyser_profil_ml"]
+
+
+def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
+    """Trouvé en usage réel : un contexte RAG suffisamment riche permet
+    parfois au modèle de recommander directement, sans jamais appeler
+    `analyser_profil_ml`, malgré la consigne du prompt. Le code doit alors
+    consulter le modèle lui-même plutôt que d'afficher un score inventé."""
+    decision = _decision_type(
+        parcours_recommandes=[
+            {"parcours": "TEH", "score_adequation": 0.99, "justification": "invente"}
+        ],
+        confiance=0.99,
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-7")
+
+    assert "analyser_profil_ml" in resultat.outils_utilises
+    # Le score inventé par le modèle de langage a été remplacé par celui du
+    # vrai modèle ML — jamais garanti d'être identique (et surtout pas de
+    # rester à 0.99 sur un profil qui ne pointe pas franchement vers TEH).
+    assert resultat.parcours_recommandes != decision.parcours_recommandes
+    assert len(resultat.parcours_recommandes) == 16  # les 16 parcours réels, classés
 
 
 # --- Test réseau : vérifie la boucle contre l'API Gemini réelle -------------

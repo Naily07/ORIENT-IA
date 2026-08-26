@@ -15,6 +15,9 @@ dependencies = [
     "streamlit",
     "requests",
     "python-dotenv",
+    "numpy",
+    "scikit-learn",
+    "joblib",
 ]
 
 [project.optional-dependencies]
@@ -26,7 +29,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "backend"}
-packages = ["src"]
+packages = ["src", "src.ml"]
 
 [tool.ruff]
 line-length = 100

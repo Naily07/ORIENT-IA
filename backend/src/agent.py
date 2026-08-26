@@ -19,14 +19,21 @@ Garanties, sur le modèle d'EXAM-S2 :
     pour répondre sans consulter l'outil, malgré la consigne du prompt), le
     code appelle le modèle ML lui-même et remplace les scores proposés —
     jamais de score d'adéquation qui ne vienne pas réellement du modèle ;
+  - si la prose omet le parcours que le modèle place en tête tout en en
+    citant d'autres (constaté en usage réel), une note rappelle le classement
+    réel : le barème note explicitement la cohérence entre le modèle ML et la
+    réponse finale ;
   - une confiance sous le seuil configuré force `action="escalade_conseiller"`
     — amorce d'AGT-4, avant qu'un orchestrateur dédié ne porte cette règle.
 """
+
+import re
 
 from google.genai import types
 
 from src.config import config
 from src.llm_client import LLMError, llm_call_with_tools
+from src.ml.archetypes import PARCOURS_CONNUS
 from src.ml.outils import analyser_profil as analyser_profil_ml
 from src.schemas import ProfilCandidat, RecommandationDecision
 from src.tools import declarer_outils, definir_profil_courant, executer_outil
@@ -192,6 +199,68 @@ def _forcer_consultation_du_modele_ml(
     return decision, [*outils_utilises, "analyser_profil_ml"]
 
 
+def _parcours_cites(texte: str) -> list[str]:
+    """Sigles de parcours nommés dans un texte, dans l'ordre d'apparition.
+
+    Frontières de mot obligatoires : sans elles, `EMP` correspondrait à
+    « **emp**loi » ou « **emp**loyeur », mots courants dans de la prose
+    d'orientation. Vérifié sans faux positif sur l'ensemble du corpus réel
+    (`backend/data/corpus.json`) et sur une liste de pièges français.
+    """
+    trouves: list[tuple[int, str]] = []
+    for parcours in PARCOURS_CONNUS:
+        correspondance = re.search(rf"\b{re.escape(parcours)}\b", texte, re.IGNORECASE)
+        if correspondance:
+            trouves.append((correspondance.start(), parcours))
+    return [parcours for _, parcours in sorted(trouves)]
+
+
+def _verifier_coherence_prose_classement(
+    decision: RecommandationDecision,
+) -> RecommandationDecision:
+    """Signale une prose qui met en avant un parcours que le classement ne
+    place pas en tête (AGT-7).
+
+    Constaté en usage réel, reproduit 2 fois sur 2 : sur un profil
+    informatique, `parcours_recommandes[0]` valait IGGLIA (0,54) tandis que
+    l'explication annonçait « le modèle recommande en priorité ESIIA » (0,11)
+    — l'agent narrait à partir des passages RAG plutôt que du classement de
+    l'outil. Le barème note explicitement la cohérence entre le modèle ML et
+    la réponse finale.
+
+    Le critère retenu est **l'absence totale** du parcours le mieux classé
+    dans la prose, pas son rang de citation : une formulation légitime du
+    type « contrairement à ESIIA, IGGLIA convient mieux » cite bien un autre
+    parcours en premier sans rien contredire. C'est l'omission du parcours
+    réellement recommandé qui trahit la dérive.
+
+    On annexe une note plutôt que de réécrire la prose ou d'escalader : les
+    scores, eux, sont corrects — seule la narration a dérivé. Même mécanisme
+    que pour les sources retirées et la consultation ML forcée.
+    """
+    if decision.action != "recommandation" or not decision.parcours_recommandes:
+        return decision
+
+    meilleur = decision.parcours_recommandes[0].parcours
+    prose = f"{decision.resume}\n{decision.explication}"
+    cites = _parcours_cites(prose)
+
+    if not cites or meilleur in cites:
+        return decision
+
+    return decision.model_copy(
+        update={
+            "explication": (
+                f"{decision.explication}\n[Contrôle automatique] L'explication ci-dessus "
+                f"met en avant {', '.join(cites)}, alors que le modèle place "
+                f"{meilleur} en tête du classement "
+                f"({decision.parcours_recommandes[0].score_adequation:.0%}). "
+                "Le classement chiffré fait foi."
+            )
+        }
+    )
+
+
 def _appliquer_controles_deterministes(
     profil: ProfilCandidat,
     decision: RecommandationDecision,
@@ -206,6 +275,9 @@ def _appliquer_controles_deterministes(
     decision, outils_utilises = _forcer_consultation_du_modele_ml(
         profil, decision, outils_utilises
     )
+    # Après la consultation forcée : `parcours_recommandes` porte alors le
+    # classement réel du modèle, ce à quoi la prose doit être confrontée.
+    decision = _verifier_coherence_prose_classement(decision)
 
     confiance = decision.confiance
     action = decision.action

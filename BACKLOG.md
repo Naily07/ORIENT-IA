@@ -151,11 +151,11 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 
 | ID | Tâche | Description | Dépendances |
 |---|---|---|---|
-| AGT-1 | Boucle agent bornée | Function calling natif, limite d'itérations, séparation stricte modèle/code **[REUSE quasi tel quel]** `agent.py`, schéma de sortie et prompt système à réécrire | SETUP-4, SETUP-3 |
-| AGT-2 | Spécification des outils du domaine | `rechercher_formation`, `comparer_parcours`, `analyser_profil_ml`, `calculer_score_adequation`, `verifier_prerequis`, `rechercher_competences`, `identifier_debouches`, `expliquer_recommandation` **[ADAPT]** structure `OUTILS`/`TOOL_REGISTRY`, contenu entièrement nouveau | DATA-3, ML-8, ONTO-3 |
-| AGT-3 | Validation & exécution des outils | `valider_parametres()`/`executer_outil()` **[REUSE tel quel]** | AGT-2 |
-| AGT-4 | Politique de refus / incertitude / renvoi | Remplace le concept « action sensible → validation humaine » d'EXAM-S2 par « confiance insuffisante → escalade vers un conseiller pédagogique » **[ADAPT concept]** | AGT-1, ORCH-2 |
-| AGT-5 | Séparation des sources dans la réponse | Prompt système imposant de distinguer résultat ML / info documentaire / règle pédagogique / texte généré — exigence explicite du sujet ORIENT'IA, absente d'EXAM-S2 **[NOUVEAU]** | AGT-1 |
+| ~~AGT-1~~ ✅ | Boucle agent bornée | Function calling natif, limite d'itérations, séparation stricte modèle/code **[REUSE quasi tel quel]** `agent.py` — schéma de sortie (`RecommandationDecision`) et prompt système réécrits pour le domaine orientation ; testé sans réseau (LLM simulé), aucun appel réel encore vérifié (pas de `GEMINI_API_KEY` disponible dans cet environnement) | SETUP-4, SETUP-3 |
+| ~~AGT-2~~ ✅ | Spécification des outils du domaine | `rechercher_formation`, `comparer_parcours`, `analyser_profil_ml`, `calculer_score_adequation`, `verifier_prerequis`, `rechercher_competences`, `identifier_debouches`, `expliquer_recommandation` **[ADAPT]** structure `OUTILS`/`TOOL_REGISTRY` — `verifier_prerequis` construit sur les données structurées (Mention/Parcours/Prerequis) plutôt que sur le graphe ONTO-2 (pas encore construit) ; `rechercher_competences`/`identifier_debouches` fonctionnels mais data-limités tant que DATA-1 (compétences/débouchés) n'est pas complété | DATA-3, ML-8, ONTO-3 |
+| ~~AGT-3~~ ✅ | Validation & exécution des outils | `valider_parametres()`/`executer_outil()` **[REUSE tel quel]** | AGT-2 |
+| AGT-4 (partiel) | Politique de refus / incertitude / renvoi | Remplace le concept « action sensible → validation humaine » d'EXAM-S2 par « confiance insuffisante → escalade vers un conseiller pédagogique » **[ADAPT concept]** — amorcé directement dans `agent.py` (seuil de confiance force `escalade_conseiller`) ; la version complète « le code contresigne la décision » (recoupement systématique avec les règles pédagogiques, gestion de `renvoi_administration`) attend l'orchestrateur | AGT-1, ORCH-2 |
+| ~~AGT-5~~ ✅ | Séparation des sources dans la réponse | Prompt système imposant de distinguer résultat ML / info documentaire / règle pédagogique / texte généré — exigence explicite du sujet ORIENT'IA, absente d'EXAM-S2 **[NOUVEAU]** | AGT-1 |
 
 ## 🔗 Orchestrateur
 

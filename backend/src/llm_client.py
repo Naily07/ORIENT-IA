@@ -101,13 +101,27 @@ def _attendre_son_tour() -> None:
         _dernier_appel = time.monotonic()
 
 
+# Motifs d'erreur transitoires, qui se résolvent en général en réessayant le
+# même appel : quota par minute dépassé, ou timeout/indisponibilité côté
+# serveur Gemini. Trouvé en usage réel (AGT-1) : un appel dans une boucle
+# d'agent avec un historique de conversation qui grossit (réponses d'outils
+# incluses) peut dépasser le délai interne de l'API (504 DEADLINE_EXCEEDED)
+# sans qu'aucun quota ne soit en cause — le distinguer permet de réessayer
+# plutôt que d'abandonner sur ce qui n'est qu'un aléa réseau.
+_MOTIFS_QUOTA = ("RESOURCE_EXHAUSTED", "429")
+_MOTIFS_SERVEUR_TRANSITOIRE = ("DEADLINE_EXCEEDED", "UNAVAILABLE", "503", "504")
+
+
 def _appeler_avec_reprise(contenu: str, parametres: types.GenerateContentConfig):
-    """Appelle l'API en absorbant les dépassements de quota par minute.
+    """Appelle l'API en absorbant les erreurs transitoires (quota par minute
+    ou indisponibilité passagère du serveur).
 
     Le Free Tier plafonne à 15 requêtes/minute (valeur constatée). Or le
     pipeline émet plusieurs appels par requête : sans reprise, une démo
     enchaînant quelques interactions déclenche une 429 en pleine
-    présentation. On réémet en respectant le délai indiqué par l'API.
+    présentation. On réémet en respectant le délai indiqué par l'API si elle
+    en fournit un (cas du quota), sinon un délai par défaut (cas d'un
+    timeout serveur, qui n'indique jamais de délai de reprise).
     """
     derniere_erreur: Exception | None = None
 
@@ -121,8 +135,10 @@ def _appeler_avec_reprise(contenu: str, parametres: types.GenerateContentConfig)
             )
         except Exception as e:
             message = str(e)
-            est_quota = "RESOURCE_EXHAUSTED" in message or "429" in message
-            if not est_quota:
+            reessayable = any(
+                motif in message for motif in (*_MOTIFS_QUOTA, *_MOTIFS_SERVEUR_TRANSITOIRE)
+            )
+            if not reessayable:
                 raise LLMError(f"Appel LLM échoué ({type(e).__name__}) : {e}") from e
 
             derniere_erreur = e
@@ -132,17 +148,18 @@ def _appeler_avec_reprise(contenu: str, parametres: types.GenerateContentConfig)
             attente = _delai_suggere(message) or config.llm_attente_quota
             attente += 0.5  # marge : la fenêtre de quota est glissante
             logger.warning(
-                "Quota atteint (tentative %d/%d), reprise dans %.1fs",
+                "Erreur transitoire (tentative %d/%d), reprise dans %.1fs : %s",
                 tentative + 1,
                 config.llm_max_tentatives,
                 attente,
+                message,
             )
             time.sleep(attente)
 
     raise QuotaDepasseError(
-        f"Quota Gemini dépassé après {config.llm_max_tentatives} tentatives. "
-        f"Free Tier limité à ~15 requêtes/minute — espacer les appels ou "
-        f"changer de modèle via GEMINI_MODEL. Détail : {derniere_erreur}"
+        f"Appel LLM toujours en échec après {config.llm_max_tentatives} tentatives "
+        f"(quota Free Tier ~15 requêtes/minute, ou indisponibilité serveur "
+        f"persistante). Détail : {derniere_erreur}"
     ) from derniere_erreur
 
 

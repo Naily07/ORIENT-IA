@@ -96,8 +96,8 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 | ~~SETUP-1~~ ✅ | Structure du dépôt | `backend/src`, `backend/tests/`, `pyproject.toml`, `requirements.txt`, `run.sh`/`run.ps1`, `.env.example`, `.gitignore` **[REUSE]** ossature EXAM-S2 — `frontend/` et `backend/data/` restent à créer avec FE-1/DATA-1 | — |
 | ~~SETUP-2~~ ✅ | Configuration centralisée | `config.py` (pydantic-settings) : modèle LLM, seuils RAG, chemins, budget orchestrateur **[REUSE]** structure, valeurs de départ héritées d'EXAM-S2 à recalibrer (RAG-5) | SETUP-1 |
 | ~~SETUP-3~~ ✅ | Client LLM unique | `llm_client.py` : `llm_call`/`llm_call_with_tools`, retry quota, lissage débit, hooks d'observabilité **[REUSE quasi telle quelle]** | SETUP-2 |
-| SETUP-4 | Schémas du domaine orientation | `schemas.py` : `ProfilCandidat`, `AnalyseProfil`, `RecommandationDecision` (parcours, score, sources, incertitude, informations_manquantes, action) **[ADAPT]** philosophie de `TicketDecision` (vocabulaires `Literal`, séparation LLM/code) — amorcé avec `VerificationInjection` (générique) pour `guardrails.py`, le reste reste à écrire | SETUP-1 |
-| SETUP-5 | Modèles de données du corpus | `models.py` : `Formation`, `Parcours`, `Matiere`, `Competence`, `Prerequis`, `Metier` + chargement JSON **[ADAPT]** `ArticleKB` → `ArticleFormation` — amorcé : `DocumentSource` générique + `charger_corpus()` ajoutés pour que le RAG soit utilisable dès maintenant, les modèles métier détaillés restent à construire une fois le corpus collecté (DATA-1) | SETUP-1 |
+| ~~SETUP-4~~ ✅ | Schémas du domaine orientation | `schemas.py` : `ProfilCandidat`, `AnalyseProfil`, `RecommandationDecision` (parcours, score, sources, incertitude, informations_manquantes, action) **[ADAPT]** philosophie de `TicketDecision` (vocabulaires `Literal`, séparation LLM/code) | SETUP-1 |
+| ~~SETUP-5~~ ✅ | Modèles de données du corpus | `models.py` : `Mention`, `Parcours`, `Matiere`, `Competence`, `Prerequis`, `Metier` + `CorpusFormations`/`charger_corpus_formations()` **[ADAPT]** `ArticleKB` → `DocumentSource` (RAG) + modèles structurés séparés pour le ML/l'ontologie — les fichiers JSON réels et le lien de provenance vers le registre des sources restent à faire avec DATA-1/DATA-3 | SETUP-1 |
 
 ## 📚 Données — corpus, traçabilité, enquête
 
@@ -116,7 +116,7 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 
 | ID | Tâche | Description | Dépendances |
 |---|---|---|---|
-| ONTO-1 | Schéma d'entités/relations | Étudiant, Formation, Mention, Parcours, Matière, Compétence, Prérequis, Métier, CentreIntérêt + relations `enseigne`/`développe`/`prépareA`/`nécessite`/`possède`/`préfère`/`estRequisePour` **[NOUVEAU]** | DATA-1 |
+| ~~ONTO-1~~ ✅ | Schéma d'entités/relations | Étudiant, Formation, Mention, Parcours, Matière, Compétence, Prérequis, Métier, CentreIntérêt + relations `enseigne`/`développe`/`prépareA`/`nécessite`/`possède`/`préfère`/`estRequisePour` **[NOUVEAU]** — `backend/src/ontologie.py` (`SCHEMA_RELATIONS`, `relation_valide()`), purement déclaratif, ne dépend pas du corpus réel | DATA-1 |
 | ONTO-2 | Construction du graphe | Peuplement (NetworkX, ou RDFLib si le temps permet) depuis le corpus structuré **[NOUVEAU]** | ONTO-1, DATA-3 |
 | ONTO-3 | Outil `verifier_prerequis` | Requête de graphe déterministe (pas de LLM), exposée à l'agent comme outil **[NOUVEAU]** | ONTO-2 |
 | ONTO-4 | Outil `detecter_incoherences` | Ex. compétence requise sans prérequis satisfaisable, parcours sans débouché renseigné **[NOUVEAU]** | ONTO-2 |
@@ -163,7 +163,7 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 |---|---|---|---|
 | ORCH-1 | Pipeline complet | Garde-fous → profil → RAG → ML → agent → sortie structurée **[REUSE]** squelette `orchestrator.py` : « une seule étape bloquante, le reste dégrade proprement » | AGT-1, RAG-2, ML-8, SEC-1 |
 | ORCH-2 | Règles métier déterministes | Sources recoupées avec les passages réellement fournis, confiance plafonnée en cas de dégradation **[REUSE]** `_appliquer_regles_metier` | ORCH-1 |
-| ORCH-3 | Gestion des échecs | Timeout LLM, sortie non conforme, budget de temps global, dégradation propre (jamais d'erreur nue) **[REUSE]** `sortie.py` + budget orchestrateur — amorcé : `generer_avec_retry()` générique porté (`backend/src/sortie.py`), la réponse de repli « toujours valide » attend le schéma `RecommandationDecision` (SETUP-4) | ORCH-1 |
+| ORCH-3 | Gestion des échecs | Timeout LLM, sortie non conforme, budget de temps global, dégradation propre (jamais d'erreur nue) **[REUSE]** `sortie.py` + budget orchestrateur — amorcé : `generer_avec_retry()` générique porté (`backend/src/sortie.py`) et `RecommandationDecision` (SETUP-4) désormais disponible ; la fonction de repli « toujours valide » elle-même (équivalent `reponse_erreur_controlee`) reste à écrire avec l'orchestrateur | ORCH-1 |
 | ORCH-4 | Endpoints FastAPI | `/orientation/traiter`, `/observabilite/traces`, `/health` **[ADAPT]** `api.py` — pas d'équivalent `/tickets/valider` sauf si une action sensible est identifiée | ORCH-1 |
 
 ## 🛡️ Sécurité & garde-fous

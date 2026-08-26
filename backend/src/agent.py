@@ -56,8 +56,14 @@ jamais un parcours de ta propre initiative, sans passer par le modèle.
 - Utilise `verifier_prerequis` avant de confirmer qu'un candidat peut intégrer un \
 parcours. Si l'outil répond `information_manquante`, pose la question au candidat \
 plutôt que de supposer une réponse.
-- Utilise `expliquer_recommandation` pour justifier ta recommandation principale \
-avec les traits du profil qui pèsent réellement dans le score du modèle.
+- Utilise `expliquer_recommandation` **une seule fois**, pour le parcours que tu \
+recommandes en premier, avec les traits du profil qui pèsent réellement dans le score \
+du modèle — jamais un appel répété pour chaque parcours candidat, ce qui épuiserait ta \
+limite d'itérations sans jamais conclure.
+- Appelle `analyser_profil_ml` uniquement quand tu t'apprêtes à recommander un \
+parcours personnalisé. Pour une question factuelle qui ne demande pas de \
+recommandation (ex. « qu'est-ce que IGGLIA ? »), réponds directement à partir des \
+outils de consultation et des passages fournis, sans consulter le modèle ML.
 - Utilise `detecter_incoherences` si le candidat interroge la fiabilité des données \
 ou si tu dois reconnaître explicitement une limite du corpus (§9 du sujet) plutôt que \
 de deviner une information absente.
@@ -84,7 +90,11 @@ jamais une estimation de ta part ;
 - `sources` ne contient que des identifiants de passages réellement fournis dans le \
 contexte, jamais inventés ;
 - `action` vaut :
-  - `recommandation` si le profil et le corpus permettent de conclure ;
+  - `information` si la demande est une question factuelle sur le corpus (une \
+formation, une comparaison, une procédure) qui ne nécessite aucune recommandation \
+personnalisée ;
+  - `recommandation` si le profil et le corpus permettent de recommander un parcours \
+personnalisé ;
   - `demande_information` s'il manque une information importante (ex. série de \
 baccalauréat pour vérifier un prérequis, ou un profil encore trop vide pour que le \
 modèle ML soit pertinent) ;
@@ -133,31 +143,49 @@ def _valider_reponse_finale(reponse) -> RecommandationDecision:
     return RecommandationDecision.model_validate_json(texte)
 
 
+_ACTIONS_NECESSITANT_LE_MODELE_ML = {"recommandation", "escalade_conseiller"}
+
+
 def _forcer_consultation_du_modele_ml(
     profil: ProfilCandidat, decision: RecommandationDecision, outils_utilises: list[str]
 ) -> tuple[RecommandationDecision, list[str]]:
-    """Si le modèle recommande sans être passé par `analyser_profil_ml`, le
-    code l'appelle lui-même et remplace les scores proposés.
+    """Si le modèle recommande ou escalade sans être passé par
+    `analyser_profil_ml`, le code l'appelle lui-même et fonde la décision sur
+    ses scores réels.
 
-    Constaté en usage réel : un contexte RAG assez riche permet parfois au
-    modèle de répondre directement à partir des passages, sans consulter
-    l'outil ML, malgré la consigne explicite du prompt système. Le vérifier
-    déterministe plutôt que de compter sur la consigne : un score
-    d'adéquation qui ne viendrait pas réellement du modèle romprait
-    l'exigence centrale du sujet (§2 : recommandation *argumentée*, §6 :
-    distinguer explicitement les résultats du modèle du texte généré)."""
-    if decision.action != "recommandation" or "analyser_profil_ml" in outils_utilises:
+    Constaté en usage réel (EVAL) : un contexte RAG assez riche permet
+    parfois au modèle de répondre directement à partir des passages, sans
+    consulter l'outil ML, malgré la consigne explicite du prompt système —
+    et à l'inverse, sur un profil pourtant renseigné, le modèle escalade
+    parfois directement à confiance nulle sans même avoir essayé. Dans les
+    deux cas, le vérifier déterministe plutôt que de compter sur la
+    consigne : une escalade non fondée sur le modèle est aussi peu
+    défendable qu'une recommandation qui ne le serait pas (§2 du sujet :
+    recommandation *argumentée*, §6 : distinguer les résultats du modèle du
+    texte généré — une décision de ne pas recommander en est aussi une).
+    `demande_information`/`information`/`renvoi_administration` ne sont pas
+    concernées : consulter le modèle ML n'a pas de sens tant que le profil
+    est jugé insuffisant ou que la question est purement factuelle ou
+    administrative."""
+    if (
+        decision.action not in _ACTIONS_NECESSITANT_LE_MODELE_ML
+        or "analyser_profil_ml" in outils_utilises
+    ):
         return decision, outils_utilises
 
     analyse = analyser_profil_ml(profil)
+    note = (
+        "consulté après coup pour fonder les scores d'adéquation ci-dessus, qui "
+        "remplacent ceux initialement proposés par le modèle de langage."
+        if decision.parcours_recommandes
+        else "consulté après coup : aucun score n'avait été calculé avant cette décision."
+    )
     decision = decision.model_copy(
         update={
             "parcours_recommandes": analyse.parcours_candidats,
             "confiance": analyse.confiance,
             "explication": (
-                f"{decision.explication}\n[Contrôle automatique] Le modèle ML a été "
-                "consulté après coup pour fonder les scores d'adéquation ci-dessus, "
-                "qui remplacent ceux initialement proposés par le modèle de langage."
+                f"{decision.explication}\n[Contrôle automatique] Le modèle ML a été {note}"
             ),
         }
     )

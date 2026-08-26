@@ -198,6 +198,41 @@ def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
     assert len(resultat.parcours_recommandes) == 16  # les 16 parcours réels, classés
 
 
+def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
+    """Trouvé en évaluant le système (EVAL) : sur un profil pourtant
+    renseigné, le modèle escaladait parfois directement à confiance nulle
+    sans jamais avoir consulté le modèle ML — une escalade tout aussi peu
+    fondée qu'une recommandation inventée. Le même garde-fou s'applique."""
+    decision = _decision_type(
+        action="escalade_conseiller",
+        parcours_recommandes=[],
+        confiance=0.0,
+        incertitude_declaree=True,
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-8")
+
+    assert "analyser_profil_ml" in resultat.outils_utilises
+    assert len(resultat.parcours_recommandes) == 16
+
+
+def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, profil):
+    """À l'inverse, une action `demande_information` (ou `information`,
+    `renvoi_administration`) ne doit pas déclencher le garde-fou : consulter
+    le modèle ML n'a pas de sens tant que le profil est jugé insuffisant."""
+    decision = _decision_type(action="demande_information", confiance=0.6)
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-9")
+
+    assert "analyser_profil_ml" not in resultat.outils_utilises
+
+
 # --- Test réseau : vérifie la boucle contre l'API Gemini réelle -------------
 
 

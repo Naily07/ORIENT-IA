@@ -86,6 +86,11 @@ class ProfilCandidat(BaseModel):
     activites_projets: list[str] = Field(default_factory=list)
     preferences_professionnelles: list[str] = Field(default_factory=list)
     environnement_travail_recherche: str | None = None
+    # Nécessaire pour `verifier_prerequis` (AGT-2) : les prérequis d'admission
+    # collectés (DATA-1) sont exprimés en séries de baccalauréat.
+    serie_bac: str | None = Field(
+        default=None, description="Série du baccalauréat déclarée (ex. 'C', 'D', 'S', 'A2'...)"
+    )
     # Champs jugés nécessaires par le code (règle métier, pas le modèle) pour
     # produire une recommandation fiable, mais absents du profil à ce stade.
     informations_manquantes: list[str] = Field(default_factory=list)

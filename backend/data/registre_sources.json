@@ -1,0 +1,79 @@
+[
+  {
+    "id": "SRC-ISPM-ACCUEIL",
+    "titre": "ISPM — Page d'accueil",
+    "url": "https://ispm-edu.com/",
+    "date_consultation": "2026-08-26",
+    "statut": "officiel",
+    "donnees_extraites": [
+      "Présentation générale de l'établissement",
+      "Fondation en janvier 1993 à Antananarivo",
+      "Distinctions (1er prix Olympiade d'Informatique de Madagascar 2012)"
+    ],
+    "limites": [
+      "Aucune liste de filières sur cette page — voir SRC-ISPM-FILIERES",
+      "Contenu récupéré via un outil de synthèse automatique, à revérifier mot à mot avant citation officielle"
+    ]
+  },
+  {
+    "id": "SRC-ISPM-FILIERES",
+    "titre": "ISPM — Départements & Filières",
+    "url": "https://ispm-edu.com/filieres.php",
+    "date_consultation": "2026-08-26",
+    "statut": "officiel",
+    "donnees_extraites": [
+      "Noms et descriptions courtes des 16 filières/parcours (IGGLIA, ESIIA, IMTICIA, ISAIA, CAA, FIC, DTJA, EMP, IAA, PIP, AEE, EMII, GCA, ICMP, TEE, TEH)",
+      "Regroupement par département (Informatique & Télécommunications, Techniques des Affaires, Biotechnologie & Agronomie, Génie Industriel & Civil, Tourisme)"
+    ],
+    "limites": [
+      "Descriptions généralistes (un paragraphe par filière) : pas de liste précise des matières enseignées, des compétences visées ni des débouchés métiers",
+      "Contenu récupéré via un outil de synthèse automatique (paraphrase, pas une citation exacte) — à revérifier mot à mot sur la page source avant toute présentation comme information officielle"
+    ]
+  },
+  {
+    "id": "SRC-ISPM-PRESENTATION",
+    "titre": "ISPM — Présentation générale",
+    "url": "https://ispm-edu.com/presentation.php",
+    "date_consultation": "2026-08-26",
+    "statut": "officiel",
+    "donnees_extraites": [
+      "Trois niveaux de diplôme : Licence (Bac+3, 3 ans + stage de 3 mois), Master/Ingénieur (Bac+5, 2 ans + stage/recherche de 6 mois), Doctorat",
+      "Organisation en 6 mentions : Informatique et Télécommunications (4 parcours), Génie Industriel (2 parcours), Génie Civil et Architecture (1 parcours), Droit et Techniques des Affaires (4 parcours), Biotechnologie et Agronomie (3 parcours), Tourisme (2 parcours) — total 16",
+      "Date de fondation janvier 1993, sous le nom initial ESSTIM avec une seule filière informatique"
+    ],
+    "limites": [
+      "Pas de détail des matières enseignées par mention ou parcours",
+      "Chiffres historiques (date de fondation, nom initial) non vérifiés indépendamment d'une deuxième source officielle"
+    ]
+  },
+  {
+    "id": "SRC-ISPM-INSCRIPTION",
+    "titre": "ISPM — Conditions d'admission / inscription",
+    "url": "https://ispm-edu.com/inscription.php",
+    "date_consultation": "2026-08-26",
+    "statut": "officiel",
+    "donnees_extraites": [
+      "Séries de baccalauréat requises par mention (ex. C/D/S ou techniques industrielles pour Informatique et Télécommunications ; toute série pour Techniques des Affaires et Tourisme ; C/D/S/techniques agricoles/A2 avec note de maths ≥ 12 pour Biotechnologie et Agronomie)",
+      "Pièces à fournir : diplôme ou attestation ou relevé de notes du bacc, un bulletin scolaire (1ère ou terminale), lettre de motivation, droit d'inscription de 30 000 Ariary",
+      "Sélection sur dossier"
+    ],
+    "limites": [
+      "Pas de période de candidature précisée dans le contenu récupéré"
+    ]
+  },
+  {
+    "id": "SRC-ANNUAIRE-MG",
+    "titre": "Annuaire.mg — Fiche ISPM (développement des sigles de filières)",
+    "url": "https://annuaire.mg/ispm/",
+    "date_consultation": "2026-08-26",
+    "statut": "externe",
+    "donnees_extraites": [
+      "Développement complet des sigles de 15 des 16 filières (ex. IGGLIA = Informatique de Gestion, Génie Logiciel et Intelligence Artificielle)"
+    ],
+    "limites": [
+      "Source tierce non institutionnelle : à recouper avec une confirmation officielle de l'ISPM avant présentation comme information certaine",
+      "Le développement du sigle AEE n'est pas confirmé (cette source ne donne que « Agriculture »)",
+      "Divergence constatée sur CAA : « Commerce et Affaires » ici contre « Commerce et Administration des Affaires » relevé dans une autre page tierce (voir corpus.json, note CAA) — à trancher avec l'ISPM"
+    ]
+  }
+]

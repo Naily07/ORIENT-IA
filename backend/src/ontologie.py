@@ -35,6 +35,14 @@ TypeRelation = Literal[
     "possede",
     "prefere",
     "estRequisePour",
+    # Au-delà des exemples du §12 : le sujet présente sa liste comme des
+    # « exemples de relations », pas comme un vocabulaire fermé. Ces deux-là
+    # portent des champs réellement présents dans le corpus structuré
+    # (`Parcours.mention_id`, `Parcours.passerelles`) qu'aucune relation du
+    # §12 ne permettait de représenter — sans elles, ces champs échappaient
+    # à la fois au graphe et au contrôle de références orphelines d'ONTO-4.
+    "appartientA",
+    "passerelleVers",
 ]
 
 ENTITES: tuple[str, ...] = get_args(TypeEntite)
@@ -49,11 +57,11 @@ class SchemaRelation(NamedTuple):
     cible: TypeEntite
 
 
-# Relations explicitement listées au §12 du sujet (Fig. 2). Un parcours peut
-# avoir plusieurs prérequis/compétences/matières : ces relations sont
-# many-to-many, portées par des listes d'identifiants côté
-# `src.models.Parcours`, pas par ce module qui ne fait que définir ce qui est
-# structurellement permis.
+# Relations explicitement listées au §12 du sujet (Fig. 2), plus deux ajouts
+# justifiés ci-dessus. Un parcours peut avoir plusieurs
+# prérequis/compétences/matières : ces relations sont many-to-many, portées
+# par des listes d'identifiants côté `src.models.Parcours`, pas par ce module
+# qui ne fait que définir ce qui est structurellement permis.
 SCHEMA_RELATIONS: tuple[SchemaRelation, ...] = (
     SchemaRelation("Parcours", "enseigne", "Matiere"),
     SchemaRelation("Parcours", "developpe", "Competence"),
@@ -62,7 +70,24 @@ SCHEMA_RELATIONS: tuple[SchemaRelation, ...] = (
     SchemaRelation("Etudiant", "possede", "Competence"),
     SchemaRelation("Etudiant", "prefere", "Matiere"),
     SchemaRelation("Competence", "estRequisePour", "Metier"),
+    SchemaRelation("Parcours", "appartientA", "Mention"),
+    SchemaRelation("Parcours", "passerelleVers", "Parcours"),
 )
+
+# --- Entités déclarées mais volontairement sans relation ----------------------
+#
+# `Etudiant` et `CentreInteret` sont nommés par le §12 du sujet et restent donc
+# dans le vocabulaire, mais aucun nœud de ces types n'est jamais ajouté au
+# graphe par `src.graphe.construire_graphe` : le graphe représente l'**offre de
+# formation** (corpus ISPM), tandis que le **profil du candidat** vit dans
+# `src.schemas.ProfilCandidat` et n'est jamais persisté. Les deux relations
+# `Etudiant → …` ci-dessus décrivent donc une extension possible (rapprocher un
+# profil du graphe), pas un état atteint aujourd'hui.
+#
+# `CentreInteret` va plus loin : le §12 le nomme comme concept mais ne lui
+# associe aucune relation, et nous n'en inventons pas une pour rendre le
+# vocabulaire « complet » — `relation_valide()` ne peut donc jamais être vraie
+# pour ce type, et c'est délibéré.
 
 
 def relation_valide(source_type: str, relation: str, cible_type: str) -> bool:

@@ -50,7 +50,8 @@ def test_analyse_profil_valide():
 
 def test_toutes_les_actions_du_sujet_sont_couvertes():
     attendu = {
-        "recommandation", "demande_information", "escalade_conseiller", "renvoi_administration",
+        "information", "recommandation", "demande_information",
+        "escalade_conseiller", "renvoi_administration",
     }
     assert attendu == set(ACTIONS)
 

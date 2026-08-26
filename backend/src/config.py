@@ -101,3 +101,14 @@ class Config(BaseSettings):
 
 
 config = Config()
+
+# Mention obligatoire dans l'interface (§16 du sujet, SEC-5) : reprise mot
+# pour mot. Une constante plutôt qu'une valeur de `Config` — ce n'est pas un
+# réglage ajustable par environnement, c'est un texte imposé par le sujet.
+# Exposée via `GET /health` en attendant qu'un frontend (FE-1) l'affiche
+# réellement à l'écran ; ce module reste la source unique du texte exact.
+MENTION_OBLIGATOIRE = (
+    "ORIENT'IA constitue un outil d'aide à l'orientation. Ses recommandations "
+    "ne remplacent ni l'avis d'un conseiller pédagogique ni une décision "
+    "officielle d'admission."
+)

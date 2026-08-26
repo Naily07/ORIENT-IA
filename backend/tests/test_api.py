@@ -48,6 +48,15 @@ def test_health_repond_ok_avec_le_corpus_charge(client):
     assert corps["corpus"]["parcours"] == 16  # les 16 parcours réels de l'ISPM (DATA-1)
 
 
+def test_health_expose_la_mention_obligatoire(client):
+    """SEC-5 : le frontend (FE-1, pas encore construit) doit pouvoir
+    récupérer le texte exact plutôt que le retaper à la main."""
+    from src.config import MENTION_OBLIGATOIRE
+
+    reponse = client.get("/health")
+    assert reponse.json()["mention_obligatoire"] == MENTION_OBLIGATOIRE
+
+
 def test_traiter_appelle_l_orchestrateur_et_retourne_sa_reponse(client, monkeypatch):
     decision = _decision()
     monkeypatch.setattr(

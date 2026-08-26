@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.config import config
+from src.config import MENTION_OBLIGATOIRE, config
 from src.llm_client import set_log_llm_call
 from src.models import charger_corpus
 from src.observability import lire_dernieres_traces, log_llm_call, log_tool_call, log_trace
@@ -91,4 +91,7 @@ def health():
             "mentions": len(corpus.mentions) if corpus else 0,
             "parcours": len(corpus.parcours) if corpus else 0,
         },
+        # SEC-5 : source unique du texte exact, à afficher par le frontend
+        # (FE-1, pas encore construit) plutôt que de le retaper à la main.
+        "mention_obligatoire": MENTION_OBLIGATOIRE,
     }

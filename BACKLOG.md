@@ -184,7 +184,7 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 | ~~OBS-1~~ ✅ | Traces JSONL | Question, profil construit, passages récupérés + scores, outils appelés, I/O ML, réponse finale, latence, erreurs **[REUSE]** `observability.py`, `log_trace()` généralisé (description/contexte/décision + champs libres) pour ne pas dépendre d'un schéma métier pas encore écrit | ORCH-1 |
 | ~~OBS-2~~ ✅ | Log des appels LLM bruts | Prompts/réponses complets, par étape **[REUSE tel quel]** `log_llm_call`/hooks | SETUP-3 |
 | ~~OBS-3~~ ✅ | Estimation de coût | **[REUSE tel quel]** `estimer_cout` | OBS-2 |
-| OBS-4 | Endpoint de lecture des traces | Pour le dashboard **[REUSE tel quel]** `GET /observabilite/traces` — fonctions de lecture déjà prêtes côté `observability.py` (`lire_dernieres_traces` etc.), l'endpoint FastAPI lui-même viendra avec ORCH-4 | ORCH-1 |
+| ~~OBS-4~~ ✅ | Endpoint de lecture des traces | Pour le dashboard **[REUSE tel quel]** `GET /observabilite/traces` — exposé dans `backend/src/api.py`, avec limite validée de 1 à 500, réponse vide contrôlée et tests HTTP. Les fonctions de lecture sont fournies par `observability.py`. | OBS-1, ORCH-4 |
 
 ## ✅ Évaluation
 

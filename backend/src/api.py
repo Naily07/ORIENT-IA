@@ -13,8 +13,9 @@ périmètre (ex. une action d'inscription réelle).
 """
 
 from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 
 from src.config import config
 from src.llm_client import set_log_llm_call
@@ -68,9 +69,18 @@ def traiter(entree: OrientationInput) -> OrientationReponse:
     return traiter_demande(entree)
 
 
-@app.get("/observabilite/traces")
-def observabilite_traces(limite: int = 50) -> list[dict]:
-    """Les dernières traces, les plus récentes en premier."""
+@app.get("/observabilite/traces", tags=["observabilite"])
+def observabilite_traces(
+    limite: Annotated[
+        int,
+        Query(ge=1, le=500, description="Nombre maximal de traces à retourner"),
+    ] = 50,
+) -> list[dict]:
+    """Retourne les dernières traces, les plus récentes en premier.
+
+    Une liste vide est une réponse normale lorsque le pipeline n'a encore
+    traité aucune demande.
+    """
     return lire_dernieres_traces(limite)
 
 

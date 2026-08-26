@@ -91,3 +91,23 @@ def test_observabilite_traces_retourne_une_liste(client, monkeypatch):
     reponse = client.get("/observabilite/traces")
     assert reponse.status_code == 200
     assert reponse.json() == [{"trace_id": "x"}]
+
+
+def test_observabilite_transmet_la_limite(client, monkeypatch):
+    limites_recues = []
+
+    def lire(limite: int):
+        limites_recues.append(limite)
+        return []
+
+    monkeypatch.setattr("src.api.lire_dernieres_traces", lire)
+
+    reponse = client.get("/observabilite/traces", params={"limite": 12})
+
+    assert reponse.status_code == 200
+    assert limites_recues == [12]
+
+
+def test_observabilite_refuse_une_limite_invalide(client):
+    assert client.get("/observabilite/traces", params={"limite": 0}).status_code == 422
+    assert client.get("/observabilite/traces", params={"limite": 501}).status_code == 422

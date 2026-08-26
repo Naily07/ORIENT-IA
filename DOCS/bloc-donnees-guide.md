@@ -57,16 +57,35 @@ les données obtenues, peupler `backend/data/matieres.json`,
 mais tolère leur absence) et ajouter les entrées de source correspondantes
 dans `registre_sources.json`.
 
-### 3.2 DATA-4 : questionnaire d'enquête
+### 3.2 DATA-4 : questionnaire d'enquête — **rédigé, reste à diffuser**
 
-Rédiger et diffuser un questionnaire pour **deux populations distinctes**
-(voir §4 ci-dessous pour le contenu exact exigé par le sujet). Un outil
-externe (Google Forms ou équivalent) suffit — pas besoin de développement.
+Le questionnaire est écrit et couvre les **deux populations distinctes**
+exigées par le sujet :
+
+- [`backend/data/enquete/questionnaire.md`](../backend/data/enquete/questionnaire.md)
+  — version de référence (21 questions, consentement explicite, aucune donnée
+  sensible, chaque question annotée du champ `ProfilCandidat` qu'elle
+  alimente). C'est le livrable exigé au §5 (« le questionnaire lui-même, dans
+  la version effectivement diffusée »).
+- [`backend/data/enquete/generer_google_form.gs`](../backend/data/enquete/generer_google_form.gs)
+  — script Apps Script qui génère le formulaire Google à l'identique depuis
+  cette référence, avec l'aiguillage étudiants / professionnels. Mode d'emploi
+  en tête du fichier (~1 minute).
+
+**Ce qu'il reste à faire, le jour J :**
+
+1. Exécuter le script (script.google.com → coller → Exécuter).
+2. Vérifier que « Collecter les adresses e-mail » est bien **désactivé**
+   (anonymat) et lier une feuille de réponses pour l'export CSV.
+3. Diffuser aux deux populations, en notant le mode de diffusion propre à
+   chacune (à reporter dans DATA-5).
+4. **Geler la collecte en fin de première journée.**
 
 **Contrainte de calendrier** : le sujet exige que l'enquête soit lancée dès
-la première heure du hackathon et gelée à la fin de la première journée. Ce
-questionnaire doit donc être prêt *avant* le jour J — c'est le seul ticket de
-tout le backlog qui a une échéance figée qui ne se rattrape pas après coup.
+la première heure du hackathon et gelée à la fin de la première journée —
+c'est le seul ticket de tout le backlog dont l'échéance ne se rattrape pas.
+Le questionnaire étant désormais prêt, cette étape se réduit à quelques
+minutes le matin même.
 
 ### 3.3 DATA-5 : registre de collecte de l'enquête
 

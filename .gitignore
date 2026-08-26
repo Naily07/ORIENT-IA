@@ -5,6 +5,7 @@ venv/
 .env
 backend/logs/
 backend/chroma_db/
+backend/data/ml/*.joblib
 *.egg-info/
 .pytest_cache/
 .ruff_cache/

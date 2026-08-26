@@ -108,8 +108,8 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 | ~~DATA-3~~ (partiel) | Corpus structuré + provenance | Peupler `DocumentSource`/`Mention`/`Parcours` (SETUP-5) en liant chaque entrée à son entrée du registre (DATA-2) **[ADAPT]** ingestion RAG-1 d'EXAM-S2 — `source_id` posé sur tous les modèles, `verifier_provenance()` garantit qu'aucune référence n'est orpheline (testé sur les données réelles). **Incomplet** : matières/compétences/métiers/passerelles pas encore peuplés (dépend de DATA-1) | SETUP-5, DATA-2 |
 | DATA-4 | Questionnaire d'enquête | Rédaction et diffusion (étudiants + professionnels), lancé dès l'heure 1 du hackathon **[NOUVEAU]** | — |
 | DATA-5 | Registre de collecte de l'enquête | Populations visées, période, nombre de réponses reçues/retenues/écartées, texte de consentement, procédure d'anonymisation, biais constatés **[NOUVEAU]** | DATA-4 |
-| DATA-6 | Génération de profils synthétiques | Méthode, hypothèses, biais introduits, contrôles de cohérence documentés **[NOUVEAU]** | SETUP-4 |
-| DATA-7 | Montage du jeu de données ML | Synthèse pour l'entraînement, réponses d'enquête gelées en fin de J1 pour validation/test **[NOUVEAU]**, recommandation explicite du sujet | DATA-5, DATA-6 |
+| ~~DATA-6~~ ✅ | Génération de profils synthétiques | Méthode, hypothèses, biais introduits, contrôles de cohérence documentés **[NOUVEAU]** — `backend/src/ml/donnees_synthetiques.py` + `archetypes.py` (16 archétypes ancrés sur les vraies descriptions de parcours, DATA-1) ; 800 profils dans `backend/data/ml/profils_synthetiques.json` | SETUP-4 |
+| DATA-7 | Montage du jeu de données ML | Synthèse pour l'entraînement, réponses d'enquête gelées en fin de J1 pour validation/test **[NOUVEAU]**, recommandation explicite du sujet — la partie synthèse existe (DATA-6) ; **bloqué** sur la partie enquête réelle (DATA-4/DATA-5), qui ne peut être menée que pendant le hackathon | DATA-5, DATA-6 |
 | DATA-8 | Anonymisation des réponses | Retrait des identifiants directs avant livraison du jeu de données **[ADAPT]** `masquer_donnees_sensibles`/`masquer_objet` de `guardrails.py` comme base | DATA-4 |
 
 ## 🕸️ Ontologie — IA symbolique
@@ -127,14 +127,14 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 
 | ID | Tâche | Description | Dépendances |
 |---|---|---|---|
-| ML-1 | Analyse exploratoire | Distributions, corrélations, déséquilibres sur synthèse + enquête **[NOUVEAU]** | DATA-7 |
-| ML-2 | Nettoyage & split | Sélection de variables, stratégie train (synthèse) / test (enquête) **[NOUVEAU]** | ML-1 |
-| ML-3 | Modèle de référence | Baseline simple (ex. régression logistique / kNN) pour classification de parcours **[NOUVEAU]** | ML-2 |
-| ML-4 | Second modèle comparé | Ex. LightGBM en ranking/score d'adéquation, ou clustering de profils similaires **[NOUVEAU]** | ML-2 |
-| ML-5 | Métriques adaptées | F1, matrice de confusion, ROC/PR-AUC, Top-k, MRR, NDCG, calibration **[ADAPT]** méthodologie « recall ET précision par catégorie » d'`evaluer_classification` (EXAM-S2) — la seule accuracy y était déjà jugée insuffisante | ML-3, ML-4 |
-| ML-6 | Analyse des erreurs et biais | Revue systématique des cas d'échec, dans l'esprit des revues de code d'EXAM-S2 (nommer les défauts plutôt que les masquer) **[ADAPT méthodologie]** | ML-5 |
-| ML-7 | Généralisation synthèse → réel | Mesurer la capacité du modèle entraîné sur profils synthétiques à généraliser aux réponses d'enquête réelles **[NOUVEAU]**, aucun équivalent EXAM-S2 | ML-5, DATA-7 |
-| ML-8 | Empaquetage en outils appelables | `analyser_profil()`, `classer_parcours()`, `calculer_adequation()`, `identifier_points_forts()` **[ADAPT]** principe « le modèle ne doit jamais rester isolé dans un notebook » | ML-4 |
+| ~~ML-1~~ (partiel) | Analyse exploratoire | Distributions, corrélations, déséquilibres sur synthèse + enquête **[NOUVEAU]** — fait sur la synthèse (800 profils, 16 classes équilibrées par construction) ; volet enquête bloqué sur DATA-4/DATA-7 | DATA-7 |
+| ~~ML-2~~ ✅ | Nettoyage & split | Sélection de variables, stratégie train (synthèse) / test (enquête) **[NOUVEAU]** — `backend/src/ml/features.py` (vectorisation multi-hot sur vocabulaire contrôlé) + `entrainement.separer_train_test()` (split stratifié) | ML-1 |
+| ~~ML-3~~ ✅ | Modèle de référence | Baseline simple (ex. régression logistique / kNN) pour classification de parcours **[NOUVEAU]** — régression logistique multinomiale, `backend/src/ml/entrainement.py` | ML-2 |
+| ~~ML-4~~ ✅ | Second modèle comparé | Ex. LightGBM en ranking/score d'adéquation, ou clustering de profils similaires **[NOUVEAU]** — forêt aléatoire plutôt que LightGBM (pas de dépendance de boosting supplémentaire pour un jeu de cette taille), score d'adéquation = probabilité par classe | ML-2 |
+| ~~ML-5~~ ✅ | Métriques adaptées | F1, matrice de confusion, ROC/PR-AUC, Top-k, MRR, NDCG, calibration **[ADAPT]** méthodologie « recall ET précision par catégorie » d'`evaluer_classification` (EXAM-S2) — `backend/src/ml/evaluation.py` : F1 par classe et macro, top-3 accuracy, calibration (confiance correcte vs erronée) et stabilité (écart-type sur 5 seeds) | ML-3, ML-4 |
+| ~~ML-6~~ ✅ | Analyse des erreurs et biais | Revue systématique des cas d'échec, dans l'esprit des revues de code d'EXAM-S2 (nommer les défauts plutôt que les masquer) **[ADAPT méthodologie]** — un défaut réel trouvé et corrigé pendant le calibrage : `environnement_travail_recherche` déterministe par archétype donnait 100 % d'exactitude à tout modèle, indépendamment du bruit ajouté ailleurs (fuite documentée dans `donnees_synthetiques.py`) ; corrigé, l'exactitude retombe à ~86-99 % selon le modèle | ML-5 |
+| ML-7 | Généralisation synthèse → réel | Mesurer la capacité du modèle entraîné sur profils synthétiques à généraliser aux réponses d'enquête réelles **[NOUVEAU]**, aucun équivalent EXAM-S2 — **bloqué** : nécessite l'enquête réelle (DATA-4/DATA-5), qui ne peut être menée que pendant le hackathon lui-même (populations réelles, lancement heure 1) | ML-5, DATA-7 |
+| ~~ML-8~~ ✅ | Empaquetage en outils appelables | `analyser_profil()`, `classer_parcours()`, `calculer_adequation()`, `identifier_points_forts()` **[ADAPT]** principe « le modèle ne doit jamais rester isolé dans un notebook » — `backend/src/ml/outils.py`, les 4 signatures exactes citées par le sujet, justifications par classe via les coefficients de la régression logistique | ML-4 |
 
 ## 📖 RAG — recherche documentaire (fortement réutilisable)
 

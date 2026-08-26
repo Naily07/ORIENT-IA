@@ -1,0 +1,262 @@
+{
+  "date": "2026-08-26T09:59:48.666671+00:00",
+  "taille_jeu_de_donnees": 800,
+  "taille_test": 200,
+  "avertissement": "Évaluation sur données synthétiques uniquement (voir donnees_synthetiques.py) : mesure la capacité du modèle à retrouver les hypothèses de génération, pas sa capacité à orienter de vrais candidats. La validation sur l'enquête réelle (ML-7) reste à faire une fois DATA-4/DATA-7 disponibles.",
+  "baseline_regression_logistique": {
+    "exactitude": 0.995,
+    "precision_macro": 0.9951923076923077,
+    "rappel_macro": 0.9947916666666666,
+    "f1_macro": 0.9947826086956522,
+    "par_classe": {
+      "AEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "CAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "DTJA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMII": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "ESIIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "FIC": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "GCA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "ICMP": {
+        "precision": 0.9230769230769231,
+        "rappel": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "IGGLIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IMTICIA": {
+        "precision": 1.0,
+        "rappel": 0.9166666666666666,
+        "f1": 0.9565217391304348,
+        "support": 12
+      },
+      "ISAIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "PIP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEH": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      }
+    },
+    "top_3_accuracy": 1.0,
+    "calibration": {
+      "confiance_moyenne_predictions_correctes": 0.8813976794512616,
+      "confiance_moyenne_predictions_erronees": 0.3343680308502501
+    }
+  },
+  "modele_foret_aleatoire": {
+    "exactitude": 0.86,
+    "precision_macro": 0.8737092768342769,
+    "rappel_macro": 0.859375,
+    "f1_macro": 0.8602170574996661,
+    "par_classe": {
+      "AEE": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "CAA": {
+        "precision": 0.7857142857142857,
+        "rappel": 0.9166666666666666,
+        "f1": 0.8461538461538461,
+        "support": 12
+      },
+      "DTJA": {
+        "precision": 0.65,
+        "rappel": 1.0,
+        "f1": 0.7878787878787878,
+        "support": 13
+      },
+      "EMII": {
+        "precision": 0.9285714285714286,
+        "rappel": 1.0,
+        "f1": 0.9629629629629629,
+        "support": 13
+      },
+      "EMP": {
+        "precision": 0.7692307692307693,
+        "rappel": 0.7692307692307693,
+        "f1": 0.7692307692307693,
+        "support": 13
+      },
+      "ESIIA": {
+        "precision": 0.8888888888888888,
+        "rappel": 0.6666666666666666,
+        "f1": 0.7619047619047619,
+        "support": 12
+      },
+      "FIC": {
+        "precision": 1.0,
+        "rappel": 0.9230769230769231,
+        "f1": 0.96,
+        "support": 13
+      },
+      "GCA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IAA": {
+        "precision": 1.0,
+        "rappel": 0.75,
+        "f1": 0.8571428571428571,
+        "support": 12
+      },
+      "ICMP": {
+        "precision": 0.9230769230769231,
+        "rappel": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "IGGLIA": {
+        "precision": 0.7142857142857143,
+        "rappel": 0.7692307692307693,
+        "f1": 0.7407407407407407,
+        "support": 13
+      },
+      "IMTICIA": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "ISAIA": {
+        "precision": 0.9,
+        "rappel": 0.6923076923076923,
+        "f1": 0.782608695652174,
+        "support": 13
+      },
+      "PIP": {
+        "precision": 0.8461538461538461,
+        "rappel": 0.9166666666666666,
+        "f1": 0.88,
+        "support": 12
+      },
+      "TEE": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "TEH": {
+        "precision": 0.8461538461538461,
+        "rappel": 0.8461538461538461,
+        "f1": 0.8461538461538461,
+        "support": 13
+      }
+    },
+    "top_3_accuracy": 0.995,
+    "calibration": {
+      "confiance_moyenne_predictions_correctes": 0.6572674418604652,
+      "confiance_moyenne_predictions_erronees": 0.3192857142857143
+    }
+  },
+  "erreurs_frequentes_foret_aleatoire": [
+    {
+      "vrai": "IAA",
+      "predit": "DTJA",
+      "occurrences": 2
+    },
+    {
+      "vrai": "EMP",
+      "predit": "DTJA",
+      "occurrences": 2
+    },
+    {
+      "vrai": "IGGLIA",
+      "predit": "EMP",
+      "occurrences": 2
+    },
+    {
+      "vrai": "TEH",
+      "predit": "PIP",
+      "occurrences": 2
+    },
+    {
+      "vrai": "IAA",
+      "predit": "CAA",
+      "occurrences": 1
+    }
+  ],
+  "stabilite_foret_aleatoire": {
+    "exactitude_moyenne": 0.858,
+    "exactitude_ecart_type": 0.02420743687382043,
+    "exactitudes": [
+      0.89,
+      0.84,
+      0.855,
+      0.825,
+      0.88
+    ]
+  }
+}

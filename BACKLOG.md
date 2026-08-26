@@ -190,12 +190,12 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 
 | ID | Tâche | Description | Dépendances |
 |---|---|---|---|
-| EVAL-1 | Jeu de 32 cas de test | 8 catégories imposées (factuel, comparaisons, profils→ML, multi-sources, info absente, profils ambigus, sécurité/injection, biais, provenance/refus profilage) **[NOUVEAU contenu]**, mécanique de restitution **[REUSE]** `run_eval` → `eval_results.json` | ORCH-4 |
-| EVAL-2 | Évaluation ML | Métriques de ML-5 exécutées sur le jeu de test **[ADAPT]** `evaluer_classification`, généralisé au ranking/score | ML-5, EVAL-1 |
-| EVAL-3 | Évaluation RAG | Rappel@k, précision des citations, détection hors-corpus **[REUSE tel quel]** `evaluer_rag` | RAG-6, EVAL-1 |
-| EVAL-4 | Évaluation système complet | Cohérence ML/réponse finale, latence, robustesse, sécurité **[ADAPT]** `evaluer_scenarios_obligatoires` étendu aux 8 catégories du sujet | EVAL-2, EVAL-3, SEC-6 |
-| EVAL-5 | Script d'évaluation unique | Un seul run produit `eval_results.json`, livrable distinct exigé par le sujet **[REUSE pattern]** | EVAL-2, EVAL-3, EVAL-4 |
-| EVAL-6 | Analyse des erreurs et limites | Section rapport dédiée **[REUSE méthode de rédaction]** | EVAL-5 |
+| ~~EVAL-1~~ ✅ | Jeu de 32 cas de test | 8 catégories imposées (factuel, comparaisons, profils→ML, multi-sources, info absente, profils ambigus, sécurité/injection, biais, provenance/refus profilage) **[NOUVEAU contenu]**, mécanique de restitution **[REUSE]** `eval_system.py` → `eval_results.json` — `backend/tests/eval_dataset.json`, minimums par catégorie vérifiés par un test | ORCH-4 |
+| ~~EVAL-2~~ ✅ | Évaluation ML | Métriques de ML-5 exécutées sur le jeu de test **[ADAPT]** `evaluer_classification`, généralisé au ranking/score — les métriques quantitatives (F1, top-3, calibration, stabilité) restent celles d'`eval_ml.py` sur le split synthétique (les 32 cas n'ont pas d'étiquette « bon parcours », ce sont des cas comportementaux) ; les cas `profils_ml` d'EVAL-1 vérifient en plus, en conditions réelles, que le modèle est effectivement consulté et fonde la décision | ML-5, EVAL-1 |
+| EVAL-3 (partiel) | Évaluation RAG | Rappel@k, précision des citations, détection hors-corpus **[REUSE tel quel]** `evaluer_rag` — les catégories factuelles/comparaisons d'EVAL-1 démontrent le rappel et la précision des citations en conditions réelles (9/9), mais un jeu RAG dédié avec cas hors-corpus reste à construire (RAG-6) | RAG-6, EVAL-1 |
+| ~~EVAL-4~~ ✅ | Évaluation système complet | Cohérence ML/réponse finale, latence, robustesse, sécurité **[ADAPT]** `evaluer_scenarios_obligatoires` étendu aux 8 catégories du sujet — `eval_system.py`, 30/32 (93,75 %), latence moyenne 9,7 s, les 2 échecs restants root-causés à une instabilité réseau réelle et reproduite (pas un défaut de code), voir `backend/tests/eval_analyse.md` | EVAL-2, EVAL-3, SEC-6 |
+| ~~EVAL-5~~ ✅ | Script d'évaluation unique | Un seul run produit `eval_results.json`, livrable distinct exigé par le sujet **[REUSE pattern]** — `python -m backend.tests.eval_system` | EVAL-2, EVAL-3, EVAL-4 |
+| ~~EVAL-6~~ ✅ | Analyse des erreurs et limites | Section rapport dédiée **[REUSE méthode de rédaction]** — `backend/tests/eval_analyse.md` : 3 défauts de code trouvés et corrigés (action « information » manquante, boucle sur `expliquer_recommandation`, garde-fou ML étendu aux escalades), 2 défauts de jeu de test corrigés, limites honnêtes documentées (pas de mémoire de conversation, ML validé seulement en synthétique, dépendance réseau) | EVAL-5 |
 
 ## 🖥️ Frontend
 

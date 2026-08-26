@@ -20,12 +20,16 @@ accepté par le sujet).
 """
 
 import functools
+import logging
 
 import numpy as np
 
 from src.ml.entrainement import entrainer_baseline, preparer_jeu_entrainement
 from src.ml.features import CouvertureProfil, analyser_couverture, noms_features, vectoriser
+from src.ml.hybride import appliquer_regles_admission
 from src.schemas import AnalyseProfil, ProfilCandidat, RecommandationParcours
+
+logger = logging.getLogger(__name__)
 
 PREFIXES_LISIBLES = {
     "matiere": "l'intérêt déclaré pour la matière",
@@ -52,6 +56,26 @@ def _modele():
             "`python -m src.ml.donnees_synthetiques` pour le générer."
         )
     return entrainer_baseline(X, y)
+
+
+@functools.lru_cache(maxsize=1)
+def _graphe_admission():
+    """Graphe de connaissances utilisé pour les règles d'admission (ONTO-2).
+
+    Construit paresseusement et mis en cache : les prérequis ne changent pas
+    au fil des requêtes. Retourne `None` si le corpus ou le graphe ne sont pas
+    disponibles — le volet hybride est un bonus, il ne doit jamais empêcher le
+    modèle de répondre (`hybride.appliquer_regles_admission` laisse alors le
+    classement intact).
+    """
+    try:
+        from src.graphe import construire_graphe
+        from src.models import charger_corpus_formations
+
+        return construire_graphe(charger_corpus_formations())
+    except Exception:  # noqa: BLE001 — l'enrichissement symbolique est optionnel
+        logger.warning("Graphe d'admission indisponible : classement ML non filtré", exc_info=True)
+        return None
 
 
 def _contributions_pour_classe(vecteur: np.ndarray, modele, indice_classe: int) -> np.ndarray:
@@ -108,6 +132,12 @@ def analyser_profil(candidat: ProfilCandidat) -> AnalyseProfil:
         reverse=True,
     )
 
+    # Volet hybride (§6 du sujet) : les parcours auxquels le candidat n'est pas
+    # admissible passent derrière ceux qui lui sont accessibles. Le modèle ne
+    # voit jamais la série de baccalauréat, il peut donc placer en tête une
+    # formation dans laquelle le candidat ne pourrait pas s'inscrire.
+    candidats = appliquer_regles_admission(candidats, candidat, _graphe_admission())
+
     if not couverture.exploitable:
         return AnalyseProfil(
             parcours_candidats=candidats,
@@ -118,7 +148,8 @@ def analyser_profil(candidat: ProfilCandidat) -> AnalyseProfil:
     confiance = candidats[0].score_adequation
     justification = (
         f"Le parcours {candidats[0].parcours} obtient le score le plus élevé "
-        f"({confiance:.0%}) d'après le modèle entraîné sur le profil déclaré."
+        f"({confiance:.0%}) parmi les parcours accessibles au candidat, d'après le "
+        "modèle entraîné sur le profil déclaré."
     )
     if couverture.non_reconnus:
         justification += (

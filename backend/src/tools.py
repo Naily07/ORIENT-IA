@@ -32,12 +32,12 @@ besoin, sur le même principe que `initialiser_donnees()` dans EXAM-S2 pour la
 base en mémoire.
 """
 
-import re
 from typing import Any, Literal
 
 import networkx as nx
 from google.genai import types
 
+from src.admission import serie_satisfait_prerequis
 from src.graphe import chemin_competence_parcours_metier, prerequis_du_parcours
 from src.graphe import construire_graphe as _construire_graphe
 from src.graphe import detecter_incoherences as _detecter_incoherences_graphe
@@ -361,9 +361,6 @@ def calculer_score_adequation(parcours: str) -> dict:
     return {"parcours": parcours, "score_adequation": score}
 
 
-_SERIES_TOUTE = "toute série"
-
-
 def verifier_prerequis(parcours: str) -> dict:
     """Vérifie la compatibilité du profil courant avec les prérequis d'un
     parcours — ONTO-3 : les prérequis sont lus depuis le graphe de
@@ -402,14 +399,10 @@ def verifier_prerequis(parcours: str) -> dict:
             ),
         }
 
-    # Frontière de mot obligatoire : une correspondance par simple sous-chaîne
-    # ferait matcher n'importe quelle lettre isolée ("L") contre une lettre
-    # présente au milieu d'un mot de la phrase ("baccaLauréat") — trouvé en
-    # testant le cas "série L" contre "Baccalauréat série C, D, S".
-    motif_serie = re.compile(rf"\b{re.escape(serie_declaree)}\b", re.IGNORECASE)
-    compatible = any(
-        _SERIES_TOUTE in d.lower() or motif_serie.search(d) for d in descriptions
-    )
+    # Règle partagée avec `ml.hybride` (voir `src/admission.py`) : une seule
+    # implémentation, pour que l'outil appelé par l'agent et le filtrage
+    # appliqué aux recommandations ML ne puissent pas diverger.
+    compatible = serie_satisfait_prerequis(serie_declaree, descriptions)
     return {
         "statut": "trouve",
         "parcours": p.id,

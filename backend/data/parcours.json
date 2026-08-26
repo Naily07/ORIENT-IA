@@ -1,0 +1,114 @@
+[
+  {
+    "id": "IGGLIA",
+    "nom": "Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "mention_id": "MENTION-INFO-TELECOM",
+    "prerequis": ["PREREQ-BAC-INFO-TELECOM"],
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "ESIIA",
+    "nom": "Électronique, Systèmes Informatiques et Intelligence Artificielle",
+    "mention_id": "MENTION-INFO-TELECOM",
+    "prerequis": ["PREREQ-BAC-INFO-TELECOM"],
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "IMTICIA",
+    "nom": "Informatique, Multimédia, Technologies de l'Information et de la Communication et Intelligence Artificielle",
+    "mention_id": "MENTION-INFO-TELECOM",
+    "prerequis": ["PREREQ-BAC-INFO-TELECOM"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "ISAIA",
+    "nom": "Informatique, Statistique Appliquée et Intelligence Artificielle",
+    "mention_id": "MENTION-INFO-TELECOM",
+    "prerequis": ["PREREQ-BAC-INFO-TELECOM"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "EMII",
+    "nom": "Électromécanique et Techniques Industrielles Informatisées",
+    "mention_id": "MENTION-GENIE-INDUSTRIEL",
+    "prerequis": ["PREREQ-BAC-GENIE-INDUSTRIEL"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "ICMP",
+    "nom": "Industries Chimiques, Minières et Pétrolières",
+    "mention_id": "MENTION-GENIE-INDUSTRIEL",
+    "prerequis": ["PREREQ-BAC-GENIE-INDUSTRIEL"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "GCA",
+    "nom": "Génie Civil et Architecture",
+    "mention_id": "MENTION-GENIE-CIVIL-ARCHI",
+    "prerequis": ["PREREQ-BAC-GENIE-CIVIL"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "CAA",
+    "nom": "Commerce et Administration des Affaires",
+    "mention_id": "MENTION-DROIT-TECH-AFFAIRES",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "FIC",
+    "nom": "Finance et Comptabilité des Entreprises",
+    "mention_id": "MENTION-DROIT-TECH-AFFAIRES",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "DTJA",
+    "nom": "Droit et Techniques Juridiques des Affaires",
+    "mention_id": "MENTION-DROIT-TECH-AFFAIRES",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "EMP",
+    "nom": "Économie et Management de Projet",
+    "mention_id": "MENTION-DROIT-TECH-AFFAIRES",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "IAA",
+    "nom": "Industries Agro-Alimentaires",
+    "mention_id": "MENTION-BIOTECH-AGRO",
+    "prerequis": ["PREREQ-BAC-BIOTECH-AGRO"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "PIP",
+    "nom": "Pharmacologie et Industries Pharmaceutiques",
+    "mention_id": "MENTION-BIOTECH-AGRO",
+    "prerequis": ["PREREQ-BAC-BIOTECH-AGRO"],
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "AEE",
+    "nom": "AEE",
+    "mention_id": "MENTION-BIOTECH-AGRO",
+    "prerequis": ["PREREQ-BAC-BIOTECH-AGRO"],
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "TEE",
+    "nom": "Tourisme de l'Environnement",
+    "mention_id": "MENTION-TOURISME",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "TEH",
+    "nom": "Tourisme et Hôtellerie",
+    "mention_id": "MENTION-TOURISME",
+    "prerequis": ["PREREQ-BAC-TOUTE-SERIE"],
+    "source_id": "SRC-ANNUAIRE-MG"
+  }
+]

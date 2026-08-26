@@ -1,0 +1,27 @@
+[
+  {
+    "id": "PREREQ-BAC-INFO-TELECOM",
+    "description": "Baccalauréat série C, D, S, ou série techniques industrielles",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  },
+  {
+    "id": "PREREQ-BAC-GENIE-INDUSTRIEL",
+    "description": "Baccalauréat série C, D, S, ou série techniques industrielles",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  },
+  {
+    "id": "PREREQ-BAC-GENIE-CIVIL",
+    "description": "Baccalauréat série C, D, S, ou série techniques du génie civil",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  },
+  {
+    "id": "PREREQ-BAC-TOUTE-SERIE",
+    "description": "Baccalauréat toute série",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  },
+  {
+    "id": "PREREQ-BAC-BIOTECH-AGRO",
+    "description": "Baccalauréat série C, D, S, série techniques agricoles, ou série A2 avec une note de mathématiques supérieure ou égale à 12/20",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  }
+]

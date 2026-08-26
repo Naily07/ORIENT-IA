@@ -3,53 +3,14 @@
 import pytest
 
 from src import tools
-from src.models import (
-    Competence,
-    CorpusFormations,
-    Matiere,
-    Mention,
-    Metier,
-    Parcours,
-    Prerequis,
-)
+from src.models import CorpusFormations
 from src.schemas import ProfilCandidat
+from tests.corpus_jouet import corpus_coherent
 
 
 @pytest.fixture
 def corpus():
-    c = CorpusFormations(
-        mentions=[
-            Mention(
-                id="MENTION-INFO",
-                nom="Informatique et Télécommunications",
-                niveau="Licence",
-            )
-        ],
-        parcours=[
-            Parcours(
-                id="IGGLIA",
-                nom="Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
-                mention_id="MENTION-INFO",
-                matieres=["MAT-INFO"],
-                competences=["COMP-PROG"],
-                prerequis=["PREREQ-SCIENTIFIQUE"],
-                debouches=["METIER-DEV"],
-            ),
-            Parcours(
-                id="TEH",
-                nom="Tourisme et Hôtellerie",
-                mention_id="MENTION-TOURISME",
-                prerequis=["PREREQ-TOUTE-SERIE"],
-            ),
-        ],
-        matieres=[Matiere(id="MAT-INFO", nom="informatique")],
-        competences=[Competence(id="COMP-PROG", nom="programmation")],
-        prerequis=[
-            Prerequis(id="PREREQ-SCIENTIFIQUE", description="Baccalauréat série C, D, S"),
-            Prerequis(id="PREREQ-TOUTE-SERIE", description="Baccalauréat toute série"),
-        ],
-        metiers=[Metier(id="METIER-DEV", nom="Développeur logiciel")],
-    )
+    c = corpus_coherent()
     tools.initialiser_corpus(c)
     yield c
     tools.initialiser_corpus()  # reset sur le corpus réel pour les autres tests
@@ -132,6 +93,63 @@ def test_verifier_prerequis_parcours_introuvable(corpus):
     assert resultat["statut"] == "aucun_resultat"
 
 
+def test_verifier_prerequis_serie_bac_blanche_ne_confirme_rien(corpus):
+    """Non-régression : une série faite d'espaces passait le test de vérité,
+    puis `.strip()` vidait le motif et la regex `\\b\\b` matchait tout — l'outil
+    confirmait l'admissibilité au lieu de réclamer l'information."""
+    tools.definir_profil_courant(ProfilCandidat(serie_bac="   "))
+    resultat = tools.verifier_prerequis("IGGLIA")
+    assert resultat["statut"] == "information_manquante"
+    assert resultat["compatible"] is None
+
+
+def test_verifier_prerequis_et_comparer_parcours_donnent_les_memes_prerequis(corpus):
+    """Une seule source de vérité : les deux outils lisent le graphe."""
+    tools.definir_profil_courant(ProfilCandidat(serie_bac="D"))
+    via_verification = tools.verifier_prerequis("IGGLIA")["prerequis"]
+    via_comparaison = tools.comparer_parcours("IGGLIA", "TEH")["parcours_a"]["prerequis"]
+    assert via_verification == via_comparaison == ["Baccalauréat série C, D, S"]
+
+
+# --- detecter_incoherences (ONTO-4) -------------------------------------
+
+
+def test_detecter_incoherences_signale_teh_sans_debouche(corpus):
+    resultat = tools.detecter_incoherences()
+    assert resultat["statut"] == "trouve"
+    parcours_signales = {
+        i["parcours"] for i in resultat["incoherences"] if i["type"] == "parcours_sans_debouche"
+    }
+    assert "TEH" in parcours_signales
+    assert "IGGLIA" not in parcours_signales  # IGGLIA a un débouché renseigné
+
+
+def test_detecter_incoherences_corpus_sain_reste_un_succes(corpus):
+    """Non-régression : `aucun_resultat` signifie « je n'ai pas pu répondre »
+    partout ailleurs dans tools.py. Un corpus sain est un résultat positif, et
+    doit le rester pour que l'agent ne rapporte pas l'inverse."""
+    tools.initialiser_corpus(CorpusFormations())
+    resultat = tools.detecter_incoherences()
+    assert resultat["statut"] == "trouve"
+    assert resultat["nombre"] == 0
+    assert "Aucune incohérence" in resultat["message"]
+
+
+def test_detecter_incoherences_distingue_donnee_manquante_et_contradiction(corpus):
+    """Le champ `donnee_manquante` et le message doivent empêcher l'agent de
+    présenter un chantier de collecte (DATA-1) comme un défaut de fiabilité."""
+    resultat = tools.detecter_incoherences()
+    manquantes = [i for i in resultat["incoherences"] if i["type"] == "parcours_sans_debouche"]
+    assert all(i["donnee_manquante"] is True for i in manquantes)
+    assert "pas encore collectée" in resultat["message"]
+
+
+def test_executer_outil_detecter_incoherences(corpus):
+    resultat = tools.executer_outil("detecter_incoherences", {}, "trace-1")
+    assert resultat["statut"] == "succes"
+    assert resultat["resultat"]["nombre"] >= 1
+
+
 # --- rechercher_competences / identifier_debouches ---------------------------
 
 
@@ -191,6 +209,24 @@ def test_executer_outil_succes(corpus):
     assert resultat["resultat"]["statut"] == "trouve"
 
 
+def test_initialiser_corpus_ne_desynchronise_pas_corpus_et_graphe(corpus, monkeypatch):
+    """Non-régression : `_corpus` était affecté avant la construction du graphe.
+    Si celle-ci échouait, un corpus neuf se retrouvait face à un graphe périmé
+    et `verifier_prerequis` croisait les deux pour répondre sur l'admissibilité."""
+    monkeypatch.setattr(
+        tools, "_construire_graphe", lambda _: (_ for _ in ()).throw(ValueError("boom"))
+    )
+    autre_corpus = CorpusFormations()
+
+    with pytest.raises(ValueError):
+        tools.initialiser_corpus(autre_corpus)
+
+    # Les deux globales ont gardé leur valeur précédente, cohérente entre elles.
+    assert tools._corpus is corpus
+    tools.definir_profil_courant(ProfilCandidat(serie_bac="D"))
+    assert tools.verifier_prerequis("IGGLIA")["prerequis"] == ["Baccalauréat série C, D, S"]
+
+
 # --- Outils ML (analyser_profil_ml, calculer_score_adequation, expliquer_recommandation) --
 # Ces outils passent par src.ml.outils (modèle réel entraîné sur le jeu synthétique) :
 # indépendants du corpus jouet ci-dessus, ils utilisent les 16 vrais parcours ISPM.
@@ -209,8 +245,52 @@ def test_calculer_score_adequation_retourne_un_score_entre_0_et_1():
     assert 0.0 <= resultat["score_adequation"] <= 1.0
 
 
-def test_expliquer_recommandation_retourne_des_points_forts():
+def test_expliquer_recommandation_retourne_des_points_forts(corpus):
     tools.definir_profil_courant(ProfilCandidat(competences_declarees=["programmation"]))
     resultat = tools.expliquer_recommandation("IGGLIA")
     assert "points_forts" in resultat
     assert isinstance(resultat["points_forts"], list)
+
+
+def test_expliquer_recommandation_ajoute_le_raisonnement_du_graphe(corpus):
+    """ONTO-5 : sur le corpus jouet (COMP-PROG développée par IGGLIA et
+    requise pour METIER-DEV), le chemin Compétence → Métier doit apparaître."""
+    tools.definir_profil_courant(ProfilCandidat(competences_declarees=["programmation"]))
+    resultat = tools.expliquer_recommandation("IGGLIA")
+    assert resultat["raisonnement_graphe"] == [
+        {
+            "parcours": "IGGLIA",
+            "competence": "programmation",
+            "metier": "Développeur logiciel",
+            "chemin": ["Parcours:IGGLIA", "Competence:COMP-PROG", "Metier:METIER-DEV"],
+        }
+    ]
+
+
+@pytest.mark.parametrize("saisie", ["IGGLIA", "igglia", "Informatique de Gestion"])
+def test_expliquer_recommandation_resout_sigle_casse_et_nom(corpus, saisie):
+    """Non-régression : sans résolution, « igglia » ou un nom de parcours
+    donnaient un score de 0.0 et un raisonnement vide — indiscernables, côté
+    agent, d'une absence réelle de données. Les autres outils résolvant déjà
+    les noms, le LLM en passe."""
+    tools.definir_profil_courant(ProfilCandidat(competences_declarees=["programmation"]))
+    resultat = tools.expliquer_recommandation(saisie)
+    assert resultat["statut"] == "trouve"
+    assert resultat["parcours"] == "IGGLIA"
+    assert len(resultat["raisonnement_graphe"]) == 1
+
+
+def test_expliquer_recommandation_parcours_introuvable(corpus):
+    tools.definir_profil_courant(ProfilCandidat())
+    resultat = tools.expliquer_recommandation("PARCOURS-INEXISTANT")
+    assert resultat["statut"] == "aucun_resultat"
+
+
+def test_expliquer_recommandation_degrade_sans_graphe_initialise(corpus, monkeypatch):
+    """L'explication ML reste utilisable même si le graphe n'a jamais été
+    construit (ex. import isolé, avant tout appel à initialiser_corpus)."""
+    monkeypatch.setattr(tools, "_graphe", None)
+    tools.definir_profil_courant(ProfilCandidat(competences_declarees=["programmation"]))
+    resultat = tools.expliquer_recommandation("IGGLIA")
+    assert resultat["raisonnement_graphe"] == []
+    assert resultat["score_adequation"] >= 0.0

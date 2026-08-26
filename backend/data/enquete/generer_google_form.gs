@@ -9,7 +9,11 @@
  * MODE D'EMPLOI (environ 1 minute)
  *  1. Ouvrir https://script.google.com/ → « Nouveau projet »
  *  2. Coller ce fichier en entier (remplacer le contenu par défaut)
- *  3. Sélectionner la fonction `genererFormulaire` puis « Exécuter »
+ *  3. Cliquer « Exécuter ». `genererFormulaire` est la première fonction du
+ *     fichier, donc celle qu'Apps Script sélectionne par défaut — c'est
+ *     volontaire : lancer un helper par mégarde produisait auparavant un
+ *     « Cannot read properties of undefined ». Si le sélecteur affiche autre
+ *     chose, choisir `genererFormulaire`.
  *  4. Autoriser l'accès quand Google le demande (le script ne fait que créer
  *     un formulaire dans votre Drive)
  *  5. L'URL publique du formulaire s'affiche dans le journal d'exécution
@@ -99,44 +103,6 @@ var DESCRIPTION = [
   'Vous pouvez arrêter à tout moment en fermant la page : rien n\'est enregistré',
   'tant que vous ne validez pas.'
 ].join('\n');
-
-// --- Blocs de questions réutilisés entre les deux populations ----------------
-
-/**
- * Questions de profil communes aux étudiants et aux professionnels.
- * `moment` précise l'époque à laquelle le répondant doit se replacer : c'est
- * la même information demandée dans deux contextes temporels différents.
- */
-function ajouterQuestionsProfil(form, moment) {
-  form.addCheckboxItem()
-    .setTitle('Matières que vous préfériez ' + moment)
-    .setHelpText('Plusieurs réponses possibles.')
-    .setChoiceValues(MATIERES);
-
-  form.addTextItem()
-    .setTitle('Autres matières qui vous plaisaient, non listées ci-dessus')
-    .setHelpText('Facultatif — écrivez librement, séparé par des virgules.')
-    .setRequired(false);
-
-  form.addCheckboxItem()
-    .setTitle('Compétences que vous aviez déjà ' + moment)
-    .setChoiceValues(COMPETENCES);
-
-  form.addCheckboxItem()
-    .setTitle('Ce qui vous intéressait ' + moment)
-    .setChoiceValues(INTERETS);
-
-  form.addMultipleChoiceItem()
-    .setTitle('Environnement de travail que vous imaginiez')
-    .setChoiceValues(ENVIRONNEMENTS);
-}
-
-function ajouterSerieBac(form) {
-  form.addMultipleChoiceItem()
-    .setTitle('Série de votre baccalauréat')
-    .setChoiceValues(SERIES_BAC)
-    .setRequired(true);
-}
 
 // --- Construction du formulaire ----------------------------------------------
 
@@ -244,4 +210,63 @@ function genererFormulaire() {
   Logger.log('');
   Logger.log('Pensez à lier une feuille de réponses (Réponses → icône Sheets)');
   Logger.log('pour disposer de l\'export CSV qui alimentera DATA-7.');
+}
+
+
+// --- Blocs de questions réutilisés entre les deux populations ----------------
+// Ces fonctions ne sont PAS des points d'entrée : elles attendent un
+// formulaire déjà créé par `genererFormulaire`. Les lancer directement depuis
+// le sélecteur d'Apps Script donnait un « Cannot read properties of undefined
+// (reading 'addCheckboxItem') » indéchiffrable ; le garde-fou ci-dessous dit
+// quoi faire à la place.
+
+function exigerFormulaire(form, nomFonction) {
+  if (!form || typeof form.addCheckboxItem !== 'function') {
+    throw new Error(
+      '`' + nomFonction + '` n\'est pas un point d\'entrée : c\'est une fonction '
+      + 'interne qui a besoin d\'un formulaire déjà créé.\n\n'
+      + 'Dans le sélecteur de fonctions (en haut de l\'éditeur Apps Script), '
+      + 'choisissez « genererFormulaire », puis cliquez sur Exécuter.'
+    );
+  }
+}
+
+/**
+ * Questions de profil communes aux étudiants et aux professionnels.
+ * `moment` précise l'époque à laquelle le répondant doit se replacer : c'est
+ * la même information demandée dans deux contextes temporels différents.
+ */
+function ajouterQuestionsProfil(form, moment) {
+  exigerFormulaire(form, 'ajouterQuestionsProfil');
+
+  form.addCheckboxItem()
+    .setTitle('Matières que vous préfériez ' + moment)
+    .setHelpText('Plusieurs réponses possibles.')
+    .setChoiceValues(MATIERES);
+
+  form.addTextItem()
+    .setTitle('Autres matières qui vous plaisaient, non listées ci-dessus')
+    .setHelpText('Facultatif — écrivez librement, séparé par des virgules.')
+    .setRequired(false);
+
+  form.addCheckboxItem()
+    .setTitle('Compétences que vous aviez déjà ' + moment)
+    .setChoiceValues(COMPETENCES);
+
+  form.addCheckboxItem()
+    .setTitle('Ce qui vous intéressait ' + moment)
+    .setChoiceValues(INTERETS);
+
+  form.addMultipleChoiceItem()
+    .setTitle('Environnement de travail que vous imaginiez')
+    .setChoiceValues(ENVIRONNEMENTS);
+}
+
+function ajouterSerieBac(form) {
+  exigerFormulaire(form, 'ajouterSerieBac');
+
+  form.addMultipleChoiceItem()
+    .setTitle('Série de votre baccalauréat')
+    .setChoiceValues(SERIES_BAC)
+    .setRequired(true);
 }

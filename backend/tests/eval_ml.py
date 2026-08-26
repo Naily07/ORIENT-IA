@@ -4,7 +4,7 @@
 Compare baseline (régression logistique) et modèle retenu (forêt aléatoire)
 sur le même split, plus une mesure de stabilité sur plusieurs seeds.
 
-    python -m backend.tests.eval_ml
+    cd backend && python -m tests.eval_ml
 """
 
 import json

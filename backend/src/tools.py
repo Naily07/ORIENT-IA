@@ -12,7 +12,16 @@ même principe qu'EXAM-S2 :
 Les 8 outils cités par le sujet sont couverts : `rechercher_formation`,
 `comparer_parcours`, `analyser_profil_ml`, `calculer_score_adequation`,
 `verifier_prerequis`, `rechercher_competences`, `identifier_debouches`,
-`expliquer_recommandation`.
+`expliquer_recommandation`. Un neuvième, `detecter_incoherences`, vient de
+l'extension symbolique (§12 du sujet, ONTO-4).
+
+`verifier_prerequis` et `detecter_incoherences` interrogent le graphe de
+connaissances (`src.graphe`, ONTO-2/ONTO-3/ONTO-4) plutôt que de filtrer le
+corpus directement : une requête de graphe déterministe, pas un appel LLM.
+`expliquer_recommandation` y ajoute un raisonnement multiétape (ONTO-5,
+`src.graphe.chemin_competence_parcours_metier`), qui dégrade silencieusement
+en liste vide si le graphe n'est pas initialisé — cet enrichissement est un
+bonus par rapport au score du modèle ML, jamais une condition pour répondre.
 
 **Le profil du candidat n'est jamais un paramètre du function calling.**
 Demander au LLM de ressaisir un profil entier en argument JSON l'inviterait à
@@ -26,8 +35,12 @@ base en mémoire.
 import re
 from typing import Any, Literal
 
+import networkx as nx
 from google.genai import types
 
+from src.graphe import chemin_competence_parcours_metier, prerequis_du_parcours
+from src.graphe import construire_graphe as _construire_graphe
+from src.graphe import detecter_incoherences as _detecter_incoherences_graphe
 from src.ml.outils import analyser_profil, calculer_adequation, identifier_points_forts
 from src.models import CorpusFormations, charger_corpus_formations
 from src.schemas import ProfilCandidat
@@ -144,11 +157,26 @@ OUTILS: list[dict] = [
         "description": (
             "Explique pourquoi le modèle ML recommande un parcours précis pour "
             "le profil courant, à partir des traits déclarés qui pèsent le plus "
-            "dans le score."
+            "dans le score, et du chemin Compétence → Métier du graphe de "
+            "connaissances lorsque ces données sont disponibles."
         ),
         "parameters": {
             "parcours": {"type": "STRING", "description": "Identifiant du parcours à expliquer"}
         },
+    },
+    {
+        "name": "detecter_incoherences",
+        "type": "consultation",
+        "sensible": False,
+        "description": (
+            "Analyse le corpus structuré et le graphe de connaissances pour "
+            "détecter des incohérences internes : référence orpheline, parcours "
+            "sans débouché renseigné, compétence requise pour un métier mais "
+            "inaccessible ou dont l'accès n'est pas vérifiable. Sert à répondre "
+            "honnêtement sur la fiabilité des données disponibles, jamais à "
+            "recommander un parcours."
+        ),
+        "parameters": {},
     },
 ]
 
@@ -194,13 +222,26 @@ def declarer_outils() -> list[types.Tool]:
 # --- État en mémoire ---------------------------------------------------------
 
 _corpus: CorpusFormations | None = None
+_graphe: nx.DiGraph | None = None
 _profil_courant: ProfilCandidat | None = None
 
 
 def initialiser_corpus(corpus: CorpusFormations | None = None) -> None:
-    """Charge le corpus structuré en mémoire. Appelé au démarrage de l'API."""
-    global _corpus
-    _corpus = corpus if corpus is not None else charger_corpus_formations()
+    """Charge le corpus structuré en mémoire et reconstruit le graphe de
+    connaissances (ONTO-2) qui en dérive. Appelé au démarrage de l'API — les
+    deux restent toujours synchronisés, jamais initialisés séparément, pour
+    qu'un test qui bascule sur un corpus jouet (`tools.initialiser_corpus(c)`)
+    voie aussi son graphe basculer avec lui.
+
+    Le graphe est construit **avant** toute affectation : si la construction
+    échoue, les deux globales gardent leur valeur précédente, cohérente entre
+    elles. Affecter `_corpus` d'abord laisserait un corpus neuf face à un
+    graphe périmé, et `verifier_prerequis` répondrait alors sur l'admissibilité
+    en croisant les deux."""
+    global _corpus, _graphe
+    nouveau_corpus = corpus if corpus is not None else charger_corpus_formations()
+    nouveau_graphe = _construire_graphe(nouveau_corpus)
+    _corpus, _graphe = nouveau_corpus, nouveau_graphe
 
 
 def definir_profil_courant(profil: ProfilCandidat) -> None:
@@ -223,6 +264,14 @@ def _profil() -> ProfilCandidat:
             "Profil non défini : appeler definir_profil_courant() avant l'agent."
         )
     return _profil_courant
+
+
+def _graphe_actuel() -> nx.DiGraph:
+    if _graphe is None:
+        raise OutilIndisponible(
+            "Graphe de connaissances non initialisé : appeler initialiser_corpus() au démarrage."
+        )
+    return _graphe
 
 
 # --- Outils de consultation ---------------------------------------------------
@@ -257,19 +306,16 @@ def _mention_de(parcours) -> dict | None:
     return {"id": mention.id, "nom": mention.nom, "niveau": mention.niveau} if mention else None
 
 
-def _descriptions_prerequis(ids_prerequis: list[str]) -> list[str]:
-    corpus = _base()
-    return [
-        p.description for p in corpus.prerequis if p.id in ids_prerequis
-    ]
-
-
 def _fiche_parcours(parcours) -> dict:
     return {
         "id": parcours.id,
         "nom": parcours.nom,
         "mention": _mention_de(parcours),
-        "prerequis": _descriptions_prerequis(parcours.prerequis),
+        # Même source que `verifier_prerequis` : le graphe (ONTO-3). Deux
+        # chemins distincts pour répondre à « quels sont les prérequis de ce
+        # parcours ? » finiraient par diverger, et l'agent peut appeler les
+        # deux outils dans une même conversation.
+        "prerequis": prerequis_du_parcours(_graphe_actuel(), parcours.id),
         "matieres": parcours.matieres,
         "competences": parcours.competences,
         "debouches": parcours.debouches,
@@ -312,11 +358,15 @@ _SERIES_TOUTE = "toute série"
 
 
 def verifier_prerequis(parcours: str) -> dict:
+    """Vérifie la compatibilité du profil courant avec les prérequis d'un
+    parcours — ONTO-3 : les prérequis sont lus depuis le graphe de
+    connaissances (`src.graphe.prerequis_du_parcours`, relation `necessite`),
+    une requête déterministe plutôt qu'un filtrage direct du corpus."""
     p = _parcours_par_id_ou_nom(parcours)
     if p is None:
         return {"statut": "aucun_resultat", "message": f"Parcours « {parcours} » introuvable."}
 
-    descriptions = _descriptions_prerequis(p.prerequis)
+    descriptions = prerequis_du_parcours(_graphe_actuel(), p.id)
     profil = _profil()
 
     if not descriptions:
@@ -328,7 +378,12 @@ def verifier_prerequis(parcours: str) -> dict:
             "message": "Aucun prérequis d'admission connu pour ce parcours.",
         }
 
-    if not profil.serie_bac:
+    # `.strip()` avant le test, pas seulement dans la regex plus bas : une
+    # saisie composée uniquement d'espaces passerait le test de vérité, puis
+    # produirait un motif vide dont la regex `\b\b` matche n'importe quel
+    # texte de prérequis — et l'outil confirmerait l'admissibilité.
+    serie_declaree = (profil.serie_bac or "").strip()
+    if not serie_declaree:
         return {
             "statut": "information_manquante",
             "parcours": p.id,
@@ -344,8 +399,7 @@ def verifier_prerequis(parcours: str) -> dict:
     # ferait matcher n'importe quelle lettre isolée ("L") contre une lettre
     # présente au milieu d'un mot de la phrase ("baccaLauréat") — trouvé en
     # testant le cas "série L" contre "Baccalauréat série C, D, S".
-    serie = re.escape(profil.serie_bac.strip())
-    motif_serie = re.compile(rf"\b{serie}\b", re.IGNORECASE)
+    motif_serie = re.compile(rf"\b{re.escape(serie_declaree)}\b", re.IGNORECASE)
     compatible = any(
         _SERIES_TOUTE in d.lower() or motif_serie.search(d) for d in descriptions
     )
@@ -353,7 +407,7 @@ def verifier_prerequis(parcours: str) -> dict:
         "statut": "trouve",
         "parcours": p.id,
         "prerequis": descriptions,
-        "serie_bac_declaree": profil.serie_bac,
+        "serie_bac_declaree": serie_declaree,
         "compatible": compatible,
     }
 
@@ -397,14 +451,65 @@ def identifier_debouches(parcours: str) -> dict:
     return {"statut": "trouve", "parcours": p.id, "debouches": noms or p.debouches}
 
 
+def _raisonnement_graphe(parcours: str) -> list[dict]:
+    """Chemin Compétence → Métier du graphe pour ce parcours (ONTO-5).
+
+    Enrichissement, pas une condition : si le graphe n'a pas encore été
+    initialisé, dégrade en liste vide plutôt que de faire échouer
+    `expliquer_recommandation`, qui reste utilisable sur le seul score ML."""
+    if _graphe is None:
+        return []
+    return chemin_competence_parcours_metier(_graphe, parcours)
+
+
 def expliquer_recommandation(parcours: str) -> dict:
+    """Explique une recommandation : score ML, traits déclarés qui pèsent, et
+    chemin Compétence → Métier du graphe (ONTO-5).
+
+    L'argument est résolu comme dans les autres outils qui prennent un
+    parcours : le LLM passe indifféremment un sigle ou un nom, et un
+    identifiant non résolu produirait un `raisonnement_graphe` vide —
+    indiscernable, côté agent, d'une absence réelle de données."""
+    p = _parcours_par_id_ou_nom(parcours)
+    if p is None:
+        return {"statut": "aucun_resultat", "message": f"Parcours « {parcours} » introuvable."}
+
     profil = _profil()
-    score = calculer_adequation(profil, parcours)
-    points_forts = identifier_points_forts(profil)
     return {
-        "parcours": parcours,
-        "score_adequation": score,
-        "points_forts": points_forts,
+        "statut": "trouve",
+        "parcours": p.id,
+        "score_adequation": calculer_adequation(profil, p.id),
+        "points_forts": identifier_points_forts(profil),
+        "raisonnement_graphe": _raisonnement_graphe(p.id),
+    }
+
+
+def detecter_incoherences() -> dict:
+    """Détecte les incohérences structurelles du corpus/graphe (ONTO-4).
+
+    Toujours `statut: "trouve"` : l'analyse a abouti dans les deux cas, et un
+    corpus sain est un résultat positif. `aucun_resultat` signifie partout
+    ailleurs dans ce module « je n'ai pas pu répondre » — le renvoyer ici
+    ferait dire à l'agent qu'il n'a aucune information sur la fiabilité des
+    données, l'inverse de ce que l'outil vient d'établir."""
+    incoherences = _detecter_incoherences_graphe(_base(), _graphe_actuel())
+    if not incoherences:
+        return {
+            "statut": "trouve",
+            "nombre": 0,
+            "incoherences": [],
+            "message": "Aucune incohérence structurelle détectée dans le corpus.",
+        }
+    return {
+        "statut": "trouve",
+        "nombre": len(incoherences),
+        "incoherences": incoherences,
+        "message": (
+            f"{len(incoherences)} incohérence(s) structurelle(s) détectée(s). "
+            "Les entrées marquées `donnee_manquante` signalent une information "
+            "pas encore collectée (voir BACKLOG.md, DATA-1), pas une "
+            "contradiction du corpus."
+        ),
     }
 
 
@@ -419,6 +524,7 @@ TOOL_REGISTRY: dict[str, Any] = {
     "rechercher_competences": rechercher_competences,
     "identifier_debouches": identifier_debouches,
     "expliquer_recommandation": expliquer_recommandation,
+    "detecter_incoherences": detecter_incoherences,
 }
 
 

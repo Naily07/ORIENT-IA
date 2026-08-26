@@ -1,10 +1,14 @@
-"""Tests de la boucle agent (AGT-1), sans appel réseau : `llm_call_with_tools`
-et `executer_outil` sont simulés."""
+"""Tests de la boucle agent (AGT-1).
+
+La majorité de ces tests simulent `llm_call_with_tools` et `executer_outil`
+(aucun appel réseau). Un test marqué `reseau` en fin de fichier vérifie en
+plus que la boucle fonctionne réellement contre l'API Gemini — à lancer avec
+`pytest -m reseau` (nécessite `GEMINI_API_KEY` dans `.env`)."""
 
 import pytest
 
 from src.agent import run_agent
-from src.schemas import RecommandationDecision
+from src.schemas import ProfilCandidat, RecommandationDecision
 
 
 class _FausseFunctionCall:
@@ -65,8 +69,6 @@ def _executer_outil_factice(nom, params, trace_id):
 
 @pytest.fixture
 def profil():
-    from src.schemas import ProfilCandidat
-
     return ProfilCandidat(matieres_preferees=["informatique"])
 
 
@@ -155,3 +157,36 @@ def test_outils_utilises_reflete_les_appels_reels(monkeypatch, profil):
     resultat = run_agent("Question", profil, None, "trace-6")
 
     assert resultat.outils_utilises == ["verifier_prerequis"]
+
+
+# --- Test réseau : vérifie la boucle contre l'API Gemini réelle -------------
+
+
+@pytest.mark.reseau
+def test_agent_reel_recommande_un_parcours_coherent():
+    """Contrairement aux tests ci-dessus, celui-ci n'attrape aucune régression
+    de logique déterministe (déjà couverte sans réseau) : il vérifie que le
+    function calling natif de Gemini s'articule réellement avec `tools.py`
+    (schémas de paramètres acceptés par l'API, `thought_signature` réattendu
+    d'un tour à l'autre, sortie finale conforme à `RecommandationDecision`)."""
+    from src.ml.archetypes import ARCHETYPES
+    from src.tools import initialiser_corpus
+
+    initialiser_corpus()
+    profil = ProfilCandidat(
+        matieres_preferees=["informatique", "mathematiques"],
+        competences_declarees=["programmation"],
+        centres_interet=["technologie"],
+        serie_bac="D",
+    )
+
+    decision = run_agent(
+        "Quel parcours me conseilles-tu ?", profil, None, "test-reseau-agent"
+    )
+
+    assert isinstance(decision, RecommandationDecision)
+    # Exigence non négociable du prompt système : ne jamais recommander sans
+    # être passé par le modèle ML.
+    assert "analyser_profil_ml" in decision.outils_utilises
+    assert decision.parcours_recommandes
+    assert decision.parcours_recommandes[0].parcours in ARCHETYPES

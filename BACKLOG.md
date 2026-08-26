@@ -161,10 +161,10 @@ la qualité d'ingénierie et plusieurs mécanismes sont directement transposable
 
 | ID | Tâche | Description | Dépendances |
 |---|---|---|---|
-| ORCH-1 | Pipeline complet | Garde-fous → profil → RAG → ML → agent → sortie structurée **[REUSE]** squelette `orchestrator.py` : « une seule étape bloquante, le reste dégrade proprement » | AGT-1, RAG-2, ML-8, SEC-1 |
-| ORCH-2 | Règles métier déterministes | Sources recoupées avec les passages réellement fournis, confiance plafonnée en cas de dégradation **[REUSE]** `_appliquer_regles_metier` | ORCH-1 |
-| ORCH-3 | Gestion des échecs | Timeout LLM, sortie non conforme, budget de temps global, dégradation propre (jamais d'erreur nue) **[REUSE]** `sortie.py` + budget orchestrateur — amorcé : `generer_avec_retry()` générique porté (`backend/src/sortie.py`) et `RecommandationDecision` (SETUP-4) désormais disponible ; la fonction de repli « toujours valide » elle-même (équivalent `reponse_erreur_controlee`) reste à écrire avec l'orchestrateur | ORCH-1 |
-| ORCH-4 | Endpoints FastAPI | `/orientation/traiter`, `/observabilite/traces`, `/health` **[ADAPT]** `api.py` — pas d'équivalent `/tickets/valider` sauf si une action sensible est identifiée | ORCH-1 |
+| ~~ORCH-1~~ ✅ | Pipeline complet | Garde-fous → RAG → agent → sortie structurée **[REUSE]** squelette `orchestrator.py` : « une seule étape bloquante (les garde-fous), le reste dégrade proprement » — vérifié par appel réel à l'API (`curl` sur `/orientation/traiter`), pas seulement en mocké | AGT-1, RAG-2, ML-8, SEC-1 |
+| ~~ORCH-2~~ ✅ | Règles métier déterministes | Sources recoupées avec les passages réellement fournis, confiance plafonnée en cas de dégradation **[REUSE]** `_appliquer_plafond_de_confiance` — le recoupement des sources et le seuil de confiance vivent déjà dans `agent.py` (AGT-1), l'orchestrateur ajoute le plafonnement en cas de dégradation *pipeline* (RAG en échec, budget dépassé) | ORCH-1 |
+| ~~ORCH-3~~ ✅ | Gestion des échecs | Timeout LLM, sortie non conforme, budget de temps global, dégradation propre (jamais d'erreur nue) **[REUSE]** `sortie.py` + budget orchestrateur — `_decision_repli()` (équivalent `reponse_erreur_controlee`) et `_etape_optionnelle()` avec budget de temps écrits dans `orchestrator.py` | ORCH-1 |
+| ~~ORCH-4~~ ✅ | Endpoints FastAPI | `POST /orientation/traiter`, `GET /observabilite/traces`, `GET /health` **[ADAPT]** `api.py` — pas d'équivalent `/tickets/valider` : `tools.OUTILS_SENSIBLES` est vide (aucun outil sensible dans le périmètre actuel) | ORCH-1 |
 
 ## 🛡️ Sécurité & garde-fous
 

@@ -209,6 +209,13 @@ def definir_profil_courant(profil: ProfilCandidat) -> None:
     _profil_courant = profil
 
 
+def corpus_charge() -> CorpusFormations | None:
+    """Le corpus actuellement en mémoire, ou `None` s'il n'a pas encore été
+    initialisé. Point d'accès public pour l'introspection (ex. `GET /health`),
+    plutôt que de lire `_corpus` directement depuis un autre module."""
+    return _corpus
+
+
 def _base() -> CorpusFormations:
     if _corpus is None:
         raise OutilIndisponible(

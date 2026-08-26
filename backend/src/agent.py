@@ -14,6 +14,11 @@ Garanties, sur le modèle d'EXAM-S2 :
     le modèle prétend avoir fait ;
   - `sources` est recoupé avec les passages RAG réellement fournis (même
     contrôle que `rag.generer_reponse_rag`) ;
+  - si le modèle recommande sans être passé par `analyser_profil_ml`
+    (constaté en usage réel : un contexte RAG riche suffit parfois au modèle
+    pour répondre sans consulter l'outil, malgré la consigne du prompt), le
+    code appelle le modèle ML lui-même et remplace les scores proposés —
+    jamais de score d'adéquation qui ne vienne pas réellement du modèle ;
   - une confiance sous le seuil configuré force `action="escalade_conseiller"`
     — amorce d'AGT-4, avant qu'un orchestrateur dédié ne porte cette règle.
 """
@@ -22,6 +27,7 @@ from google.genai import types
 
 from src.config import config
 from src.llm_client import LLMError, llm_call_with_tools
+from src.ml.outils import analyser_profil as analyser_profil_ml
 from src.schemas import ProfilCandidat, RecommandationDecision
 from src.tools import declarer_outils, definir_profil_courant, executer_outil
 
@@ -114,7 +120,39 @@ def _valider_reponse_finale(reponse) -> RecommandationDecision:
     return RecommandationDecision.model_validate_json(texte)
 
 
+def _forcer_consultation_du_modele_ml(
+    profil: ProfilCandidat, decision: RecommandationDecision, outils_utilises: list[str]
+) -> tuple[RecommandationDecision, list[str]]:
+    """Si le modèle recommande sans être passé par `analyser_profil_ml`, le
+    code l'appelle lui-même et remplace les scores proposés.
+
+    Constaté en usage réel : un contexte RAG assez riche permet parfois au
+    modèle de répondre directement à partir des passages, sans consulter
+    l'outil ML, malgré la consigne explicite du prompt système. Le vérifier
+    déterministe plutôt que de compter sur la consigne : un score
+    d'adéquation qui ne viendrait pas réellement du modèle romprait
+    l'exigence centrale du sujet (§2 : recommandation *argumentée*, §6 :
+    distinguer explicitement les résultats du modèle du texte généré)."""
+    if decision.action != "recommandation" or "analyser_profil_ml" in outils_utilises:
+        return decision, outils_utilises
+
+    analyse = analyser_profil_ml(profil)
+    decision = decision.model_copy(
+        update={
+            "parcours_recommandes": analyse.parcours_candidats,
+            "confiance": analyse.confiance,
+            "explication": (
+                f"{decision.explication}\n[Contrôle automatique] Le modèle ML a été "
+                "consulté après coup pour fonder les scores d'adéquation ci-dessus, "
+                "qui remplacent ceux initialement proposés par le modèle de langage."
+            ),
+        }
+    )
+    return decision, [*outils_utilises, "analyser_profil_ml"]
+
+
 def _appliquer_controles_deterministes(
+    profil: ProfilCandidat,
     decision: RecommandationDecision,
     contexte: list[dict] | None,
     outils_utilises: list[str],
@@ -122,6 +160,11 @@ def _appliquer_controles_deterministes(
     """Le code contresigne la décision du modèle, il ne s'y fie pas."""
     disponibles = {c["source_id"] for c in contexte} if contexte else set()
     sources = [s for s in decision.sources if s in disponibles]
+    decision = decision.model_copy(update={"sources": sources})
+
+    decision, outils_utilises = _forcer_consultation_du_modele_ml(
+        profil, decision, outils_utilises
+    )
 
     confiance = decision.confiance
     action = decision.action
@@ -132,7 +175,6 @@ def _appliquer_controles_deterministes(
 
     return decision.model_copy(
         update={
-            "sources": sources,
             "outils_utilises": outils_utilises,
             "action": action,
             "incertitude_declaree": incertitude,
@@ -180,7 +222,7 @@ def run_agent(
         appels = _extraire_appels(reponse)
         if not appels:
             decision = _valider_reponse_finale(reponse)
-            return _appliquer_controles_deterministes(decision, contexte, outils_utilises)
+            return _appliquer_controles_deterministes(profil, decision, contexte, outils_utilises)
 
         # Le Content du modèle est renvoyé tel quel (pas reconstruit) : Gemini
         # attache un `thought_signature` à chaque function_call, réattendu au

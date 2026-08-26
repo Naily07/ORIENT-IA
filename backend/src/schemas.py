@@ -146,3 +146,29 @@ class RecommandationDecision(BaseModel):
             "qui est un score continu plutôt qu'un drapeau"
         )
     )
+
+
+# --- Entrée/sortie de l'orchestrateur -----------------------------------------
+
+
+class OrientationInput(BaseModel):
+    """Corps de `POST /orientation/traiter`.
+
+    `profil` est celui construit jusqu'ici par l'appelant (frontend ou
+    session de conversation) : l'orchestrateur ne le reconstruit pas à partir
+    de `message`, il l'utilise tel quel et laisse l'agent décider si des
+    informations manquent encore (`action="demande_information"`)."""
+
+    message: str
+    profil: ProfilCandidat = Field(default_factory=ProfilCandidat)
+
+
+class OrientationReponse(BaseModel):
+    """Enveloppe retournée par `POST /orientation/traiter`.
+
+    `trace_id` est une métadonnée de routage (observabilité), pas une donnée
+    métier : elle n'appartient pas à `RecommandationDecision`, sur le même
+    principe que `TicketReponse` dans EXAM-S2."""
+
+    trace_id: str
+    decision: RecommandationDecision

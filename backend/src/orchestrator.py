@@ -11,7 +11,12 @@ structurée, sur les deux principes déjà appliqués dans EXAM-S2 :
 2. **Le dernier mot revient au code.** Une décision produite avec un
    pipeline amputé (RAG indisponible, budget de temps dépassé) ne peut pas
    afficher la même certitude qu'une décision complète : sa confiance est
-   plafonnée et son incertitude déclarée, quoi que l'agent ait renvoyé.
+   plafonnée et son incertitude déclarée, quoi que l'agent ait renvoyé. Le
+   texte produit par l'agent est en plus scanné (SEC-3, SEC-4) : un critère
+   discriminatoire utilisé comme justification, ou un langage de profilage
+   psychologique, force une escalade vers un conseiller — cette
+   responsabilité ne peut pas rester une simple consigne de prompt (§16 du
+   sujet, non négociable).
 
 `traiter_demande()` ne lève jamais : chaque échec possible a une réponse
 dégradée mais valide (§2 du sujet EXAM-S2, gestion d'erreurs — même exigence
@@ -29,6 +34,7 @@ from src.guardrails import check_injection, masquer_donnees_sensibles
 from src.llm_client import LLMError
 from src.rag import retrieve_context
 from src.schemas import OrientationInput, OrientationReponse, RecommandationDecision
+from src.securite import verifier_sortie
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +109,7 @@ def _escalade_injection(message: str, risque: dict) -> RecommandationDecision:
 
 def _decision_repli(motif: str) -> RecommandationDecision:
     """Décision de repli quand l'agent n'a pas pu conclure — jamais d'erreur
-    nue vers l'utilisateur. `motif` est masqué (SEC-5) : il peut recopier un
+    nue vers l'utilisateur. `motif` est masqué (SEC-2) : il peut recopier un
     extrait brut d'une réponse LLM, potentiellement le message de
     l'utilisateur lui-même."""
     return RecommandationDecision(
@@ -116,6 +122,34 @@ def _decision_repli(motif: str) -> RecommandationDecision:
         outils_utilises=[],
         action="escalade_conseiller",
         incertitude_declaree=True,
+    )
+
+
+def _appliquer_controle_de_sortie(decision: RecommandationDecision) -> RecommandationDecision:
+    """Scanne le texte produit par l'agent (SEC-3, SEC-4) : un critère
+    discriminatoire utilisé comme justification, ou un langage de profilage
+    psychologique, force une escalade vers un conseiller humain.
+
+    Vérifié en dernier, sur la décision qui sera effectivement montrée à
+    l'utilisateur — après le plafonnement de confiance, pas avant, pour que
+    la raison de l'escalade reste celle réellement en cause plutôt qu'être
+    masquée par une dégradation de pipeline sans rapport."""
+    textes = [decision.resume, decision.explication] + [
+        p.justification for p in decision.parcours_recommandes
+    ]
+    verdict = verifier_sortie(*textes)
+    if not verdict["danger"]:
+        return decision
+
+    return decision.model_copy(
+        update={
+            "action": "escalade_conseiller",
+            "incertitude_declaree": True,
+            "explication": (
+                f"{decision.explication}\n[Contrôle automatique] Réponse retenue pour "
+                f"revue humaine : {verdict['raison']}."
+            ),
+        }
     )
 
 
@@ -211,6 +245,7 @@ def traiter_demande(entree: OrientationInput) -> OrientationReponse:
             degradations.append(f"agent indisponible ({type(e).__name__})")
             decision = _decision_repli(str(e))
 
-    # 4. Contrôle déterministe final.
+    # 4. Contrôles déterministes finaux.
     decision = _appliquer_plafond_de_confiance(decision, degradations)
+    decision = _appliquer_controle_de_sortie(decision)
     return _finaliser(trace_id, entree, contexte, decision, depart)

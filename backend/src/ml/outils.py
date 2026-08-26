@@ -24,7 +24,7 @@ import functools
 import numpy as np
 
 from src.ml.entrainement import entrainer_baseline, preparer_jeu_entrainement
-from src.ml.features import noms_features, vectoriser
+from src.ml.features import CouvertureProfil, analyser_couverture, noms_features, vectoriser
 from src.schemas import AnalyseProfil, ProfilCandidat, RecommandationParcours
 
 PREFIXES_LISIBLES = {
@@ -78,8 +78,19 @@ def _justification(vecteur: np.ndarray, modele, indice_classe: int, score: float
 
 def analyser_profil(candidat: ProfilCandidat) -> AnalyseProfil:
     """Sortie brute du modèle sur un profil (§6 du sujet) : tous les parcours
-    connus, classés par score d'adéquation décroissant."""
+    connus, classés par score d'adéquation décroissant.
+
+    **Refuse d'affirmer sur un profil qu'il n'a pas exploité.** Si trop peu de
+    traits déclarés ont pu être ramenés au vocabulaire du modèle (voir
+    `features.analyser_couverture`), les probabilités retombent sur la
+    distribution a priori des classes : les scores existent numériquement mais
+    ne portent aucune information sur *ce candidat-là*. La confiance est alors
+    mise à zéro, ce qui déclenche naturellement l'escalade en aval
+    (`agent._appliquer_controles_deterministes` compare au seuil configuré) au
+    lieu de présenter un classement d'apparence normale.
+    """
     modele = _modele()
+    couverture = analyser_couverture(candidat)
     vecteur = vectoriser(candidat)
     probabilites = modele.predict_proba(vecteur.reshape(1, -1))[0]
 
@@ -96,14 +107,43 @@ def analyser_profil(candidat: ProfilCandidat) -> AnalyseProfil:
         key=lambda c: c.score_adequation,
         reverse=True,
     )
+
+    if not couverture.exploitable:
+        return AnalyseProfil(
+            parcours_candidats=candidats,
+            confiance=0.0,
+            justification=_justification_profil_inexploitable(couverture),
+        )
+
     confiance = candidats[0].score_adequation
+    justification = (
+        f"Le parcours {candidats[0].parcours} obtient le score le plus élevé "
+        f"({confiance:.0%}) d'après le modèle entraîné sur le profil déclaré."
+    )
+    if couverture.non_reconnus:
+        justification += (
+            " Éléments déclarés non rattachés au vocabulaire du modèle, donc non pris "
+            f"en compte dans ce score : {', '.join(couverture.non_reconnus)}."
+        )
     return AnalyseProfil(
         parcours_candidats=candidats,
         confiance=confiance,
-        justification=(
-            f"Le parcours {candidats[0].parcours} obtient le score le plus élevé "
-            f"({confiance:.0%}) d'après le modèle entraîné sur le profil déclaré."
-        ),
+        justification=justification,
+    )
+
+
+def _justification_profil_inexploitable(couverture: CouvertureProfil) -> str:
+    if couverture.non_reconnus:
+        return (
+            "Profil insuffisamment exploitable par le modèle : les éléments déclarés "
+            f"({', '.join(couverture.non_reconnus)}) n'ont pas pu être rattachés à son "
+            "vocabulaire. Les scores ci-dessous reflètent la distribution générale des "
+            "parcours, pas ce candidat — ils ne doivent pas fonder une recommandation."
+        )
+    return (
+        "Profil trop peu renseigné pour que le modèle produise un score informatif. "
+        "Les scores ci-dessous reflètent la distribution générale des parcours, pas ce "
+        "candidat — ils ne doivent pas fonder une recommandation."
     )
 
 

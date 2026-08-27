@@ -32,6 +32,7 @@ besoin, sur le même principe que `initialiser_donnees()` dans EXAM-S2 pour la
 base en mémoire.
 """
 
+from contextvars import ContextVar
 from typing import Any, Literal
 
 import networkx as nx
@@ -224,7 +225,12 @@ def declarer_outils() -> list[types.Tool]:
 
 _corpus: CorpusFormations | None = None
 _graphe: nx.DiGraph | None = None
-_profil_courant: ProfilCandidat | None = None
+# Le profil est **par requête** : FastAPI sert les endpoints synchrones dans un
+# pool de threads, et une variable de module se faisait écraser d'une demande à
+# l'autre. Voir `definir_profil_courant`.
+_profil_courant: ContextVar[ProfilCandidat | None] = ContextVar(
+    "profil_courant", default=None
+)
 
 
 def initialiser_corpus(corpus: CorpusFormations | None = None) -> None:
@@ -251,9 +257,24 @@ def initialiser_corpus(corpus: CorpusFormations | None = None) -> None:
 
 
 def definir_profil_courant(profil: ProfilCandidat) -> None:
-    """Fixe le profil du candidat pour la durée d'un appel à l'agent."""
-    global _profil_courant
-    _profil_courant = profil
+    """Fixe le profil du candidat pour la durée d'un appel à l'agent.
+
+    **Isolé par requête, pas partagé.** Le profil vivait dans une variable de
+    module, alors que FastAPI exécute les endpoints synchrones dans un pool de
+    threads : deux demandes simultanées s'écrasaient mutuellement. Mesuré — une
+    requête déclarant la série « D » voyait ses outils lire « A », la série de
+    l'autre requête. Un candidat se serait fait vérifier son admissibilité sur
+    le profil de quelqu'un d'autre, silencieusement.
+
+    `ContextVar` plutôt que `threading.local()` : le comportement est correct
+    pour un pool de threads comme pour une éventuelle bascule en `async def`,
+    où plusieurs requêtes partagent un même thread.
+
+    Le profil reste hors du function calling, pour la raison expliquée en tête
+    de module : demander au LLM de ressaisir un profil entier l'inviterait à en
+    inventer ou à en oublier des champs.
+    """
+    _profil_courant.set(profil)
 
 
 def corpus_charge() -> CorpusFormations | None:
@@ -272,11 +293,12 @@ def _base() -> CorpusFormations:
 
 
 def _profil() -> ProfilCandidat:
-    if _profil_courant is None:
+    profil = _profil_courant.get()
+    if profil is None:
         raise OutilIndisponible(
             "Profil non défini : appeler definir_profil_courant() avant l'agent."
         )
-    return _profil_courant
+    return profil
 
 
 def _graphe_actuel() -> nx.DiGraph:

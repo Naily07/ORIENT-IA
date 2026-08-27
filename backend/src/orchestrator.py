@@ -244,6 +244,21 @@ def traiter_demande(entree: OrientationInput) -> OrientationReponse:
             logger.warning("Agent indisponible (trace_id=%s) : %s", trace_id, e)
             degradations.append(f"agent indisponible ({type(e).__name__})")
             decision = _decision_repli(str(e))
+        except Exception as e:  # noqa: BLE001 — voir ci-dessous : la promesse est absolue
+            # **Ne rattraper que `LLMError` ne suffisait pas.** Une réponse
+            # finale au JSON valide mais non conforme au schéma fait lever une
+            # `ValidationError` par `agent._valider_reponse_finale()`, qui
+            # traversait tout l'orchestrateur — donc un HTTP 500 nu, alors que
+            # ce module, `api.traiter()` et le ticket ORCH-3 promettent tous
+            # trois l'inverse. Reproduit en simulant une sortie tronquée.
+            #
+            # La promesse « ne lève jamais » ne tolère pas une liste
+            # d'exceptions connues : c'est la sortie d'un modèle de langage, on
+            # ne peut pas énumérer ses façons d'échouer. Le type réel est
+            # conservé dans la dégradation et la trace pour rester diagnosticable.
+            logger.exception("Agent en échec inattendu (trace_id=%s)", trace_id)
+            degradations.append(f"agent en échec ({type(e).__name__})")
+            decision = _decision_repli(f"{type(e).__name__}: {e}")
 
     # 4. Contrôles déterministes finaux.
     decision = _appliquer_plafond_de_confiance(decision, degradations)

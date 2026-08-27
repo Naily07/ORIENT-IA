@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from src.config import config
 from src.ml.archetypes import (
     VOCAB_CENTRES_INTERET,
     VOCAB_COMPETENCES,
@@ -57,7 +58,7 @@ class CouvertureProfil:
         parcours : le modèle retomberait sur des scores proches de la distribution
         a priori, présentés à l'utilisateur comme s'ils étaient informatifs.
         """
-        return self.nb_traits_reconnus >= 2
+        return self.nb_traits_reconnus >= config.ml_traits_minimum_exploitables
 
 
 def _multi_hot(valeurs: list[str], vocabulaire: tuple[str, ...]) -> list[float]:

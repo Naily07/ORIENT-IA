@@ -294,3 +294,21 @@ def test_expliquer_recommandation_degrade_sans_graphe_initialise(corpus, monkeyp
     resultat = tools.expliquer_recommandation("IGGLIA")
     assert resultat["raisonnement_graphe"] == []
     assert resultat["score_adequation"] >= 0.0
+
+
+def test_le_graphe_d_admission_suit_le_corpus_courant(corpus):
+    """Non-régression d'alignement : `ml.outils` reconstruisait son propre
+    graphe **depuis le disque** et le mettait en cache. Basculer le corpus ne
+    rebâtissait que celui de `tools` — mesuré : 2 nœuds d'un côté, 517 de
+    l'autre, pour un seul corpus censément courant. Les règles d'admission
+    jugeaient donc d'après un corpus que plus personne ne servait, et
+    silencieusement (un parcours inconnu n'a pas de prérequis, donc aucune
+    rétrogradation) : un test croyait les exercer alors qu'elles ne
+    s'appliquaient pas."""
+    from src.ml import outils
+
+    assert outils._graphe_courant() is tools._graphe
+
+    tools.initialiser_corpus(CorpusFormations())
+    assert outils._graphe_courant() is tools._graphe
+    assert len(outils._graphe_courant().nodes) == 0

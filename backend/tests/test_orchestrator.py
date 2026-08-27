@@ -126,6 +126,25 @@ def test_traiter_demande_ne_leve_jamais_meme_sur_erreur_inattendue(monkeypatch):
     assert reponse.decision is not None  # aucune exception n'est remontée
 
 
+def test_pipeline_installe_un_budget_global_pour_les_appels_llm(monkeypatch):
+    import src.llm_client as llm_client_module
+
+    budgets_observes = []
+
+    def _agent_espion(*args, **kwargs):
+        budgets_observes.append(llm_client_module._temps_restant_s())
+        return _decision_type()
+
+    monkeypatch.setattr("src.orchestrator.run_agent", _agent_espion)
+
+    traiter_demande(OrientationInput(message="Question"))
+
+    assert len(budgets_observes) == 1
+    assert 0 < budgets_observes[0] <= 120
+    # Le contexte ne doit pas fuiter vers la prochaine requête du thread.
+    assert llm_client_module._temps_restant_s() is None
+
+
 # --- Jeu de test sécurité / biais (SEC-6) ------------------------------------
 # Les 3 cas de prompt injection sont déjà couverts par
 # test_injection_detectee_court_circuite_l_agent (ci-dessus) et par

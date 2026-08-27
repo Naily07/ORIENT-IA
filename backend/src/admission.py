@@ -16,6 +16,29 @@ import re
 # apparaît dans le corpus collecté (voir `backend/data/prerequis.json`).
 SERIES_TOUTE = "toute série"
 
+# Tête de phrase que les candidats ajoutent devant leur série (« bac D »,
+# « Baccalauréat série C ») et que le formulaire n'impose pas de retirer. Sans
+# ce nettoyage, « bac D » ne correspond à aucun prérequis rédigé « série C, D, S »
+# et le parcours est rétrogradé à tort — mesuré, un « bac D » scientifique voyait
+# toutes ses formations techniques passer derrière le tourisme.
+_PREFIXE_SERIE = re.compile(
+    r"^\s*(?:bac(?:calaur[ée]at)?|s[ée]ries?|en|fili[èe]re)\b[\s:.-]*", re.IGNORECASE
+)
+
+
+def serie_bac_nettoyee(serie: str) -> str:
+    """Retire les têtes de phrase (« bac », « série »…) répétées devant la série.
+
+    Partagée avec `extraction_profil.fusionner_profils` : la série est stockée et
+    affichée sous sa forme courte (« D »), et confrontée aux prérequis sous cette
+    même forme."""
+    precedent = None
+    courant = serie.strip()
+    while courant and courant != precedent:
+        precedent = courant
+        courant = _PREFIXE_SERIE.sub("", courant).strip()
+    return courant or serie.strip()
+
 
 def serie_satisfait_prerequis(serie_declaree: str | None, descriptions: list[str]) -> bool | None:
     """La série déclarée satisfait-elle au moins un des prérequis listés ?
@@ -34,6 +57,11 @@ def serie_satisfait_prerequis(serie_declaree: str | None, descriptions: list[str
         return None
 
     serie = (serie_declaree or "").strip()
+    if not serie:
+        return None
+    # « bac D », « Série D » → « D » : le prérequis est rédigé avec la seule
+    # lettre/mention de série, jamais avec la tête de phrase.
+    serie = serie_bac_nettoyee(serie)
     if not serie:
         return None
 

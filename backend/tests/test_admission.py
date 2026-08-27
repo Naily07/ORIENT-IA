@@ -8,7 +8,7 @@ deux côtés ; ses cas limites — série absente, série blanche, prérequis in
 — ne l'étaient pas tous.
 """
 
-from src.admission import SERIES_TOUTE, serie_satisfait_prerequis
+from src.admission import SERIES_TOUTE, serie_bac_nettoyee, serie_satisfait_prerequis
 
 SCIENTIFIQUE = ["Baccalauréat série C, D, S, ou série techniques industrielles"]
 TOUTE_SERIE = ["Baccalauréat toute série"]
@@ -79,3 +79,24 @@ def test_un_caractere_special_ne_casse_pas_la_regex():
     """La série est échappée : une saisie contenant un métacaractère ne doit ni
     lever ni matcher n'importe quoi."""
     assert serie_satisfait_prerequis("C.*", SCIENTIFIQUE) is False
+
+
+# --- Tête de phrase (« bac D », « série D ») ---------------------------------
+
+
+def test_une_serie_prefixee_bac_est_reconnue():
+    """« bac D » ne correspond pas littéralement à « série C, D, S » : sans
+    nettoyage, un profil scientifique voyait toutes ses formations techniques
+    rétrogradées derrière le tourisme."""
+    assert serie_satisfait_prerequis("bac D", SCIENTIFIQUE) is True
+    assert serie_satisfait_prerequis("Baccalauréat série D", SCIENTIFIQUE) is True
+    assert serie_satisfait_prerequis("Série A", SCIENTIFIQUE) is False
+
+
+def test_serie_bac_nettoyee_retire_les_tetes_de_phrase():
+    assert serie_bac_nettoyee("bac D") == "D"
+    assert serie_bac_nettoyee("  Série  D ") == "D"
+    assert serie_bac_nettoyee("baccalauréat série C") == "C"
+    assert serie_bac_nettoyee("D") == "D"
+    # Rien d'exploitable à retirer : on rend la saisie telle quelle plutôt que vide.
+    assert serie_bac_nettoyee("série") == "série"

@@ -197,6 +197,23 @@ def _finaliser(
 # --- Pipeline complet (ORCH-1) -----------------------------------------------
 
 
+def _texte_a_controler(entree: OrientationInput) -> str:
+    """Message courant **et** questions rejouées, soumis au même contrôle.
+
+    L'historique vient du client : rien n'empêche un appelant d'y glisser une
+    consigne de manipulation qui n'apparaîtrait jamais dans `message`. Ne
+    contrôler que le message laisserait une porte ouverte là où le §11 demande
+    précisément qu'elle soit fermée.
+
+    Seules les **questions** passent le contrôle, pas les réponses : celles-ci
+    sont notre propre prose, déjà filtrée par `verifier_sortie`, et y chercher
+    des motifs d'injection produirait des faux positifs sur les réponses qui
+    expliquent justement qu'une tentative vient d'être détectée.
+    """
+    questions = [tour.question for tour in entree.historique if tour.question.strip()]
+    return "\n".join([*questions, entree.message])
+
+
 def traiter_demande(entree: OrientationInput) -> OrientationReponse:
     """Traite une demande de bout en bout et retourne la décision et sa trace.
 
@@ -221,7 +238,7 @@ def _traiter_demande_dans_budget(
     #    cherche à manipuler l'assistant ne doit atteindre ni le RAG, ni
     #    l'agent, ni ses outils.
     try:
-        risque = check_injection(entree.message)
+        risque = check_injection(_texte_a_controler(entree))
     except Exception as e:  # noqa: BLE001 — check_injection absorbe déjà LLMError
         logger.exception("Garde-fous d'entrée en échec (trace_id=%s)", trace_id)
         risque = {"danger": False, "raison": None, "couche": None, "verification_llm": "erreur"}
@@ -250,7 +267,9 @@ def _traiter_demande_dans_budget(
         decision = _decision_repli("budget de temps dépassé")
     else:
         try:
-            decision = run_agent(entree.message, entree.profil, contexte, trace_id)
+            decision = run_agent(
+                entree.message, entree.profil, contexte, trace_id, entree.historique
+            )
         except LLMError as e:
             logger.warning("Agent indisponible (trace_id=%s) : %s", trace_id, e)
             degradations.append(f"agent indisponible ({type(e).__name__})")

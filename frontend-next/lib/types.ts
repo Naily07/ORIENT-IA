@@ -62,9 +62,26 @@ export interface RecommandationDecision {
   incertitude_declaree: boolean;
 }
 
+/**
+ * Un échange déjà joué, rejoué à chaque requête (`backend/src/schemas.py`).
+ *
+ * Le pipeline backend reste sans état : c'est le client qui porte la
+ * conversation. Sans cet aller-retour, une question de suivi (« et les
+ * matières de cette filière ? ») arrivait seule et restait insoluble.
+ */
+export interface TourHistorique {
+  question: string;
+  reponse: string;
+}
+
+/** Doit rester aligné sur `MAX_TOURS_HISTORIQUE` (backend/src/schemas.py) : le
+ *  backend rejette au-delà. */
+export const MAX_TOURS_HISTORIQUE = 6;
+
 export interface OrientationInput {
   message: string;
   profil: ProfilCandidat;
+  historique?: TourHistorique[];
 }
 
 export interface OrientationReponse {

@@ -48,7 +48,12 @@ from src.llm_client import LLMError, llm_call_with_tools
 from src.ml.archetypes import PARCOURS_CONNUS
 from src.ml.outils import analyser_profil as analyser_profil_ml
 from src.ml.outils import selectionner_significatifs
-from src.schemas import ProfilCandidat, RecommandationDecision
+from src.schemas import (
+    MAX_TOURS_HISTORIQUE,
+    ProfilCandidat,
+    RecommandationDecision,
+    TourConversation,
+)
 from src.tools import (
     OutilIndisponible,
     declarer_outils,
@@ -154,10 +159,32 @@ def _formater_passage(fragment: dict) -> str:
     return f"[{fragment['source_id']}{provenance}] {fragment['contenu']}"
 
 
+def _tours_precedents(historique: list[TourConversation] | None) -> list[types.Content]:
+    """Rejoue les échanges passés comme de vrais tours, pas comme du texte collé.
+
+    Empiler « Question 1 : … Réponse 1 : … » dans un seul bloc `user` oblige le
+    modèle à démêler qui a dit quoi. Des `Content` alternés `user`/`model` sont
+    la structure que l'API attend, et c'est elle qui permet à une question de
+    suivi (« et les matières de cette filière ? ») de se rattacher au parcours
+    dont il vient d'être question.
+    """
+    if not historique:
+        return []
+    tours: list[types.Content] = []
+    for tour in historique[-MAX_TOURS_HISTORIQUE:]:
+        if not tour.question.strip():
+            continue
+        tours.append(types.Content(role="user", parts=[types.Part(text=tour.question)]))
+        if tour.reponse.strip():
+            tours.append(types.Content(role="model", parts=[types.Part(text=tour.reponse)]))
+    return tours
+
+
 def _construire_prompt_initial(
     description: str,
     profil: ProfilCandidat,
     contexte: list[dict] | None,
+    historique: list[TourConversation] | None = None,
 ) -> list[types.Content]:
     if contexte:
         passages = "\n\n".join(_formater_passage(c) for c in contexte)
@@ -169,7 +196,10 @@ def _construire_prompt_initial(
         f"Profil déclaré jusqu'ici :\n{profil.model_dump()}\n\n"
         f"Passages du corpus pédagogique :\n{passages}"
     )
-    return [types.Content(role="user", parts=[types.Part(text=contenu)])]
+    return [
+        *_tours_precedents(historique),
+        types.Content(role="user", parts=[types.Part(text=contenu)]),
+    ]
 
 
 def _extraire_appels(reponse) -> list[types.FunctionCall]:
@@ -474,18 +504,19 @@ def run_agent(
     profil: ProfilCandidat,
     contexte: list[dict] | None,
     trace_id: str,
+    historique: list[TourConversation] | None = None,
 ) -> RecommandationDecision:
     """Exécute la boucle agent et retourne toujours une `RecommandationDecision`
     valide — jamais d'exception, hormis `LLMError` sur échec d'appel LLM
     (à l'appelant de dégrader, voir le futur orchestrateur, ORCH-3)."""
     definir_profil_courant(profil)
-    historique = _construire_prompt_initial(description, profil, contexte)
+    conversation = _construire_prompt_initial(description, profil, contexte, historique)
     outils_utilises: list[str] = []
     sources_outils: set[str] = set()
 
     for _ in range(config.agent_max_iterations):
         reponse = llm_call_with_tools(
-            historique,
+            conversation,
             PROMPT_SYSTEME_AGENT,
             declarer_outils(),
             response_schema=RecommandationDecision,
@@ -503,7 +534,7 @@ def run_agent(
         # Le Content du modèle est renvoyé tel quel (pas reconstruit) : Gemini
         # attache un `thought_signature` à chaque function_call, réattendu au
         # tour suivant (même piège que documenté dans EXAM-S2).
-        historique.append(reponse.candidates[0].content)
+        conversation.append(reponse.candidates[0].content)
 
         reponses_fonctions = []
         for appel in appels:
@@ -516,7 +547,7 @@ def run_agent(
                 types.Part(function_response=types.FunctionResponse(name=nom, response=resultat))
             )
 
-        historique.append(types.Content(role="user", parts=reponses_fonctions))
+        conversation.append(types.Content(role="user", parts=reponses_fonctions))
 
     # Limite d'itérations atteinte sans conclusion : ne jamais renvoyer une
     # erreur nue, escalader proprement.

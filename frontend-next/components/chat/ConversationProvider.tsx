@@ -19,7 +19,39 @@ import {
   type EtatConversation,
   type TourConversation,
 } from "@/lib/conversation-storage";
-import type { OrientationReponse, ProfilCandidat } from "@/lib/types";
+import {
+  MAX_TOURS_HISTORIQUE,
+  type OrientationReponse,
+  type ProfilCandidat,
+  type TourHistorique,
+} from "@/lib/types";
+
+/**
+ * Condense les tours déjà joués pour l'agent.
+ *
+ * Ce qui est renvoyé n'est pas la carte de décision complète mais ce dont une
+ * question de suivi a besoin : le résumé et les parcours nommés. « Quelles
+ * matières dans cette filière ? » n'est résoluble que si le tour précédent dit
+ * encore de quelle filière il s'agit.
+ *
+ * Les tours en erreur sont écartés : rejouer une question restée sans réponse
+ * ferait croire à l'agent qu'il y a déjà répondu.
+ */
+function construireHistorique(messages: TourConversation[]): TourHistorique[] {
+  return messages
+    .filter((tour) => tour.reponse !== null)
+    .slice(-MAX_TOURS_HISTORIQUE)
+    .map((tour) => {
+      const decision = tour.reponse!.decision;
+      const parcours = decision.parcours_recommandes.map((p) => p.parcours).join(", ");
+      // `explication` plutôt que `resume` : le résumé reformule la *question*
+      // posée (« l'utilisateur souhaite savoir… »), pas la réponse donnée.
+      // Le rejouer laissait l'agent sans aucune trace de ce qui avait été dit.
+      const morceaux = [decision.explication || decision.resume];
+      if (parcours) morceaux.push(`Parcours cités : ${parcours}.`);
+      return { question: tour.message, reponse: morceaux.join(" ") };
+    });
+}
 
 interface ConversationContextValue {
   messages: TourConversation[];
@@ -68,6 +100,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
     async (message: string) => {
       const id = crypto.randomUUID();
       const profilCourant = etat.profil;
+      const historique = construireHistorique(etat.messages);
 
       setEtat((precedent) => ({
         ...precedent,
@@ -79,7 +112,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         const reponseHttp = await fetch("/api/orientation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message, profil: profilCourant }),
+          body: JSON.stringify({ message, profil: profilCourant, historique }),
         });
         const corps = await reponseHttp.json().catch(() => null);
         if (!reponseHttp.ok) {
@@ -104,7 +137,9 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         setEnCours(false);
       }
     },
-    [etat.profil],
+    // `etat.messages` est indispensable ici : sans lui, la fermeture capturerait
+    // la liste du premier rendu et l'historique envoyé resterait vide.
+    [etat.profil, etat.messages],
   );
 
   const mettreAJourProfil = useCallback((profil: ProfilCandidat) => {

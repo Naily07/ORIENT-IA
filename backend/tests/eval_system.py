@@ -7,7 +7,7 @@ mesurée plutôt qu'affirmation ») : cohérence de l'action retenue, sources
 citées, outils appelés, latence par requête, et écrit `eval_results.json`
 (EVAL-5), le livrable distinct exigé par le sujet.
 
-    python -m backend.tests.eval_system
+    cd backend && python -m tests.eval_system
 
 Consomme du quota LLM réel (~2 à 5 appels par cas selon les outils
 nécessaires) : à lancer une fois avant la démo, pas à chaque exécution de la

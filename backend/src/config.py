@@ -107,6 +107,37 @@ class Config(BaseSettings):
     # présentée sans renvoyer vers un conseiller pédagogique ou l'administration.
     orchestrateur_seuil_confiance: float = 0.5
 
+    # --- Machine Learning : seuils de décision ---
+    # Regroupés ici avec leurs pairs (`rag_seuil_pertinence`,
+    # `orchestrateur_seuil_confiance`) plutôt que dispersés en constantes de
+    # module : ce sont les trois réglages qui décident de **ce que le candidat
+    # voit**, et quelqu'un qui règle le système doit les trouver au même endroit
+    # — c'est aussi ce que le tableau de bord du back-office affiche.
+    #
+    # Les hypothèses de génération (`ml/donnees_synthetiques.py`) et les tarifs
+    # de tokens (`observability.py`) restent volontairement dans leur module :
+    # ce ne sont pas des réglages, ce sont des propriétés documentées de la
+    # méthode et du modèle facturé.
+
+    # Un parcours n'est proposé que si son score atteint cette fraction du score
+    # de tête. Mesuré (voir `ml.outils.selectionner_significatifs`) : au-delà du
+    # rang 1, les scores tombent sous 2 % et se séparent de fractions de point.
+    # Un top-3 systématique présentait ce bruit comme une recommandation et
+    # changeait de composition pour 34 % des profils au retrait d'un seul trait.
+    ml_part_minimale_du_leader: float = 0.20
+    # Plafond de parcours proposés, même quand plusieurs sont significatifs.
+    ml_maximum_parcours_proposes: int = 3
+    # Nombre minimal de traits déclarés rattachés au vocabulaire pour que le
+    # modèle produise un score informatif. En dessous, les probabilités
+    # retombent sur la distribution a priori des classes : elles existent
+    # numériquement mais ne disent rien de ce candidat-là.
+    ml_traits_minimum_exploitables: int = 2
+    # Similarité cosinus minimale du repli sémantique de `ml/vocabulaire.py`.
+    # Calibrée à la main : « maths » (0,72) et « anglais » (0,51) passent ;
+    # « SVT » (0,33 vers *gestion*) et « cuisine » (0,38 vers *langues*) sont
+    # rejetés — les mapper de force aurait fabriqué un profil faux.
+    ml_seuil_similarite_semantique: float = 0.50
+
     # --- Chemins ---
     dossier_data: Path = RACINE / "data"
     dossier_logs: Path = RACINE / "logs"

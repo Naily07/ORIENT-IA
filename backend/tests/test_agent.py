@@ -133,6 +133,31 @@ def test_sources_absentes_du_contexte_sont_retirees(monkeypatch, profil):
     assert resultat.sources == ["FORM-REEL"]
 
 
+def test_source_retournee_par_un_outil_structure_est_conservee(monkeypatch, profil):
+    """AGT-6 : une source qui provient d'un outil structuré (`Parcours.source_id`,
+    remonté par ex. par `verifier_prerequis`) doit rester citable même sans aucun
+    passage RAG fourni — correctif d'EVAL-17 (`eval_analyse.md`)."""
+    decision = _decision_type(sources=["FORM-STRUCTURE", "FORM-INVENTE"])
+    reponses = iter(
+        [
+            _reponse_appel_outil("verifier_prerequis", {"parcours": "IGGLIA"}),
+            _reponse_finale(decision),
+        ]
+    )
+    monkeypatch.setattr("src.agent.llm_call_with_tools", lambda *a, **k: next(reponses))
+    monkeypatch.setattr(
+        "src.agent.executer_outil",
+        lambda nom, params, trace_id: {
+            "statut": "succes",
+            "resultat": {"parcours": "IGGLIA", "source_id": "FORM-STRUCTURE", "compatible": True},
+        },
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-4b")
+
+    assert resultat.sources == ["FORM-STRUCTURE"]
+
+
 def test_confiance_faible_force_l_escalade(monkeypatch, profil):
     # `analyser_profil_ml` déjà dans outils_utilises : on isole ici le seul
     # comportement testé (seuil de confiance), sans déclencher en plus le
@@ -234,6 +259,136 @@ def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, pr
     resultat = run_agent("Question", profil, None, "trace-9")
 
     assert "analyser_profil_ml" not in resultat.outils_utilises
+
+
+# --- Politique de refus / incertitude / renvoi (AGT-4) -----------------------
+
+
+@pytest.fixture
+def corpus_jouet_pour_admission():
+    """Bascule sur le corpus jouet (IGGLIA exige un bac C/D/S) le temps d'un
+    test, puis revient au corpus réel — même pattern que la fixture `corpus`
+    de `test_tools.py`, nécessaire ici car `_recouper_avec_regles_pedagogiques`
+    appelle `tools.verifier_prerequis()` directement, hors function calling."""
+    from src import tools
+    from tests.corpus_jouet import corpus_coherent
+
+    tools.initialiser_corpus(corpus_coherent())
+    yield
+    tools.initialiser_corpus()
+
+
+def test_recommandation_inadmissible_est_escaladee(monkeypatch, corpus_jouet_pour_admission):
+    """`ml.hybride.appliquer_regles_admission` rétrograde déjà les parcours
+    inadmissibles sous les parcours accessibles à l'intérieur du modèle ML :
+    mais si le modèle a lui-même appelé `analyser_profil_ml` plus tôt dans la
+    boucle, rien ne garantit qu'il recopie mot pour mot cette annotation dans
+    sa réponse finale plutôt que de la paraphraser. Le garde-fou revérifie
+    donc indépendamment, via `tools.verifier_prerequis()`, que le parcours mis
+    en avant reste compatible avec la série de baccalauréat déclarée."""
+    profil_incompatible = ProfilCandidat(matieres_preferees=["informatique"], serie_bac="L")
+    decision = _decision_type(
+        action="recommandation",
+        confiance=0.8,
+        incertitude_declaree=False,
+        parcours_recommandes=[
+            {"parcours": "IGGLIA", "score_adequation": 0.54, "justification": "Score élevé."}
+        ],
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil_incompatible, None, "trace-9b")
+
+    assert resultat.action == "escalade_conseiller"
+    assert resultat.incertitude_declaree is True
+    assert "[Contrôle automatique]" in resultat.explication
+    # Les scores restent ceux du modèle : seule l'action a changé.
+    assert resultat.parcours_recommandes[0].parcours == "IGGLIA"
+
+
+def test_recommandation_admissible_n_est_pas_affectee(monkeypatch, corpus_jouet_pour_admission):
+    """Non-régression : un parcours de tête compatible avec la série de
+    baccalauréat déclarée ne doit déclencher aucune escalade."""
+    profil_compatible = ProfilCandidat(matieres_preferees=["informatique"], serie_bac="D")
+    decision = _decision_type(
+        action="recommandation",
+        confiance=0.8,
+        incertitude_declaree=False,
+        parcours_recommandes=[
+            {"parcours": "IGGLIA", "score_adequation": 0.54, "justification": "Score élevé."}
+        ],
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil_compatible, None, "trace-9c")
+
+    assert resultat.action == "recommandation"
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
+def test_recommandation_sans_serie_bac_declaree_n_est_pas_affectee(monkeypatch, profil):
+    """Non-régression : une série de baccalauréat non déclarée (`compatible`
+    indéterminé) ne doit jamais être traitée comme un refus — même principe
+    que `hybride.VerdictAdmission.inadmissible`. Ce test tourne volontairement
+    sans le corpus jouet (`profil` n'a pas de `serie_bac`), pour couvrir aussi
+    le cas où le corpus/graphe ne sont pas initialisés."""
+    decision = _decision_type(
+        action="recommandation",
+        confiance=0.8,
+        incertitude_declaree=False,
+        parcours_recommandes=[
+            {"parcours": "IGGLIA", "score_adequation": 0.54, "justification": "Score élevé."}
+        ],
+    )
+    _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
+
+    resultat = run_agent("Question", profil, None, "trace-9f")
+
+    assert resultat.action == "recommandation"
+    assert "[Contrôle automatique]" not in resultat.explication
+
+
+def test_renvoi_administration_efface_les_parcours_recommandes(monkeypatch, profil):
+    """§16 du sujet : une décision `renvoi_administration` n'est par définition
+    pas un conseil pédagogique — elle ne doit jamais s'accompagner d'une
+    recommandation de parcours, même si un appel ML antérieur en a produit une."""
+    decision = _decision_type(
+        action="renvoi_administration",
+        confiance=0.9,
+        incertitude_declaree=False,
+        outils_utilises=["analyser_profil_ml"],
+        parcours_recommandes=[
+            {"parcours": "IGGLIA", "score_adequation": 0.54, "justification": "Score élevé."}
+        ],
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-9d")
+
+    assert resultat.action == "renvoi_administration"
+    assert resultat.parcours_recommandes == []
+    assert resultat.incertitude_declaree is True
+
+
+def test_renvoi_administration_sans_parcours_n_est_pas_modifie(monkeypatch, profil):
+    """Non-régression : une décision `renvoi_administration` déjà propre ne
+    doit pas être altérée par ce garde-fou."""
+    decision = _decision_type(
+        action="renvoi_administration",
+        confiance=0.9,
+        incertitude_declaree=False,
+        parcours_recommandes=[],
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-9e")
+
+    assert resultat.action == "renvoi_administration"
+    assert resultat.incertitude_declaree is False
 
 
 # --- Cohérence entre la prose et le classement du modèle (AGT-7) -------------

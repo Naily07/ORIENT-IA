@@ -13,7 +13,11 @@ Garanties, sur le modèle d'EXAM-S2 :
   - `outils_utilises` reflète les appels réellement effectués, jamais ce que
     le modèle prétend avoir fait ;
   - `sources` est recoupé avec les passages RAG réellement fournis (même
-    contrôle que `rag.generer_reponse_rag`) ;
+    contrôle que `rag.generer_reponse_rag`) **et** avec les `source_id`
+    réellement retournés par les outils structurés appelés pendant la boucle
+    (AGT-6 : un outil comme `verifier_prerequis` ou `identifier_debouches`
+    peut répondre à partir du corpus structuré sans qu'aucun passage RAG
+    n'ait été fourni — voir `_source_ids_des_outils`, correctif d'EVAL-17) ;
   - si le modèle recommande sans être passé par `analyser_profil_ml`
     (constaté en usage réel : un contexte RAG riche suffit parfois au modèle
     pour répondre sans consulter l'outil, malgré la consigne du prompt), le
@@ -23,8 +27,16 @@ Garanties, sur le modèle d'EXAM-S2 :
     citant d'autres (constaté en usage réel), une note rappelle le classement
     réel : le barème note explicitement la cohérence entre le modèle ML et la
     réponse finale ;
-  - une confiance sous le seuil configuré force `action="escalade_conseiller"`
-    — amorce d'AGT-4, avant qu'un orchestrateur dédié ne porte cette règle.
+  - une confiance sous le seuil configuré force `action="escalade_conseiller"` ;
+  - une recommandation dont le parcours de tête ne satisfait pas les
+    prérequis d'admission connus, revérifiés indépendamment de la prose via
+    `tools.verifier_prerequis()` (§6, règle pédagogique) plutôt qu'un
+    marqueur textuel que le modèle pourrait reformuler, force elle aussi
+    `action="escalade_conseiller"` : le modèle ML et une règle pédagogique se
+    contredisent, un conseiller doit trancher (AGT-4) ;
+  - une décision `renvoi_administration` ne peut jamais s'accompagner d'une
+    recommandation de parcours : ce n'est par définition pas un conseil
+    pédagogique (§16 du sujet, AGT-4).
 """
 
 import re
@@ -37,7 +49,13 @@ from src.ml.archetypes import PARCOURS_CONNUS
 from src.ml.outils import analyser_profil as analyser_profil_ml
 from src.ml.outils import selectionner_significatifs
 from src.schemas import ProfilCandidat, RecommandationDecision
-from src.tools import declarer_outils, definir_profil_courant, executer_outil
+from src.tools import (
+    OutilIndisponible,
+    declarer_outils,
+    definir_profil_courant,
+    executer_outil,
+    verifier_prerequis,
+)
 
 PROMPT_SYSTEME_AGENT = """Tu es l'assistant d'orientation pédagogique de l'ISPM. Tu \
 recommandes un ou plusieurs parcours à un candidat à partir de son profil déclaré, \
@@ -289,14 +307,126 @@ def _verifier_coherence_prose_classement(
     )
 
 
+def _source_ids_des_outils(resultat: dict) -> set[str]:
+    """Identifiants de source portés par le résultat d'un appel d'outil (AGT-6).
+
+    Un outil structuré (`verifier_prerequis`, `identifier_debouches`,
+    `comparer_parcours`...) peut répondre à partir d'un `Parcours` ou d'une
+    `Mention` du corpus, chacun porteur d'un `source_id` (registre DATA-2,
+    voir `tools._fiche_parcours` et apparentés). Cette source est réellement
+    disponible pour la citer, au même titre qu'un passage RAG — ce que
+    `_appliquer_controles_deterministes` ignorait jusqu'ici en ne recoupant
+    `decision.sources` qu'avec le contexte RAG (défaut trouvé à l'évaluation
+    post-fusion, `backend/tests/eval_analyse.md`, EVAL-17).
+
+    Parcourt récursivement le résultat plutôt que de lire un champ fixe : le
+    résultat d'un outil est une structure arbitrairement imbriquée
+    (`comparer_parcours` renvoie deux fiches, `rechercher_formation` une
+    liste de chacune), et un champ ajouté ici ne doit pas exiger une mise à
+    jour parallèle de ce module à chaque nouvel outil.
+    """
+    trouves: set[str] = set()
+
+    def _parcourir(valeur) -> None:
+        if isinstance(valeur, dict):
+            source_id = valeur.get("source_id")
+            if isinstance(source_id, str):
+                trouves.add(source_id)
+            for v in valeur.values():
+                _parcourir(v)
+        elif isinstance(valeur, list):
+            for v in valeur:
+                _parcourir(v)
+
+    _parcourir(resultat)
+    return trouves
+
+
+def _recouper_avec_regles_pedagogiques(
+    decision: RecommandationDecision,
+) -> RecommandationDecision:
+    """Confronte une recommandation à la règle pédagogique d'admission (AGT-4).
+
+    Revérifie le parcours de tête via `tools.verifier_prerequis()` — la même
+    requête déterministe du graphe qu'utilise l'outil que l'agent peut
+    appeler — plutôt que d'inspecter un marqueur textuel dans la
+    justification produite par le modèle. Un premier essai s'appuyait sur
+    `ml.hybride.MARQUEUR_REGLE_ADMISSION` recopié tel quel dans le texte,
+    mais rien ne garantit que le modèle, lorsqu'il a lui-même appelé
+    `analyser_profil_ml` plus tôt dans la boucle, reproduise ce marqueur mot
+    pour mot en rédigeant sa réponse finale plutôt que de paraphraser : le
+    garde-fou se serait tu précisément quand la consultation n'était pas déjà
+    forcée par `_forcer_consultation_du_modele_ml`. Revérifier la règle
+    elle-même, indépendamment de toute prose, ne dépend plus de ce que le
+    modèle a choisi d'écrire.
+
+    Seul un verdict `compatible is False` **établi** déclenche l'escalade :
+    `None` (série non déclarée, prérequis inconnus, parcours introuvable)
+    n'est jamais traité comme un refus, même principe que
+    `hybride.VerdictAdmission.inadmissible`.
+    """
+    if decision.action != "recommandation" or not decision.parcours_recommandes:
+        return decision
+
+    tete = decision.parcours_recommandes[0]
+    try:
+        verdict = verifier_prerequis(tete.parcours)
+    except OutilIndisponible:
+        # Corpus ou graphe non initialisés : enrichissement, pas une
+        # condition pour répondre (même repli que `tools._raisonnement_graphe`).
+        return decision
+
+    if verdict.get("compatible") is not False:
+        return decision
+
+    prerequis = verdict.get("prerequis") or []
+    description_prerequis = prerequis[0] if prerequis else "prérequis non précisés"
+    return decision.model_copy(
+        update={
+            "action": "escalade_conseiller",
+            "incertitude_declaree": True,
+            "explication": (
+                f"{decision.explication}\n[Contrôle automatique] Le parcours "
+                f"{tete.parcours}, en tête du classement du modèle, ne correspond pas "
+                f"aux prérequis d'admission connus ({description_prerequis}) pour la "
+                "série de baccalauréat déclarée. Un conseiller pédagogique doit trancher."
+            ),
+        }
+    )
+
+
+def _verrouiller_renvoi_administration(
+    decision: RecommandationDecision,
+) -> RecommandationDecision:
+    """Contresigne une décision `renvoi_administration` (AGT-4, §16 du sujet).
+
+    Une question qui relève d'une décision administrative (admission,
+    dérogation, inscription) n'est, par définition, pas un conseil
+    pédagogique : `parcours_recommandes` n'a rien à y faire, même si un appel
+    à `analyser_profil_ml` plus tôt dans la même boucle en a produit un — par
+    exemple un candidat qui commence par une question d'orientation avant de
+    préciser qu'il s'agit en réalité d'une dérogation. Le distinguo entre
+    conseil pédagogique et décision administrative est une exigence non
+    négociable du sujet, pas seulement une consigne de prompt.
+    """
+    if decision.action != "renvoi_administration" or not decision.parcours_recommandes:
+        return decision
+
+    return decision.model_copy(
+        update={"parcours_recommandes": [], "incertitude_declaree": True}
+    )
+
+
 def _appliquer_controles_deterministes(
     profil: ProfilCandidat,
     decision: RecommandationDecision,
     contexte: list[dict] | None,
     outils_utilises: list[str],
+    sources_outils: set[str],
 ) -> RecommandationDecision:
     """Le code contresigne la décision du modèle, il ne s'y fie pas."""
     disponibles = {c["source_id"] for c in contexte} if contexte else set()
+    disponibles |= sources_outils
     sources = [s for s in decision.sources if s in disponibles]
     decision = decision.model_copy(update={"sources": sources})
 
@@ -306,6 +436,8 @@ def _appliquer_controles_deterministes(
     # Après la consultation forcée : `parcours_recommandes` porte alors le
     # classement réel du modèle, ce à quoi la prose doit être confrontée.
     decision = _verifier_coherence_prose_classement(decision)
+    decision = _recouper_avec_regles_pedagogiques(decision)
+    decision = _verrouiller_renvoi_administration(decision)
 
     confiance = decision.confiance
     action = decision.action
@@ -349,6 +481,7 @@ def run_agent(
     definir_profil_courant(profil)
     historique = _construire_prompt_initial(description, profil, contexte)
     outils_utilises: list[str] = []
+    sources_outils: set[str] = set()
 
     for _ in range(config.agent_max_iterations):
         reponse = llm_call_with_tools(
@@ -363,7 +496,9 @@ def run_agent(
         appels = _extraire_appels(reponse)
         if not appels:
             decision = _valider_reponse_finale(reponse)
-            return _appliquer_controles_deterministes(profil, decision, contexte, outils_utilises)
+            return _appliquer_controles_deterministes(
+                profil, decision, contexte, outils_utilises, sources_outils
+            )
 
         # Le Content du modèle est renvoyé tel quel (pas reconstruit) : Gemini
         # attache un `thought_signature` à chaque function_call, réattendu au
@@ -376,6 +511,7 @@ def run_agent(
             params = dict(appel.args or {})
             outils_utilises.append(nom)
             resultat = executer_outil(nom, params, trace_id)
+            sources_outils |= _source_ids_des_outils(resultat)
             reponses_fonctions.append(
                 types.Part(function_response=types.FunctionResponse(name=nom, response=resultat))
             )

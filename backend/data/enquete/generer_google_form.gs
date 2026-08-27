@@ -193,16 +193,24 @@ function genererFormulaire() {
     .setChoiceValues(PARCOURS)
     .setRequired(false);
 
-  // Fin du parcours étudiant : sans cette instruction, le répondant
-  // enchaînerait sur la section destinée aux professionnels.
-  pageEtudiants.setGoToPage(FormApp.PageNavigationType.SUBMIT);
-
   var pagePros = form.addPageBreakItem()
     .setTitle('Votre parcours (professionnel·le)')
     .setHelpText(
       'Répondez en vous replaçant avant vos études, puis sur votre situation '
       + 'actuelle. C\'est cette population qui montre le point d\'arrivée réel.'
     );
+
+  // Fin du parcours étudiant : soumettre au lieu d'enchaîner sur la section
+  // professionnelle.
+  //
+  // `setGoToPage` se pose sur le saut de page qui SUIT la section à terminer,
+  // pas sur celui qui l'ouvre : la documentation Apps Script précise qu'il
+  // règle « la page vers laquelle naviguer après avoir terminé la page qui
+  // précède ce saut de page ». Posé sur `pageEtudiants`, il s'appliquait donc
+  // à la page de consentement, et les étudiants enchaînaient sur la section
+  // professionnelle — 12 des 15 premières réponses ont rempli les deux
+  // sections avant que ce défaut ne soit repéré dans l'export.
+  pagePros.setGoToPage(FormApp.PageNavigationType.SUBMIT);
 
   ajouterSerieBac(form);
 

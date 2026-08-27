@@ -58,11 +58,36 @@ class Config(BaseSettings):
     # ATTENTION : ChromaDB utilise L2 au carré par défaut, pas le cosinus. La
     # collection est créée explicitement en espace cosinus (voir rag.py) —
     # sans cela, ce seuil s'appliquerait à une échelle deux fois plus grande.
-    # Valeurs de départ héritées d'un autre corpus (support IT) : à
-    # recalibrer sur le corpus pédagogique ISPM une fois constitué (voir
-    # `backend/tests/calibrer_seuil.py`), pas à prendre pour acquises.
-    rag_seuil_pertinence: float = 0.75
-    rag_k: int = 8
+    #
+    # **Valeurs calibrées sur le corpus ISPM** (RAG-5), pas héritées : voir
+    # `backend/tests/calibrer_seuil_rag.py` et
+    # `backend/tests/eval_results_rag_calibration.json`. Les valeurs
+    # précédentes (0.75 / k=8) venaient d'un corpus de support informatique et
+    # se sont révélées franchement mauvaises ici : rappel parfait, mais
+    # **silence nul** sur les questions hors corpus — le RAG renvoyait toujours
+    # des passages, y compris quand le corpus n'a rien à dire, ce qui invite le
+    # modèle à broder (§16) — et une précision de 0,17, soit 83 % de passages
+    # hors sujet dans le contexte.
+    #
+    # Mesuré sur 12 questions à source connue et 4 questions hors corpus :
+    #
+    #   seuil  k   rappel  précision  silence hors corpus
+    #    0.56  5     0.75       0.48                 1.00   <- retenu
+    #    0.60  5     1.00       0.47                 0.25
+    #    0.75  8     1.00       0.17                 0.00   <- ancienne valeur
+    #
+    # Le compromis retenu privilégie le silence : ne rien trouver est un
+    # comportement attendu du sujet (§9, « reconnaître les situations dans
+    # lesquelles les informations disponibles ne permettent pas de conclure »),
+    # là où répondre à partir de passages hors sujet est le mode d'échec
+    # dangereux. Le rappel perdu est en partie rattrapé par les outils
+    # structurés de l'agent, qui n'ont pas besoin du RAG pour répondre.
+    #
+    # k=5 plutôt que k=3 (rappel et silence identiques, précision à 0,02 près) :
+    # avec `rag_max_fragments_par_source=2`, k=3 plafonne à 2 sources distinctes,
+    # trop peu pour les questions multi-sources exigées au §13.
+    rag_seuil_pertinence: float = 0.56
+    rag_k: int = 5
     rag_taille_chunk: int = 220  # en mots
     rag_chevauchement: int = 40
     # Empêche un article long de monopoliser le top-k avec ses propres

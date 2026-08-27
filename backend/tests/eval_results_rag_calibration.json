@@ -1,0 +1,298 @@
+{
+  "date": "2026-08-26T16:43:06.704963+00:00",
+  "corpus": {
+    "documents": 18,
+    "fragments": 18
+  },
+  "espace_de_distance": "cosinus (forcé explicitement, voir rag._collection)",
+  "questions": {
+    "avec_source_attendue": 12,
+    "hors_corpus": 4
+  },
+  "configuration_actuelle": {
+    "seuil": 0.56,
+    "k": 5
+  },
+  "mesures": [
+    {
+      "seuil": 0.46,
+      "k": 3,
+      "rappel": 0.4166666666666667,
+      "precision_moyenne": 0.3611111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.5882352941176471,
+      "distance_moyenne_bonne_source": 0.37975106239318845
+    },
+    {
+      "seuil": 0.48,
+      "k": 3,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.5277777777777778,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.5,
+      "k": 3,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.4861111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.52,
+      "k": 3,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.47222222222222227,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.54,
+      "k": 3,
+      "rappel": 0.6666666666666666,
+      "precision_moyenne": 0.47222222222222227,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8,
+      "distance_moyenne_bonne_source": 0.4219648987054825
+    },
+    {
+      "seuil": 0.56,
+      "k": 3,
+      "rappel": 0.75,
+      "precision_moyenne": 0.5,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8571428571428571,
+      "distance_moyenne_bonne_source": 0.4362754755549961
+    },
+    {
+      "seuil": 0.58,
+      "k": 3,
+      "rappel": 0.8333333333333334,
+      "precision_moyenne": 0.47222222222222227,
+      "silence_correct_hors_corpus": 0.75,
+      "compromis": 0.7894736842105262,
+      "distance_moyenne_bonne_source": 0.44951828122138976
+    },
+    {
+      "seuil": 0.6,
+      "k": 3,
+      "rappel": 0.9166666666666666,
+      "precision_moyenne": 0.5,
+      "silence_correct_hors_corpus": 0.25,
+      "compromis": 0.3928571428571429,
+      "distance_moyenne_bonne_source": 0.46253681724721735
+    },
+    {
+      "seuil": 0.65,
+      "k": 3,
+      "rappel": 0.9166666666666666,
+      "precision_moyenne": 0.40277777777777773,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.46253681724721735
+    },
+    {
+      "seuil": 0.75,
+      "k": 3,
+      "rappel": 0.9166666666666666,
+      "precision_moyenne": 0.3194444444444444,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.46253681724721735
+    },
+    {
+      "seuil": 0.46,
+      "k": 5,
+      "rappel": 0.4166666666666667,
+      "precision_moyenne": 0.3611111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.5882352941176471,
+      "distance_moyenne_bonne_source": 0.37975106239318845
+    },
+    {
+      "seuil": 0.48,
+      "k": 5,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.5277777777777778,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.5,
+      "k": 5,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.4861111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.52,
+      "k": 5,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.46527777777777773,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.54,
+      "k": 5,
+      "rappel": 0.6666666666666666,
+      "precision_moyenne": 0.4583333333333333,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8,
+      "distance_moyenne_bonne_source": 0.4219648987054825
+    },
+    {
+      "seuil": 0.56,
+      "k": 5,
+      "rappel": 0.75,
+      "precision_moyenne": 0.48194444444444445,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8571428571428571,
+      "distance_moyenne_bonne_source": 0.4362754755549961
+    },
+    {
+      "seuil": 0.58,
+      "k": 5,
+      "rappel": 0.8333333333333334,
+      "precision_moyenne": 0.4472222222222222,
+      "silence_correct_hors_corpus": 0.75,
+      "compromis": 0.7894736842105262,
+      "distance_moyenne_bonne_source": 0.44951828122138976
+    },
+    {
+      "seuil": 0.6,
+      "k": 5,
+      "rappel": 1.0,
+      "precision_moyenne": 0.47361111111111115,
+      "silence_correct_hors_corpus": 0.25,
+      "compromis": 0.4,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    },
+    {
+      "seuil": 0.65,
+      "k": 5,
+      "rappel": 1.0,
+      "precision_moyenne": 0.3458333333333334,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    },
+    {
+      "seuil": 0.75,
+      "k": 5,
+      "rappel": 1.0,
+      "precision_moyenne": 0.225,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    },
+    {
+      "seuil": 0.46,
+      "k": 8,
+      "rappel": 0.4166666666666667,
+      "precision_moyenne": 0.3611111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.5882352941176471,
+      "distance_moyenne_bonne_source": 0.37975106239318845
+    },
+    {
+      "seuil": 0.48,
+      "k": 8,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.5277777777777778,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.5,
+      "k": 8,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.4861111111111111,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.52,
+      "k": 8,
+      "rappel": 0.5833333333333334,
+      "precision_moyenne": 0.46527777777777773,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.7368421052631579,
+      "distance_moyenne_bonne_source": 0.4066864422389439
+    },
+    {
+      "seuil": 0.54,
+      "k": 8,
+      "rappel": 0.6666666666666666,
+      "precision_moyenne": 0.4583333333333333,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8,
+      "distance_moyenne_bonne_source": 0.4219648987054825
+    },
+    {
+      "seuil": 0.56,
+      "k": 8,
+      "rappel": 0.75,
+      "precision_moyenne": 0.4771825396825397,
+      "silence_correct_hors_corpus": 1.0,
+      "compromis": 0.8571428571428571,
+      "distance_moyenne_bonne_source": 0.4362754755549961
+    },
+    {
+      "seuil": 0.58,
+      "k": 8,
+      "rappel": 0.8333333333333334,
+      "precision_moyenne": 0.44097222222222227,
+      "silence_correct_hors_corpus": 0.75,
+      "compromis": 0.7894736842105262,
+      "distance_moyenne_bonne_source": 0.44951828122138976
+    },
+    {
+      "seuil": 0.6,
+      "k": 8,
+      "rappel": 1.0,
+      "precision_moyenne": 0.46458333333333335,
+      "silence_correct_hors_corpus": 0.25,
+      "compromis": 0.4,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    },
+    {
+      "seuil": 0.65,
+      "k": 8,
+      "rappel": 1.0,
+      "precision_moyenne": 0.31607142857142856,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    },
+    {
+      "seuil": 0.75,
+      "k": 8,
+      "rappel": 1.0,
+      "precision_moyenne": 0.1669642857142857,
+      "silence_correct_hors_corpus": 0.0,
+      "compromis": 0.0,
+      "distance_moyenne_bonne_source": 0.4732462763786316
+    }
+  ],
+  "meilleur_compromis": {
+    "seuil": 0.56,
+    "k": 3,
+    "rappel": 0.75,
+    "precision_moyenne": 0.5,
+    "silence_correct_hors_corpus": 1.0,
+    "compromis": 0.8571428571428571,
+    "distance_moyenne_bonne_source": 0.4362754755549961
+  },
+  "limite": "12 questions seulement, écrites par l'équipe à partir du corpus : l'intervalle de confiance est large et le jeu ne couvre pas les formulations d'un vrai candidat. À élargir avec les questions réellement posées pendant la démonstration."
+}

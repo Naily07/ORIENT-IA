@@ -1,0 +1,21 @@
+# Dépendances de l'API seule (image de déploiement Railway).
+#
+# Sous-ensemble de requirements.txt : ni `streamlit` ni `requests`, qui ne
+# servent qu'au frontend Streamlit (`frontend/`) et jamais à `backend/src/`.
+# Les retirer supprime pandas / pyarrow / altair / pydeck de l'image — build
+# plus court, conteneur plus léger, démarrage à froid plus rapide.
+#
+# `frontend/` (Streamlit) reste servi avec le requirements.txt complet.
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+google-genai
+chromadb
+onnxruntime
+tokenizers
+numpy
+scikit-learn
+joblib
+networkx
+python-dotenv

@@ -18,6 +18,7 @@ pédagogique ORIENT'IA.
 """
 
 import functools
+import logging
 import re
 
 import chromadb
@@ -25,8 +26,12 @@ from chromadb.utils import embedding_functions
 from pydantic import BaseModel, Field
 
 from src.config import config
+from src.guardrails import check_injection
 from src.llm_client import llm_call
 from src.models import DocumentSource
+from src.sources import statut_de_source
+
+logger = logging.getLogger(__name__)
 
 
 class ReponseRAG(BaseModel):
@@ -58,8 +63,11 @@ def chunker(
     ampute la procédure ou la règle citée au jury et dégrade l'embedding du
     fragment. On regroupe donc des phrases entières jusqu'à la taille visée.
     """
-    taille_max = taille_max or config.rag_taille_chunk
-    chevauchement = chevauchement or config.rag_chevauchement
+    # `is None` et non `or` : `chevauchement=0` est une valeur légitime (désactiver
+    # le chevauchement), que `or` remplaçait silencieusement par la valeur de
+    # configuration — le paramètre explicite était alors sans effet.
+    taille_max = config.rag_taille_chunk if taille_max is None else taille_max
+    chevauchement = config.rag_chevauchement if chevauchement is None else chevauchement
     # Un chevauchement proche de la taille du fragment fait repartir chaque
     # nouveau fragment presque au début du précédent : les fragments
     # grossissent sans fin et le contenu se retrouve dupliqué plusieurs fois
@@ -148,6 +156,13 @@ def ingerer(documents: list[DocumentSource], reinitialiser: bool = True) -> int:
                     "titre": document.titre,
                     "categorie": document.categorie,
                     "fragment": i,
+                    # Lien vers le registre de traçabilité (DATA-2), distinct de
+                    # `source_id` qui identifie le document du corpus. Sans lui,
+                    # une citation remontée à l'utilisateur ne permettait pas de
+                    # savoir si l'information est officielle, institutionnelle ou
+                    # externe — la règle du §4 restait invérifiable côté RAG.
+                    # Chroma n'accepte pas `None` en métadonnée : chaîne vide.
+                    "registre_source_id": document.source_id or "",
                 }
             )
 
@@ -208,7 +223,43 @@ def retrieve_context(
         if connu is None or fragment["distance"] < connu["distance"]:
             meilleurs[fragment["identifiant"]] = fragment
 
-    return _diversifier(sorted(meilleurs.values(), key=lambda f: f["distance"]), k)
+    retenus = _ecarter_passages_malveillants(
+        sorted(meilleurs.values(), key=lambda f: f["distance"])
+    )
+    return _diversifier(retenus, k)
+
+
+def _ecarter_passages_malveillants(fragments: list[dict]) -> list[dict]:
+    """Retire les passages qui contiennent une instruction adressée au modèle.
+
+    Le §16 du sujet distingue explicitement les injections de prompt (dans la
+    question de l'utilisateur, traitées par `orchestrator`) des « instructions
+    malveillantes présentes dans les documents ». Un document du corpus n'est
+    pas nécessairement de confiance : une brochure récupérée en ligne, un PDF
+    reconverti ou une page modifiée peuvent porter un texte qui s'adresse à
+    l'assistant.
+
+    Le prompt le dit déjà aux deux étages (`PROMPT_RAG`,
+    `agent.PROMPT_SYSTEME_AGENT`), mais une consigne n'est pas un contrôle :
+    tout le reste du pipeline vérifie côté code ce qu'il a demandé au modèle,
+    et ce risque-là ne faisait exception que par omission.
+
+    Couche mots-clés uniquement (`avec_llm=False`) : déterministe, gratuite, et
+    surtout sans appel LLM supplémentaire par passage récupéré — la couche LLM
+    multiplierait la latence par le nombre de fragments à chaque requête.
+    """
+    surs = []
+    for fragment in fragments:
+        verdict = check_injection(fragment["contenu"], avec_llm=False)
+        if verdict["danger"]:
+            logger.warning(
+                "Passage écarté (instruction détectée dans le document %s) : %s",
+                fragment.get("source_id"),
+                verdict["raison"],
+            )
+            continue
+        surs.append(fragment)
+    return surs
 
 
 def _diversifier(fragments: list[dict], k: int) -> list[dict]:
@@ -249,6 +300,11 @@ def _interroger(description: str, k: int, filtre: dict | None, total: int) -> li
             "titre": meta["titre"],
             "categorie": meta["categorie"],
             "distance": distance,
+            # Provenance (§4) : d'où vient réellement cette information, et avec
+            # quel statut déclaré au registre. `.get` plutôt qu'indexation : un
+            # index construit avant l'ajout de ce champ reste lisible.
+            "registre_source_id": meta.get("registre_source_id") or None,
+            "statut_source": statut_de_source(meta.get("registre_source_id")),
         }
         for identifiant, document, meta, distance in zip(
             brut["ids"][0],

@@ -2,6 +2,13 @@
 
 ORIENT'IA est un assistant d'aide à l'orientation vers les 16 parcours de l'ISPM. Il combine un modèle de classement supervisé, des règles d'admission, un corpus sourcé, une recherche RAG et un agent conversationnel. Les recommandations restent indicatives et doivent être confirmées par un conseiller pédagogique ou l'administration.
 
+## Version à jour et déploiements
+
+La branche principale contenant la version à jour du projet est **`develop`**.
+
+- Backend (documentation de l'API) : [https://orient-ia-production.up.railway.app/docs](https://orient-ia-production.up.railway.app/docs)
+- Frontend : [https://x-project-orient-ia.vercel.app/chat](https://x-project-orient-ia.vercel.app/chat)
+
 ## Démarrage rapide
 
 ### Prérequis

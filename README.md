@@ -1,6 +1,6 @@
 # ORIENT'IA
 
-ORIENT'IA est un assistant d'aide à l'orientation vers les 16 parcours de l'ISPM. Il combine un modèle de classement supervisé, des règles d'admission, un corpus sourcé, une recherche RAG et un agent conversationnel. Les recommandations restent indicatives et doivent être confirmées par un conseiller pédagogique ou l'administration.
+ORIENT'IA est un assistant d'aide à l'orientation vers les 16 parcours de l'ISPM. Il combine un modèle de classement supervisé, des règles d'admission, un corpus sourcé, une recherche RAG et un agent conversationnel. Le profil du candidat se construit au fil de l'échange à partir de ce qu'il déclare explicitement — matières, compétences, série du baccalauréat, métiers visés — jamais d'une inférence sur son style d'écriture, et reste modifiable à la main dans le panneau « Mon profil ». Les recommandations restent indicatives et doivent être confirmées par un conseiller pédagogique ou l'administration.
 
 ## Démarrage rapide
 
@@ -148,3 +148,5 @@ DOCS/                 dossier de remise et documentation transversale
 ## Confidentialité et portée
 
 Ne jamais committer `.env`, les journaux, l'index Chroma ou un export contenant des identifiants. Les données d'enquête publiées ont été anonymisées, mais les petits effectifs conservent un risque de ré-identification indirecte. Le modèle apprend principalement sur des profils synthétiques : ses scores mesurent d'abord la cohérence avec les hypothèses de génération, pas la réussite future d'une personne.
+
+Le profil n'est alimenté que par des déclarations explicites du candidat : aucun trait n'est déduit du ton ou du style d'écriture, et aucun attribut personnel sensible (genre, âge, origine, santé…) n'est retenu, ni dans le panneau ni dans l'extraction faite à partir du chat.

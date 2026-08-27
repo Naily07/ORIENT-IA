@@ -15,8 +15,14 @@ from src.schemas import OrientationReponse, RecommandationDecision
 def client(monkeypatch):
     # Évite tout accès à Chroma pendant le démarrage de l'app en tests :
     # l'ingestion automatique du corpus RAG ne se déclenche que si l'index
-    # est vide (voir `src.api.lifespan`).
-    monkeypatch.setattr("src.api.nombre_de_fragments", lambda: 1)
+    # est absent ou périmé (voir `src.api.lifespan`, constat d'audit C1).
+    monkeypatch.setattr("src.api.index_a_jour", lambda documents: True)
+    # Évite d'entraîner le modèle ML et d'interroger Chroma au démarrage
+    # (préchauffage, constat d'audit P3, voir `src.api.lifespan`) : ces deux
+    # étapes sont déjà couvertes sans réseau par `tests/ml/test_outils.py` et
+    # `tests/test_rag.py`, pas par les tests du contrat HTTP.
+    monkeypatch.setattr("src.api.precharger_modeles_ml", lambda: None)
+    monkeypatch.setattr("src.api.retrieve_context", lambda *a, **k: [])
 
     from src.api import app
 
@@ -132,3 +138,76 @@ def test_observabilite_transmet_la_limite(client, monkeypatch):
 def test_observabilite_refuse_une_limite_invalide(client):
     assert client.get("/observabilite/traces", params={"limite": 0}).status_code == 422
     assert client.get("/observabilite/traces", params={"limite": 501}).status_code == 422
+
+
+# --- Ingestion RAG au démarrage (constat d'audit C1) ------------------------
+#
+# `client` (ci-dessus) neutralise déjà l'ingestion pour tous les autres
+# tests : les deux tests suivants la réactivent explicitement pour vérifier
+# la condition de déclenchement elle-même, sans toucher à Chroma (`ingerer`
+# est aussi remplacé).
+
+
+def test_lifespan_ingere_si_l_index_est_perime(monkeypatch):
+    from src.models import DocumentSource
+
+    appels = []
+    monkeypatch.setattr(
+        "src.api.charger_corpus_rag",
+        lambda: [
+            DocumentSource(
+                id="X", titre="T", categorie="c", contenu="...", derniere_maj="2026-01-01"
+            )
+        ],
+    )
+    monkeypatch.setattr("src.api.index_a_jour", lambda documents: False)
+    monkeypatch.setattr("src.api.ingerer", lambda documents: appels.append(documents))
+
+    from src.api import app
+
+    with TestClient(app):
+        pass
+
+    assert len(appels) == 1
+
+
+def test_lifespan_prechauffe_le_modele_ml_et_la_recherche_documentaire(monkeypatch):
+    """Constat d'audit P3 : le premier candidat d'une démo ne doit pas payer
+    l'entraînement du modèle ML ni le chargement du modèle d'embedding."""
+    monkeypatch.setattr("src.api.index_a_jour", lambda documents: True)
+
+    appels_ml = []
+    appels_rag = []
+    monkeypatch.setattr("src.api.precharger_modeles_ml", lambda: appels_ml.append(1))
+    monkeypatch.setattr("src.api.retrieve_context", lambda *a, **k: appels_rag.append(a) or [])
+
+    from src.api import app
+
+    with TestClient(app):
+        pass
+
+    assert appels_ml == [1]
+    assert len(appels_rag) == 1
+
+
+def test_lifespan_n_ingere_pas_si_l_index_est_a_jour(monkeypatch):
+    from src.models import DocumentSource
+
+    appels = []
+    monkeypatch.setattr(
+        "src.api.charger_corpus_rag",
+        lambda: [
+            DocumentSource(
+                id="X", titre="T", categorie="c", contenu="...", derniere_maj="2026-01-01"
+            )
+        ],
+    )
+    monkeypatch.setattr("src.api.index_a_jour", lambda documents: True)
+    monkeypatch.setattr("src.api.ingerer", lambda documents: appels.append(documents))
+
+    from src.api import app
+
+    with TestClient(app):
+        pass
+
+    assert appels == []

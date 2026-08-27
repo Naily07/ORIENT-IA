@@ -16,7 +16,14 @@ from tests.corpus_jouet import corpus_avec_incoherences, corpus_coherent
 
 @pytest.fixture
 def client(monkeypatch):
-    monkeypatch.setattr("src.api.nombre_de_fragments", lambda: 1)
+    # Évite tout accès à Chroma pendant le démarrage de l'app en tests :
+    # l'ingestion automatique du corpus RAG ne se déclenche que si l'index
+    # est absent ou périmé (voir `src.api.lifespan`, constat d'audit C1).
+    monkeypatch.setattr("src.api.index_a_jour", lambda documents: True)
+    # Évite d'entraîner le modèle ML et d'interroger Chroma au démarrage
+    # (préchauffage, constat d'audit P3, voir `src.api.lifespan`).
+    monkeypatch.setattr("src.api.precharger_modeles_ml", lambda: None)
+    monkeypatch.setattr("src.api.retrieve_context", lambda *a, **k: [])
 
     from src.api import app
 

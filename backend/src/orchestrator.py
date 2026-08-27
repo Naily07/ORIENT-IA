@@ -4,10 +4,18 @@ Enchaîne garde-fous d'entrée → recherche documentaire (RAG) → agent → so
 structurée, sur les deux principes déjà appliqués dans EXAM-S2 :
 
 1. **Une seule étape est bloquante : les garde-fous d'entrée.** Une tentative
-   de manipulation détectée court-circuite tout le reste — aucun appel RAG,
-   aucun outil, aucune recommandation générée. La recherche documentaire est
-   *optionnelle* : son échec dégrade la décision (moins de contexte,
-   confiance plafonnée) plutôt que d'interrompre le traitement.
+   de manipulation détectée court-circuite tout le reste — aucun outil
+   appelé, aucune recommandation générée, aucun contexte documentaire
+   transmis à l'agent ni exposé dans la décision. La recherche documentaire
+   est *optionnelle* : son échec dégrade la décision (moins de contexte,
+   confiance plafonnée) plutôt que d'interrompre le traitement. **Correctif
+   d'audit P1/T8** : garde-fous et recherche documentaire s'exécutent
+   désormais en parallèle (`_executer_en_parallele`), la seconde ne
+   dépendant pas du verdict de la première. Sur un message dangereux, le
+   contexte RAG calculé en parallèle est un travail purement local (aucun
+   appel réseau, aucune écriture) simplement jeté sans être utilisé — la
+   garantie porte sur ce qui atteint l'agent et la décision, pas sur le fait
+   qu'aucun calcul local n'ait jamais été tenté.
 2. **Le dernier mot revient au code.** Une décision produite avec un
    pipeline amputé (RAG indisponible, budget de temps dépassé) ne peut pas
    afficher la même certitude qu'une décision complète : sa confiance est
@@ -23,9 +31,11 @@ dégradée mais valide (§2 du sujet EXAM-S2, gestion d'erreurs — même exigen
 implicite pour ORIENT'IA : ne jamais renvoyer une erreur nue à l'utilisateur).
 """
 
+import contextvars
 import logging
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from src.agent import run_agent
@@ -72,6 +82,61 @@ def _etape_optionnelle(nom: str, fonction, defaut, depart: float) -> tuple[Any, 
     except Exception as e:  # noqa: BLE001 — aucune étape optionnelle ne doit faire échouer la demande
         logger.warning("Étape « %s » indisponible : %s", nom, e)
         return defaut, f"{nom} indisponible ({type(e).__name__})"
+
+
+# --- Exécution en parallèle des étapes indépendantes (correctif d'audit P1/T8) -
+#
+# La vérification anti-injection (couche LLM, quand la couche mots-clés n'a
+# rien trouvé) et la recherche documentaire n'ont aucune dépendance l'une sur
+# l'autre : la seconde ne lit jamais le verdict de la première avant de
+# s'exécuter. Jusqu'ici, elles s'enchaînaient malgré tout en série — un aller-
+# retour LLM complet (≈1 à 5 s) avant même de lancer une recherche qui, elle,
+# ne fait aucun appel réseau (embeddings ONNX locaux + Chroma). Les exécuter
+# en parallèle ne change aucun résultat, seulement la latence perçue.
+_executeur_parallele = ThreadPoolExecutor(
+    max_workers=4, thread_name_prefix="orient-ia-orchestrateur"
+)
+
+
+def _executer_en_parallele(*fonctions):
+    """Exécute des fonctions sans argument en parallèle et retourne leurs
+    résultats dans l'ordre où elles ont été passées.
+
+    Chaque fonction reçoit sa **propre** copie du contexte (`ContextVar`) de
+    l'appelant, prise avant la soumission au pool. C'est nécessaire pour que
+    `limiter_temps_llm` (le budget de temps global, ORCH-5) reste visible
+    dans les threads du pool — un thread démarré sans cette copie explicite
+    n'hérite d'aucune `ContextVar`, et un appel LLM lancé depuis ce thread ne
+    verrait plus jamais son échéance. Une copie *par fonction*, pas une copie
+    partagée : `Context.run()` refuse d'être appelé depuis deux threads à la
+    fois sur le même objet contexte.
+
+    Ne relève aucune exception : les fonctions passées ici gèrent déjà leurs
+    propres échecs (voir `_etape_optionnelle` et `_verifier_injection_entree`)
+    et ne sont censées jamais lever — comme c'était déjà le cas quand ces
+    mêmes appels s'enchaînaient en série.
+    """
+    futures = [
+        _executeur_parallele.submit(contextvars.copy_context().run, fonction)
+        for fonction in fonctions
+    ]
+    return [future.result() for future in futures]
+
+
+def _verifier_injection_entree(message: str, trace_id: str) -> tuple[dict, str | None]:
+    """Garde-fou d'entrée : verdict anti-injection et dégradation éventuelle.
+
+    Séparé de `_traiter_demande_dans_budget` pour pouvoir s'exécuter dans le
+    pool de `_executer_en_parallele` sans muter d'état partagé (la liste
+    `degradations` de l'appelant) depuis un autre thread — le résultat est
+    retourné, jamais accumulé sur place.
+    """
+    try:
+        return check_injection(message), None
+    except Exception as e:  # noqa: BLE001 — check_injection absorbe déjà LLMError
+        logger.exception("Garde-fous d'entrée en échec (trace_id=%s)", trace_id)
+        risque = {"danger": False, "raison": None, "couche": None, "verification_llm": "erreur"}
+        return risque, f"garde-fous d'entrée dégradés ({type(e).__name__})"
 
 
 # --- Décisions de repli, toujours valides ------------------------------------
@@ -267,15 +332,27 @@ def _traiter_demande_dans_budget(
     trace_id = str(uuid.uuid4())
     degradations: list[str] = []
 
-    # 1. Garde-fous en entrée, avant toute autre étape : une demande qui
-    #    cherche à manipuler l'assistant ne doit atteindre ni le RAG, ni
-    #    l'agent, ni ses outils.
-    try:
-        risque = check_injection(entree.message)
-    except Exception as e:  # noqa: BLE001 — check_injection absorbe déjà LLMError
-        logger.exception("Garde-fous d'entrée en échec (trace_id=%s)", trace_id)
-        risque = {"danger": False, "raison": None, "couche": None, "verification_llm": "erreur"}
-        degradations.append(f"garde-fous d'entrée dégradés ({type(e).__name__})")
+    # 1+2. Garde-fous d'entrée et recherche documentaire, en parallèle.
+    #
+    # Les deux étapes sont indépendantes (voir `_executer_en_parallele`) :
+    # seul l'**usage** du résultat de la recherche documentaire reste
+    # conditionné au verdict des garde-fous, exactement comme avant. Sur un
+    # message jugé dangereux, `contexte` est calculé (par un thread du pool,
+    # en parallèle) mais **jamais utilisé** ci-dessous : ni transmis à
+    # l'agent (celui-ci n'est même pas appelé), ni journalisé, ni renvoyé —
+    # `_finaliser` reçoit `None`, inchangé. Le principe « aucun outil ni
+    # recommandation sur une tentative de manipulation » (voir l'en-tête du
+    # module) reste donc respecté dans son effet observable ; ce qui change
+    # est qu'un calcul purement local (embeddings ONNX + Chroma, aucun appel
+    # réseau ni écriture) est parfois mené puis jeté plutôt que jamais lancé.
+    (risque, echec_injection), (contexte, echec_rag) = _executer_en_parallele(
+        lambda: _verifier_injection_entree(entree.message, trace_id),
+        lambda: _etape_optionnelle(
+            "recherche documentaire", lambda: retrieve_context(entree.message), [], depart
+        ),
+    )
+    if echec_injection:
+        degradations.append(echec_injection)
 
     if risque["danger"]:
         decision = _escalade_injection(entree.message, risque)
@@ -288,13 +365,8 @@ def _traiter_demande_dans_budget(
     if risque.get("verification_llm") == "indisponible":
         degradations.append("vérification anti-injection LLM indisponible")
 
-    # 2. Recherche documentaire (RAG) — optionnelle, enrichit l'agent sans le
-    #    conditionner.
-    contexte, echec = _etape_optionnelle(
-        "recherche documentaire", lambda: retrieve_context(entree.message), [], depart
-    )
-    if echec:
-        degradations.append(echec)
+    if echec_rag:
+        degradations.append(echec_rag)
 
     # 3. Agent avec outils.
     if _budget_epuise(depart):

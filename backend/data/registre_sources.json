@@ -75,5 +75,25 @@
       "Le développement du sigle AEE n'est pas confirmé (cette source ne donne que « Agriculture »)",
       "Divergence constatée sur CAA : « Commerce et Affaires » ici contre « Commerce et Administration des Affaires » relevé dans une autre page tierce (voir corpus.json, note CAA) — à trancher avec l'ISPM"
     ]
+  },
+  {
+    "id": "SRC-CALENDRIERS-FACEBOOK",
+    "titre": "Calendriers d'épreuves ISPM (129 images, L1 à M2) — archive Matières.rar",
+    "url": "Groupe Facebook d'étudiants de l'ISPM (archive transmise par l'équipe, backend/data/Matières.rar)",
+    "date_consultation": "2026-08-27",
+    "statut": "externe",
+    "donnees_extraites": [
+      "492 intitulés de matières distincts, rattachés aux 16 parcours (L1 à M2, S1 et S2)",
+      "Programme détaillé par parcours, niveau et semestre (backend/data/programme_matieres.json)",
+      "Correspondance tronc commun BIO (L1-L2) vers les parcours AEE, IAA et PIP de la mention Biotechnologie et Agronomie",
+      "Le rattachement suit la classe **imprimée sur le document** et non le nom de dossier de l'archive : les calendriers de master rangés sous « TEH » annoncent « Classe : TOUR4/TOUR5 », classe qui réunit les deux parcours de la mention Tourisme."
+    ],
+    "limites": [
+      "STATUT EXTERNE MALGRÉ UNE APPARENCE OFFICIELLE : les documents portent l'en-tête de l'ISPM, le tampon et la signature du Recteur, mais proviennent d'un groupe Facebook d'étudiants et non de l'établissement. Ni l'authenticité, ni l'absence de retouche, ni le caractère courant de ces documents n'ont pu être vérifiés — ces matières ne doivent pas être présentées comme une information officielle de l'ISPM (§4).",
+      "CE SONT DES CALENDRIERS D'ÉPREUVES, PAS DES MAQUETTES PÉDAGOGIQUES : une matière enseignée mais non évaluée lors de la session photographiée n'apparaît pas. La liste est donc un minorant du programme réel.",
+      "Le parcours TEE (Tourisme de l'Environnement) n'a **aucun calendrier propre** : ses 29 matières proviennent toutes de la classe commune TOUR4/TOUR5 de master, partagée avec TEH. Le contenu confirme le rattachement (Écotourisme, Écologie marine, Droit de l'environnement, Gestion durable des ressources naturelles), mais **les matières de licence propres à TEE restent inconnues**, et la répartition exacte entre TEE et TEH à l'intérieur de la classe TOUR n'est pas documentée.",
+      "Extraction par OCR (RapidOCR) : une centaine d'intitulés sur 492 restent partiellement agglutinés faute des mots correspondants ailleurs dans le corpus (ex. « Economiebleu », « Gestiondurabledes ressourcesnaturelles »). Quelques fragments de cellules multi-lignes peuvent subsister.",
+      "Les sessions photographiées ne datent pas toutes de la même année universitaire ; le programme reconstitué mélange donc potentiellement plusieurs millésimes."
+    ]
   }
 ]

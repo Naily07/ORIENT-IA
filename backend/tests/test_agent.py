@@ -73,6 +73,18 @@ def profil():
     return ProfilCandidat(matieres_preferees=["informatique"])
 
 
+@pytest.fixture
+def profil_exploitable():
+    """Profil dont assez de traits sont rattachés au vocabulaire du modèle pour
+    que `analyser_couverture` le juge exploitable (seuil à 2).
+
+    Nécessaire dès qu'un test veut exercer les contrôles qui portent sur un
+    *classement de parcours* : `_masquer_classement_non_informatif` retire le
+    classement d'un profil trop mince (une seule matière, comme `profil`), ce
+    qui est le bon comportement mais court-circuiterait ces tests."""
+    return ProfilCandidat(matieres_preferees=["informatique", "mathematiques"])
+
+
 def test_reponse_finale_immediate_sans_appel_d_outil(monkeypatch, profil):
     """Le modèle recommande directement, sans le moindre appel d'outil : le
     code force malgré tout la consultation du modèle ML avant de conclure
@@ -199,7 +211,7 @@ def test_outils_utilises_reflete_les_appels_reels(monkeypatch, profil):
     assert resultat.outils_utilises == ["verifier_prerequis", "analyser_profil_ml"]
 
 
-def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
+def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil_exploitable):
     """Trouvé en usage réel : un contexte RAG suffisamment riche permet
     parfois au modèle de recommander directement, sans jamais appeler
     `analyser_profil_ml`, malgré la consigne du prompt. Le code doit alors
@@ -214,7 +226,7 @@ def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
         "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
     )
 
-    resultat = run_agent("Question", profil, None, "trace-7")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-7")
 
     assert "analyser_profil_ml" in resultat.outils_utilises
     # Le score inventé par le modèle de langage a été remplacé par celui du
@@ -227,7 +239,7 @@ def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
     assert 1 <= len(resultat.parcours_recommandes) <= 3
 
 
-def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
+def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil_exploitable):
     """Trouvé en évaluant le système (EVAL) : sur un profil pourtant
     renseigné, le modèle escaladait parfois directement à confiance nulle
     sans jamais avoir consulté le modèle ML — une escalade tout aussi peu
@@ -242,7 +254,7 @@ def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
         "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
     )
 
-    resultat = run_agent("Question", profil, None, "trace-8")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-8")
 
     assert "analyser_profil_ml" in resultat.outils_utilises
     assert 1 <= len(resultat.parcours_recommandes) <= 3
@@ -266,6 +278,53 @@ def test_demande_information_sur_profil_trop_mince_ne_consulte_pas_le_ml(
 
     assert "analyser_profil_ml" not in resultat.outils_utilises
     assert resultat.action == "demande_information"
+
+
+def test_profil_inexploitable_ne_montre_aucun_classement(monkeypatch, profil):
+    """Sur un profil trop mince, le modèle retombe sur la distribution a priori
+    (TEE, AEE, TEH une fraction de point au-dessus de l'uniforme). Ce classement
+    ne porte aucune information : il ne doit pas atteindre l'utilisateur."""
+    assert not analyser_couverture(profil).exploitable  # prémisse
+    decision = _decision_type(
+        action="recommandation",
+        confiance=0.88,
+        parcours_recommandes=[
+            {"parcours": "TEE", "score_adequation": 0.07, "justification": "inventé"}
+        ],
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Quel parcours ?", profil, None, "trace-creux-1")
+
+    assert resultat.parcours_recommandes == []
+    # Confiance nulle du modèle sur un profil inexploitable → escalade.
+    assert resultat.action == "escalade_conseiller"
+
+
+def test_profil_inexploitable_ne_recopie_pas_le_classement_dans_la_prose(monkeypatch, profil):
+    """Non-régression du défaut signalé : la prose recommandait ISAIA/IGGLIA
+    (via le RAG) puis le contrôle de cohérence ajoutait « d'après le modèle,
+    c'est TEE qui obtient le meilleur score (7 %) » — une contradiction née d'un
+    classement qui n'aurait jamais dû être exposé."""
+    decision = _decision_type(
+        action="recommandation",
+        confiance=0.9,
+        reponse="Avec votre profil, tournez-vous vers ISAIA ou IGGLIA.",
+        explication="Recommandation ISAIA/IGGLIA d'après les passages du corpus.",
+        parcours_recommandes=[
+            {"parcours": "TEE", "score_adequation": 0.07, "justification": "inventé"}
+        ],
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Quel parcours ?", profil, None, "trace-creux-2")
+
+    assert "meilleur score" not in resultat.reponse
+    assert "TEE" not in resultat.reponse
 
 
 def test_demande_information_sur_profil_suffisant_consulte_le_ml_et_recommande(
@@ -384,7 +443,9 @@ def test_recommandation_inadmissible_est_escaladee(monkeypatch, corpus_jouet_pou
     sa réponse finale plutôt que de la paraphraser. Le garde-fou revérifie
     donc indépendamment, via `tools.verifier_prerequis()`, que le parcours mis
     en avant reste compatible avec la série de baccalauréat déclarée."""
-    profil_incompatible = ProfilCandidat(matieres_preferees=["informatique"], serie_bac="L")
+    profil_incompatible = ProfilCandidat(
+        matieres_preferees=["informatique", "mathematiques"], serie_bac="L"
+    )
     decision = _decision_type(
         action="recommandation",
         confiance=0.8,
@@ -407,7 +468,9 @@ def test_recommandation_inadmissible_est_escaladee(monkeypatch, corpus_jouet_pou
 def test_recommandation_admissible_n_est_pas_affectee(monkeypatch, corpus_jouet_pour_admission):
     """Non-régression : un parcours de tête compatible avec la série de
     baccalauréat déclarée ne doit déclencher aucune escalade."""
-    profil_compatible = ProfilCandidat(matieres_preferees=["informatique"], serie_bac="D")
+    profil_compatible = ProfilCandidat(
+        matieres_preferees=["informatique", "mathematiques"], serie_bac="D"
+    )
     decision = _decision_type(
         action="recommandation",
         confiance=0.8,
@@ -424,11 +487,13 @@ def test_recommandation_admissible_n_est_pas_affectee(monkeypatch, corpus_jouet_
     assert "[Contrôle automatique]" not in resultat.explication
 
 
-def test_recommandation_sans_serie_bac_declaree_n_est_pas_affectee(monkeypatch, profil):
+def test_recommandation_sans_serie_bac_declaree_n_est_pas_affectee(
+    monkeypatch, profil_exploitable
+):
     """Non-régression : une série de baccalauréat non déclarée (`compatible`
     indéterminé) ne doit jamais être traitée comme un refus — même principe
     que `hybride.VerdictAdmission.inadmissible`. Ce test tourne volontairement
-    sans le corpus jouet (`profil` n'a pas de `serie_bac`), pour couvrir aussi
+    sans le corpus jouet (le profil n'a pas de `serie_bac`), pour couvrir aussi
     le cas où le corpus/graphe ne sont pas initialisés."""
     decision = _decision_type(
         action="recommandation",
@@ -440,7 +505,7 @@ def test_recommandation_sans_serie_bac_declaree_n_est_pas_affectee(monkeypatch, 
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-9f")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-9f")
 
     assert resultat.action == "recommandation"
     assert "[Contrôle automatique]" not in resultat.explication
@@ -520,7 +585,9 @@ def _simuler_agent_ayant_appele_le_modele(monkeypatch, decision: RecommandationD
     monkeypatch.setattr("src.agent.executer_outil", _executer_outil_factice)
 
 
-def test_prose_qui_omet_le_parcours_le_mieux_classe_est_signalee(monkeypatch, profil):
+def test_prose_qui_omet_le_parcours_le_mieux_classe_est_signalee(
+    monkeypatch, profil_exploitable
+):
     """Le cas réel, reproduit 2 fois sur 2 : le classement place IGGLIA en
     tête mais la prose annonce ESIIA."""
     decision = _decision_avec_classement(
@@ -529,7 +596,7 @@ def test_prose_qui_omet_le_parcours_le_mieux_classe_est_signalee(monkeypatch, pr
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-10")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-10")
 
     assert "[Contrôle automatique]" in resultat.explication
     assert "IGGLIA en tête" in resultat.explication
@@ -538,19 +605,19 @@ def test_prose_qui_omet_le_parcours_le_mieux_classe_est_signalee(monkeypatch, pr
     assert resultat.action == "recommandation"
 
 
-def test_prose_coherente_n_est_pas_annotee(monkeypatch, profil):
+def test_prose_coherente_n_est_pas_annotee(monkeypatch, profil_exploitable):
     decision = _decision_avec_classement(
         "Le modèle place IGGLIA en tête, devant ESIIA."
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-11")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-11")
 
     assert "[Contrôle automatique]" not in resultat.explication
 
 
 def test_comparaison_citant_un_autre_parcours_d_abord_n_est_pas_un_faux_positif(
-    monkeypatch, profil
+    monkeypatch, profil_exploitable
 ):
     """« contrairement à ESIIA, IGGLIA convient mieux » cite ESIIA en premier
     sans rien contredire : c'est l'omission du parcours recommandé qui trahit
@@ -561,24 +628,26 @@ def test_comparaison_citant_un_autre_parcours_d_abord_n_est_pas_un_faux_positif(
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-12")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-12")
 
     assert "[Contrôle automatique]" not in resultat.explication
 
 
-def test_prose_sans_aucun_parcours_nomme_n_est_pas_annotee(monkeypatch, profil):
+def test_prose_sans_aucun_parcours_nomme_n_est_pas_annotee(monkeypatch, profil_exploitable):
     """Une explication qui ne nomme aucun parcours ne contredit rien."""
     decision = _decision_avec_classement(
         "Ce profil scientifique ouvre plusieurs possibilités en informatique."
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-13")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-13")
 
     assert "[Contrôle automatique]" not in resultat.explication
 
 
-def test_mot_francais_contenant_un_sigle_ne_declenche_pas_le_controle(monkeypatch, profil):
+def test_mot_francais_contenant_un_sigle_ne_declenche_pas_le_controle(
+    monkeypatch, profil_exploitable
+):
     """« emploi » contient « EMP » : sans frontière de mot, toute prose
     parlant d'emploi serait signalée à tort."""
     decision = _decision_avec_classement(
@@ -586,7 +655,7 @@ def test_mot_francais_contenant_un_sigle_ne_declenche_pas_le_controle(monkeypatc
     )
     _simuler_agent_ayant_appele_le_modele(monkeypatch, decision)
 
-    resultat = run_agent("Question", profil, None, "trace-14")
+    resultat = run_agent("Question", profil_exploitable, None, "trace-14")
 
     assert "[Contrôle automatique]" not in resultat.explication
 

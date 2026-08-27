@@ -41,7 +41,11 @@ from src.admission import serie_satisfait_prerequis
 from src.graphe import chemin_competence_parcours_metier, prerequis_du_parcours
 from src.graphe import construire_graphe as _construire_graphe
 from src.graphe import detecter_incoherences as _detecter_incoherences_graphe
-from src.ml.outils import analyser_profil, identifier_points_forts
+from src.ml.outils import (
+    analyser_profil,
+    definir_graphe_admission,
+    identifier_points_forts,
+)
 from src.models import CorpusFormations, charger_corpus_formations
 from src.schemas import ProfilCandidat
 
@@ -191,9 +195,6 @@ def spec_outil(nom: str) -> dict | None:
     return next((o for o in OUTILS if o["name"] == nom), None)
 
 
-def est_sensible(nom: str) -> bool:
-    return nom in OUTILS_SENSIBLES
-
 
 # --- Déclaration pour le function calling Gemini -----------------------------
 
@@ -242,6 +243,11 @@ def initialiser_corpus(corpus: CorpusFormations | None = None) -> None:
     nouveau_corpus = corpus if corpus is not None else charger_corpus_formations()
     nouveau_graphe = _construire_graphe(nouveau_corpus)
     _corpus, _graphe = nouveau_corpus, nouveau_graphe
+    # Une seule vérité pour le graphe : le volet hybride (`ml.outils`)
+    # reconstruisait le sien depuis le disque et le mettait en cache, si bien
+    # qu'il jugeait l'admissibilité d'après un corpus que plus personne ne
+    # servait. Il reçoit désormais celui-ci.
+    definir_graphe_admission(nouveau_graphe)
 
 
 def definir_profil_courant(profil: ProfilCandidat) -> None:

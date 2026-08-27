@@ -98,7 +98,7 @@
   },
   {
     "id": "SRC-EXTERNE",
-    "titre": "source externe — dataset ISPM et enquête terrain (équipe tierce)",
+    "titre": "source externe — dataset ISPM et enquête terrain (équipe tierce, MIT License, Copyright (c) 2026 source externe)",
     "url": "source externe",
     "date_consultation": "2026-08-26",
     "statut": "externe",
@@ -108,7 +108,7 @@
       "86 réponses d'enquête anonymisées (71 étudiants, 15 professionnels), importées via src/enquete_import.py"
     ],
     "limites": [
-      "Travail étudiant tiers publié sous licence MIT, sans registre de sources propre : aucune de ces données n'est confirmée par l'ISPM et ne doit être présentée comme officielle",
+      "Travail étudiant tiers publié sous licence MIT (Copyright (c) 2026 source externe — notice conservée dans NOTICE.md à la racine du dépôt, comme la licence l'exige), sans registre de sources propre : aucune de ces données n'est confirmée par l'ISPM et ne doit être présentée comme officielle",
       "Recoupement des prérequis avec notre source officielle (ispm-edu.com) : 14 concordances sur 16, mais divergence sur EMII et ESIIA, où ce dataset omet la série D que le site officiel accepte — en cas de conflit, notre source officielle fait foi",
       "L'enquête n'a demandé ni série de baccalauréat, ni compétences, ni centres d'intérêt, ni environnement de travail : ces champs sont absents des réponses réelles",
       "Les professionnels n'ont renseigné aucun trait de profil exploitable — seulement leur parcours et leur métier",

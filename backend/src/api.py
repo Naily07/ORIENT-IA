@@ -22,10 +22,11 @@ from src.config import MENTION_OBLIGATOIRE, config
 from src.llm_client import set_log_llm_call
 from src.ml.hybride import MARQUEUR_REGLE_ADMISSION
 from src.ml.outils import AVERTISSEMENT_NON_EXPLOITABLE
+from src.ml.outils import precharger as precharger_modeles_ml
 from src.models import charger_corpus_rag
 from src.observability import lire_dernieres_traces, log_llm_call, log_tool_call, log_trace
 from src.orchestrator import set_log_trace, traiter_demande
-from src.rag import ingerer, nombre_de_fragments
+from src.rag import index_a_jour, ingerer, retrieve_context
 from src.schemas import OrientationInput, OrientationReponse
 from src.tools import corpus_charge, initialiser_corpus, set_log_appel
 
@@ -45,16 +46,44 @@ async def lifespan(app: FastAPI):
     set_log_llm_call(log_llm_call)
     set_log_trace(log_trace)
 
-    # Ingestion automatique du corpus RAG s'il est vide au démarrage.
+    # Ingestion automatique du corpus RAG si l'index est vide OU périmé.
+    #
+    # Constat d'audit C1 : la condition d'origine (`nombre_de_fragments() ==
+    # 0`) ne se déclenchait qu'une base jamais peuplée. Un `chroma_db/` déjà
+    # rempli par une démo précédente continuait alors de servir l'ancien
+    # corpus, en ignorant silencieusement un `corpus_genere.json` enrichi —
+    # rencontré en développement, il avait fallu forcer la ré-ingestion à la
+    # main. `index_a_jour()` compare désormais une empreinte du corpus
+    # (`rag.empreinte_corpus`) à celle réellement indexée.
     try:
-        if nombre_de_fragments() == 0:
-            documents = charger_corpus_rag()
-            if documents:
-                ingerer(documents)
+        documents = charger_corpus_rag()
+        if documents and not index_a_jour(documents):
+            ingerer(documents)
     except Exception:
         import logging
 
         logging.getLogger("src.api").exception("Échec de l'ingestion automatique du corpus RAG")
+
+    # Préchauffage (constat d'audit P3) : sans lui, `_modele()` (régression
+    # logistique calibrée, `cv=5`) s'entraîne et le modèle d'embedding ONNX
+    # se charge au tout premier appel — c'est le premier candidat d'une démo
+    # qui payait cette latence, pas un choix voulu. Chacun des deux
+    # préchauffages est indépendant et ne doit jamais empêcher l'autre ni le
+    # démarrage du serveur.
+    precharger_modeles_ml()
+    try:
+        # Interroger l'index force le calcul d'un embedding, ce que le seul
+        # `count()` déjà effectué ci-dessus (via `index_a_jour`) ne fait pas
+        # — `retrieve_context` sur un index vide renvoie `[]` sans jamais
+        # appeler le modèle, donc ce préchauffage n'a d'effet réel qu'après
+        # une ingestion réussie ; sans effet sinon, jamais bloquant.
+        retrieve_context("préchauffage du modèle d'embedding au démarrage")
+    except Exception:
+        import logging
+
+        logging.getLogger("src.api").warning(
+            "Préchauffage de la recherche documentaire impossible", exc_info=True
+        )
 
     yield
 

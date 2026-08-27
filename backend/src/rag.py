@@ -18,11 +18,13 @@ pédagogique ORIENT'IA.
 """
 
 import functools
+import hashlib
 import logging
 import math
 import re
 import unicodedata
 from collections import Counter
+from pathlib import Path
 
 import chromadb
 from chromadb.utils import embedding_functions
@@ -150,6 +152,91 @@ def _collection():
         raise
 
 
+# --- Version de l'index ---------------------------------------------------
+#
+# Constat d'audit C1 : l'ingestion au démarrage ne se déclenchait que si la
+# collection était **vide**. Un `chroma_db/` déjà peuplé par une démo
+# précédente continuait donc de servir l'ancien corpus, en ignorant
+# silencieusement un `corpus_genere.json` enrichi — rencontré en
+# développement, il avait fallu forcer la ré-ingestion à la main.
+#
+# L'empreinte est stockée dans un fichier voisin de la base plutôt que dans
+# les métadonnées Chroma : `metadata` porte déjà `hnsw:space`, immuable après
+# création, et le modifier expose à écraser ce réglage — c'est précisément ce
+# réglage dont l'absence avait donné 0 % de rappel sur le hackathon
+# précédent. Le fichier vit et meurt avec le dossier de la base, il ne peut
+# donc pas survivre à sa suppression et prétendre à tort que l'index est à jour.
+
+NOM_FICHIER_EMPREINTE = ".empreinte_corpus"
+
+
+def _chemin_empreinte() -> Path:
+    return config.dossier_chroma / NOM_FICHIER_EMPREINTE
+
+
+def empreinte_corpus(documents: list[DocumentSource]) -> str:
+    """Empreinte stable du corpus indexable.
+
+    Couvre ce qui change le contenu de l'index — identifiant, titre, texte,
+    catégorie et source de traçabilité — et **pas** l'ordre des documents :
+    une simple réorganisation du fichier source ne doit pas déclencher une
+    ré-ingestion complète.
+    """
+    empreinte = hashlib.sha256()
+    for document in sorted(documents, key=lambda d: d.id):
+        for champ in (
+            document.id,
+            document.titre,
+            document.categorie or "",
+            document.source_id or "",
+            document.contenu,
+        ):
+            empreinte.update(champ.encode("utf-8"))
+            empreinte.update(b"\x1f")
+    return empreinte.hexdigest()
+
+
+def empreinte_indexee() -> str | None:
+    """Empreinte du corpus effectivement indexé, ou `None` si inconnue.
+
+    `None` couvre aussi bien un index jamais construit qu'un index construit
+    par une version antérieure à ce mécanisme : dans les deux cas la seule
+    réponse honnête est « on ne sait pas », qui doit déclencher une
+    ré-ingestion plutôt qu'une confiance par défaut.
+    """
+    chemin = _chemin_empreinte()
+    if not chemin.exists():
+        return None
+    try:
+        return chemin.read_text(encoding="utf-8").strip() or None
+    except OSError:
+        return None
+
+
+def _enregistrer_empreinte(empreinte: str) -> None:
+    try:
+        chemin = _chemin_empreinte()
+        chemin.parent.mkdir(parents=True, exist_ok=True)
+        chemin.write_text(empreinte, encoding="utf-8")
+    except OSError:
+        # Une empreinte non écrite provoquera une ré-ingestion inutile au
+        # prochain démarrage : coûteux, jamais faux. L'inverse (prétendre
+        # l'index à jour) le serait.
+        logger.warning("Empreinte du corpus RAG non enregistrée", exc_info=True)
+
+
+def index_a_jour(documents: list[DocumentSource]) -> bool:
+    """L'index reflète-t-il exactement ce corpus ?
+
+    Faux si l'index est vide, si aucune empreinte n'est connue, ou si le
+    corpus a changé depuis la dernière ingestion.
+    """
+    if nombre_de_fragments() == 0:
+        return False
+    indexee = empreinte_indexee()
+    return indexee is not None and indexee == empreinte_corpus(documents)
+
+
 def ingerer(documents: list[DocumentSource], reinitialiser: bool = True) -> int:
     """Indexe le corpus et retourne le nombre de fragments créés."""
     if reinitialiser:
@@ -188,6 +275,14 @@ def ingerer(documents: list[DocumentSource], reinitialiser: bool = True) -> int:
         # documents du corpus sont censés évoluer (mise à jour d'une
         # maquette de formation, par exemple).
         collection.upsert(ids=identifiants, documents=contenus, metadatas=metadonnees)
+
+    # Après l'écriture seulement : une empreinte posée avant l'`upsert`
+    # déclarerait à jour un index que l'ingestion aurait pu ne pas terminer.
+    # Le cas `reinitialiser=False` (ingestion partielle) est exclu : l'index
+    # ne correspond alors à aucun corpus complet, et prétendre le contraire
+    # est exactement le défaut que C1 signale.
+    if reinitialiser:
+        _enregistrer_empreinte(empreinte_corpus(documents))
     return len(identifiants)
 
 
@@ -196,6 +291,12 @@ def _vider_collection() -> None:
     existants = collection.get(include=[])["ids"]
     if existants:
         collection.delete(ids=existants)
+    # L'empreinte décrit le contenu de l'index : vider l'un sans effacer
+    # l'autre laisserait `index_a_jour()` affirmer qu'un index vide est à jour.
+    try:
+        _chemin_empreinte().unlink(missing_ok=True)
+    except OSError:
+        pass
 
 
 def nombre_de_fragments() -> int:
@@ -525,3 +626,33 @@ def generer_reponse_rag(question: str, fragments: list[dict]) -> ReponseRAG:
         )
 
     return reponse
+
+
+if __name__ == "__main__":
+    # `--reindex` mentionné par l'audit C1 comme alternative au hash
+    # automatique : utile quand on sait qu'il faut forcer une ré-ingestion
+    # sans attendre le prochain démarrage de l'API (ou pour un corpus qui a
+    # changé sans que son contenu textuel change, ce que l'empreinte ne
+    # détecterait pas — un déplacement de dossier des documents source,
+    # par exemple).
+    #
+    #     cd backend && python -m src.rag --reindex
+    import argparse
+
+    from src.models import charger_corpus_rag
+
+    parseur = argparse.ArgumentParser(description=__doc__)
+    parseur.add_argument(
+        "--reindex",
+        action="store_true",
+        required=True,
+        help="Force une ré-ingestion complète du corpus RAG, même si l'index semble à jour.",
+    )
+    parseur.parse_args()
+
+    documents = charger_corpus_rag()
+    if not documents:
+        print("Aucun document à indexer (backend/data/corpus_genere.json absent ou vide).")
+    else:
+        n = ingerer(documents)
+        print(f"{n} fragments indexés depuis {len(documents)} documents.")

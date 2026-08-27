@@ -16,7 +16,9 @@ cette taille l'entraînement prend une fraction de seconde, et ça évite les
 problèmes de compatibilité d'un fichier `.joblib` figé entre versions de
 scikit-learn sur les machines de l'équipe. `entrainement.entrainer_et_sauvegarder()`
 reste disponible pour qui veut un artefact persisté (livrable alternatif
-accepté par le sujet).
+accepté par le sujet) — il entraîne désormais la même fonction que la
+production (`entrainer_baseline_calibree`), après correction d'un écart où il
+persistait la régression non calibrée (AUDIT-ML-7).
 """
 
 import functools
@@ -112,6 +114,32 @@ def imposer_modele_pour_evaluation(modele) -> None:
 
 def _modele_courant():
     return _modele_impose if _modele_impose is not None else _modele()
+
+
+def precharger() -> None:
+    """Force l'entraînement des modèles ML mis en cache, avant la première requête.
+
+    Correctif d'audit P3 : `_modele()`, `_modele_explicatif()` et
+    `_graphe_admission()` s'entraînent/se construisent au premier appel
+    (`functools.lru_cache`) — le bon comportement en régime établi, mais qui
+    fait payer la latence d'entraînement au tout premier candidat d'une démo.
+    Prévue pour être appelée depuis `api.lifespan()`, une fois au démarrage.
+
+    Ne lève jamais : un jeu de données ML absent est un cas normal (dépôt
+    fraîchement cloné avant `python -m src.ml.donnees_synthetiques`), qui ne
+    doit pas empêcher le serveur de démarrer — la première requête réelle
+    retombera sur la même erreur explicite que `_jeu_ou_erreur()` produit
+    aujourd'hui, simplement sans le bénéfice du préchauffage.
+    """
+    try:
+        _modele()
+        _modele_explicatif()
+    except Exception:  # noqa: BLE001 — le préchauffage est un bonus, jamais bloquant
+        logger.warning("Préchauffage du modèle ML impossible", exc_info=True)
+    # Toujours tentée séparément : un jeu de données absent ne doit pas priver
+    # le graphe d'admission (qui ne dépend, lui, que du corpus) de son propre
+    # préchauffage.
+    _graphe_admission()
 
 
 # Graphe fourni par le propriétaire du corpus (`tools`), plutôt que reconstruit ici.

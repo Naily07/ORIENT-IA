@@ -1,10 +1,13 @@
 """Tests du pipeline d'entraînement (ML-3, ML-4)."""
 
 import numpy as np
+from sklearn.calibration import CalibratedClassifierCV
 
 from src.ml.entrainement import (
+    ModeleBorne,
     entrainer_baseline,
     entrainer_baseline_calibree,
+    entrainer_et_sauvegarder,
     entrainer_foret,
     preparer_jeu_entrainement,
     separer_train_test,
@@ -208,3 +211,55 @@ def test_aucun_profil_reel_ne_produit_de_distribution_uniforme():
         assert max(scores) - min(scores) > 1e-6, (
             f"{reponse.id} : distribution uniforme, le classement ne veut rien dire"
         )
+
+
+# --- Alignement modèle évalué / modèle servi (AUDIT-ML-7) ------------------
+
+
+def test_entrainer_et_sauvegarder_persiste_le_meme_modele_que_la_production(tmp_path, monkeypatch):
+    """Le défaut trouvé par l'audit : `entrainer_et_sauvegarder()` persistait
+    la régression logistique **non calibrée**, alors que `ml.outils._modele()`
+    sert en production la version **calibrée** (voir la note de biais de
+    `entrainer_baseline_calibree` — sans elle, un score affiché à un candidat
+    était systématiquement sous-estimé de 12 points). Le `.joblib` livré comme
+    artefact alternatif aurait donc été un autre modèle que celui mesuré."""
+    import src.ml.entrainement as module
+
+    monkeypatch.setattr(module, "charger_jeu_de_donnees", lambda: _exemples_jouets())
+
+    chemin = entrainer_et_sauvegarder(chemin=tmp_path / "modele.joblib")
+
+    import joblib
+
+    modele_persiste = joblib.load(chemin)
+    # `entrainer_baseline_calibree` retourne un `ModeleBorne` qui enveloppe le
+    # `CalibratedClassifierCV` (voir sa note de biais : sans la borne, 68 %
+    # des profils synthétiques ressortaient à exactement 100 % d'adéquation).
+    # C'est cette enveloppe, pas seulement le calibrateur qu'elle contient,
+    # que `ml.outils._modele()` sert en production.
+    assert isinstance(modele_persiste, ModeleBorne)
+    assert isinstance(modele_persiste._modele, CalibratedClassifierCV)
+
+
+def test_entrainer_et_sauvegarder_produit_les_memes_probabilites_que_le_modele_de_production(
+    tmp_path, monkeypatch
+):
+    """Non-régression plus stricte que la seule vérification de type : les
+    deux chemins doivent produire des scores identiques sur les mêmes
+    données, pas seulement une classe Python identique."""
+    import joblib
+
+    import src.ml.entrainement as module
+
+    exemples = _exemples_jouets()
+    monkeypatch.setattr(module, "charger_jeu_de_donnees", lambda: exemples)
+
+    chemin = entrainer_et_sauvegarder(chemin=tmp_path / "modele.joblib")
+    modele_persiste = joblib.load(chemin)
+
+    X, y = preparer_jeu_entrainement(exemples)
+    modele_production = entrainer_baseline_calibree(X, y)
+
+    np.testing.assert_allclose(
+        modele_persiste.predict_proba(X), modele_production.predict_proba(X)
+    )

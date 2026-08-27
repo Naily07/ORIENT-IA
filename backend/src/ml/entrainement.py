@@ -253,14 +253,23 @@ def entrainer_foret(
 
 
 def entrainer_et_sauvegarder(chemin: Path | None = None) -> Path:
-    """Entraîne le modèle de production (régression logistique, sur tout le
-    jeu de données disponible) et le persiste en `.joblib`.
+    """Entraîne le modèle de production et le persiste en `.joblib`.
 
     Alternative acceptée par le sujet au script reproductible : un artefact
     déjà entraîné, prêt à charger sans ré-entraînement. Ce fichier n'est pas
     versionné (voir `.gitignore`) — un pickle scikit-learn ne garantit pas
     d'être rechargeable avec une version différente de la bibliothèque, il
     doit donc rester reproductible à la demande plutôt que figé dans le dépôt.
+
+    **Correctif d'audit (AUDIT-ML-7)** : cette fonction persistait la
+    régression logistique **non calibrée** (`entrainer_baseline`), alors que
+    `ml.outils._modele()` sert en production la version **calibrée**
+    (`entrainer_baseline_calibree`) — les scores affichés à un candidat sont
+    recalés sur la réalité observée, voir la note de biais de
+    `entrainer_baseline_calibree`. Le `.joblib` produit ici était donc un
+    autre modèle que celui réellement mesuré et servi. Corrigé pour entraîner
+    la même fonction que la production, verrouillé par
+    `test_entrainer_et_sauvegarder_persiste_le_meme_modele_que_la_production`.
     """
     X, y = preparer_jeu_entrainement()
     if X.size == 0:
@@ -268,7 +277,7 @@ def entrainer_et_sauvegarder(chemin: Path | None = None) -> Path:
             "Aucun jeu de données ML disponible : lancer "
             "`python -m src.ml.donnees_synthetiques` pour le générer."
         )
-    modele = entrainer_baseline(X, y)
+    modele = entrainer_baseline_calibree(X, y)
     chemin = chemin or CHEMIN_MODELE_DEFAUT
     chemin.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(modele, chemin)

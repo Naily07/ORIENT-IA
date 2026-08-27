@@ -12,12 +12,14 @@ exclus par défaut (voir `pyproject.toml`).
 import pytest
 
 from src.agent import _formater_passage
+from src.models import DocumentSource
 from src.rag import (
     ReponseRAG,
     _ecarter_passages_malveillants,
     _fusionner_rrf,
     _normaliser_lexical,
     chunker,
+    empreinte_corpus,
     generer_reponse_rag,
 )
 
@@ -296,3 +298,92 @@ def test_le_passage_porte_le_statut_de_sa_source():
 def test_un_passage_sans_registre_le_declare_explicitement():
     fragment = {"source_id": "DOC-X", "contenu": "...", "statut_source": None}
     assert "provenance non enregistrée" in _formater_passage(fragment)
+
+
+# --- Empreinte du corpus indexé (constat d'audit C1) -----------------------
+
+
+def _doc(**kwargs) -> DocumentSource:
+    valeurs = {
+        "id": "FORM-TEST-01",
+        "titre": "Titre",
+        "categorie": "informatique",
+        "contenu": "Contenu de test.",
+        "derniere_maj": "2026-01-01T00:00:00",
+    }
+    valeurs.update(kwargs)
+    return DocumentSource.model_validate(valeurs)
+
+
+def test_l_empreinte_est_stable_pour_un_meme_corpus():
+    corpus = [_doc(id="A"), _doc(id="B", titre="Autre")]
+    assert empreinte_corpus(corpus) == empreinte_corpus(corpus)
+
+
+def test_l_empreinte_est_independante_de_l_ordre_des_documents():
+    a = [_doc(id="A"), _doc(id="B", titre="Autre")]
+    b = list(reversed(a))
+    assert empreinte_corpus(a) == empreinte_corpus(b)
+
+
+def test_l_empreinte_change_si_un_contenu_change():
+    original = [_doc(contenu="Version 1.")]
+    modifie = [_doc(contenu="Version 2.")]
+    assert empreinte_corpus(original) != empreinte_corpus(modifie)
+
+
+def test_l_empreinte_change_si_un_document_est_ajoute():
+    court = [_doc(id="A")]
+    long = [_doc(id="A"), _doc(id="B")]
+    assert empreinte_corpus(court) != empreinte_corpus(long)
+
+
+def test_l_empreinte_change_si_la_categorie_ou_la_source_changent():
+    """Deux champs facilement oubliés d'un hash « sur le contenu » : la
+    catégorie oriente `retrieve_context`, et `source_id` porte la traçabilité
+    (§4) — un changement de l'un ou l'autre doit rester détectable."""
+    base = [_doc(categorie="informatique", source_id="SRC-A")]
+    autre_categorie = [_doc(categorie="gestion", source_id="SRC-A")]
+    autre_source = [_doc(categorie="informatique", source_id="SRC-B")]
+    assert empreinte_corpus(base) != empreinte_corpus(autre_categorie)
+    assert empreinte_corpus(base) != empreinte_corpus(autre_source)
+
+
+@pytest.mark.index
+class TestIndexAJour:
+    """Comportement bout-en-bout sur un index Chroma réel et isolé."""
+
+    @pytest.fixture
+    def index_isole(self, tmp_path):
+        from src import rag
+        from src.config import config
+
+        ancien_dossier, ancienne_collection = config.dossier_chroma, config.rag_collection
+        config.dossier_chroma = tmp_path
+        config.rag_collection = "test-empreinte"
+        rag._collection.cache_clear()
+        yield rag
+        rag._collection.cache_clear()
+        config.dossier_chroma, config.rag_collection = ancien_dossier, ancienne_collection
+
+    def test_un_index_jamais_construit_n_est_pas_a_jour(self, index_isole):
+        corpus = [_doc()]
+        assert index_isole.index_a_jour(corpus) is False
+
+    def test_apres_ingestion_l_index_est_a_jour_pour_ce_corpus(self, index_isole):
+        corpus = [_doc()]
+        index_isole.ingerer(corpus)
+        assert index_isole.index_a_jour(corpus) is True
+
+    def test_un_corpus_modifie_rend_l_index_perime(self, index_isole):
+        """Le scénario même de C1 : le corpus enrichi (nouveaux documents,
+        contenu corrigé) doit être détecté sans intervention manuelle."""
+        index_isole.ingerer([_doc(id="A")])
+        corpus_enrichi = [_doc(id="A"), _doc(id="B", titre="Nouveau document")]
+        assert index_isole.index_a_jour(corpus_enrichi) is False
+
+    def test_vider_la_collection_efface_aussi_l_empreinte(self, index_isole):
+        corpus = [_doc()]
+        index_isole.ingerer(corpus)
+        index_isole._vider_collection()
+        assert index_isole.empreinte_indexee() is None

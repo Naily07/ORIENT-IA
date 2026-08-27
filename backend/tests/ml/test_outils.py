@@ -9,6 +9,7 @@ from src.ml.outils import (
     calculer_adequation,
     classer_parcours,
     identifier_points_forts,
+    precharger,
 )
 from src.schemas import ProfilCandidat
 
@@ -135,3 +136,40 @@ def test_un_profil_exploitable_n_est_pas_annote():
     assert analyse.profil_exploitable is True
     assert analyse.confiance > 0.0
     assert all("non informatif" not in c.justification for c in analyse.parcours_candidats)
+
+
+# --- Préchauffage (constat d'audit P3) --------------------------------------
+
+
+def test_precharger_ne_leve_jamais():
+    """Sur le jeu livré avec le dépôt, `precharger()` doit réussir sans
+    exception — c'est la condition pour l'appeler depuis `api.lifespan()`
+    sans jamais empêcher le serveur de démarrer."""
+    precharger()  # ne doit pas lever
+
+
+def test_precharger_peuple_le_cache_du_modele():
+    """Après `precharger()`, `analyser_profil` ne doit plus payer le coût
+    d'entraînement — vérifié indirectement via le cache `lru_cache` de
+    `_modele`, dont l'info expose les appels réussis."""
+    from src.ml import outils
+
+    outils._modele.cache_clear()
+    outils._modele_explicatif.cache_clear()
+
+    precharger()
+
+    assert outils._modele.cache_info().currsize == 1
+    assert outils._modele_explicatif.cache_info().currsize == 1
+
+
+def test_precharger_tolere_l_absence_de_jeu_de_donnees(monkeypatch):
+    """Un dépôt fraîchement cloné, avant `python -m src.ml.donnees_synthetiques`,
+    ne doit pas empêcher le serveur de démarrer."""
+    from src.ml import outils
+
+    outils._modele.cache_clear()
+    outils._modele_explicatif.cache_clear()
+    monkeypatch.setattr(outils, "_jeu_ou_erreur", lambda: (_ for _ in ()).throw(RuntimeError()))
+
+    precharger()  # ne doit pas lever

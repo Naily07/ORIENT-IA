@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+google-genai
+chromadb
+onnxruntime
+tokenizers
+streamlit
+requests
+python-dotenv
+numpy
+scikit-learn
+joblib
+networkx

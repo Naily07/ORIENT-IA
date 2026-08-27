@@ -111,15 +111,19 @@ export function DecisionCard({
         )}
       </div>
 
-      {decision.incertitude_declaree && (
-        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          <p>
-            Réponse à confirmer : les informations disponibles ne suffisent pas à en faire un
-            conseil arrêté.
-          </p>
-        </div>
-      )}
+      {/* Bandeau de prudence réservé aux réponses qui *conseillent* : sur une
+          question factuelle ou une demande de précisions, la nuance est déjà
+          portée par le texte, un bandeau en plus n'est que du bruit. */}
+      {decision.incertitude_declaree &&
+        (decision.action === "recommandation" || decision.action === "escalade_conseiller") && (
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <p>
+              À confirmer avec un conseiller : les informations disponibles ne suffisent pas à en
+              faire un conseil arrêté.
+            </p>
+          </div>
+        )}
 
       {parcours.length > 0 && (
         <div className="space-y-2">
@@ -139,18 +143,9 @@ export function DecisionCard({
         </div>
       )}
 
-      {manquantes.length > 0 && (
-        <div className="rounded-lg bg-neutral-50 px-3 py-2 text-sm dark:bg-neutral-900">
-          <p className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-            Ce qui aiderait à préciser la réponse
-          </p>
-          <ul className="mt-1 list-disc space-y-0.5 pl-5">
-            {manquantes.map((element) => (
-              <li key={element}>{element}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* `informations_manquantes` n'est pas affiché comme une liste : la
+          question à l'utilisateur vit dans `decision.reponse`, en langage
+          naturel. La liste reste dans la traçabilité ci-dessous, pour le jury. */}
 
       <details className="group rounded-lg border border-neutral-200 text-sm dark:border-neutral-800">
         <summary className="flex cursor-pointer items-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-500 select-none">
@@ -182,6 +177,19 @@ export function DecisionCard({
               {decision.explication || "—"}
             </p>
           </div>
+
+          {manquantes.length > 0 && (
+            <div>
+              <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Informations manquantes (suivi interne)
+              </h4>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-neutral-700 dark:text-neutral-300">
+                {manquantes.map((element) => (
+                  <li key={element}>{element}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>

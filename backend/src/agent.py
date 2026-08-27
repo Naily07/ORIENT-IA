@@ -102,6 +102,21 @@ ci-dessous ; `action = "information"`.
 critère sensible ; analyser la personnalité d'après les messages ; affirmer une \
 information contraire aux documents) → refuse clairement et explique pourquoi, \
 sans rien inventer.
+- un **salut ou un message d'ouverture** (« bonjour », « salut », « tu peux \
+m'aider ? ») → réponds chaleureusement, invite la personne à parler de ses \
+matières préférées, de ses centres d'intérêt ou à poser une question ; \
+`action = "information"`, `incertitude_declaree = false`, `informations_manquantes` \
+vide. Ne déclenche ni escalade ni demande d'information formelle sur un simple \
+bonjour.
+
+QUAND IL MANQUE UNE INFORMATION (`action = "demande_information"`) : ta `reponse` \
+doit être une **question posée à la personne**, en langage naturel — « Pour vous \
+orienter, dites-moi quelles matières vous plaisent le plus et, si vous le savez, \
+votre série de baccalauréat. » Ne te contente jamais de renvoyer une liste de \
+champs : `informations_manquantes` est un suivi interne, pas le texte affiché. \
+Chaque entrée de `informations_manquantes` nomme une donnée concrète (« série de \
+baccalauréat », « matières préférées »), jamais une formule vague comme « besoin \
+de l'utilisateur » ou « profil ».
 
 FONCTIONNEMENT DE L'ASSISTANT (faits sur ce système, utilise-les pour répondre \
 aux méta-questions) :
@@ -645,6 +660,9 @@ def _garantir_reponse_humaine(decision: RecommandationDecision) -> Recommandatio
     - `action` passée à `escalade_conseiller` par un contrôle déterministe
       sans que le texte n'en dise rien : on ajoute la phrase qui manque, pour
       que la version parlée ne contredise pas la décision.
+    - `action = "demande_information"` mais `reponse` ne pose aucune question :
+      `informations_manquantes` est un suivi interne, jamais le texte affiché —
+      on formule la question à la place.
     """
     reponse = (decision.reponse or "").strip()
 
@@ -678,6 +696,23 @@ def _garantir_reponse_humaine(decision: RecommandationDecision) -> Recommandatio
             "Je n'ai pas assez d'éléments pour répondre précisément. "
             "Pouvez-vous préciser votre question ?"
         )
+
+    if (
+        decision.action == "demande_information"
+        and decision.informations_manquantes
+        and "?" not in reponse
+    ):
+        # Formules vagues filtrées : le prompt les interdit, mais un modèle
+        # `flash-lite` en produit encore (« besoin de l'utilisateur »).
+        _vagues = {"besoin de l'utilisateur", "profil", "informations", "contexte"}
+        besoins = [
+            b for b in decision.informations_manquantes if b.strip().lower() not in _vagues
+        ] or decision.informations_manquantes
+        reponse = (
+            f"{reponse}\n\nPour vous orienter, dites-moi : "
+            + ", ".join(besoins)
+            + "."
+        ).strip()
 
     mots_conseiller = ("conseiller", "conseillère")
     if decision.action == "escalade_conseiller" and not any(

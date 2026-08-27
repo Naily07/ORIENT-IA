@@ -103,6 +103,36 @@ class ProfilCandidat(BaseModel):
     informations_manquantes: list[str] = Field(default_factory=list)
 
 
+class NoteMatiereDeclaree(BaseModel):
+    """Une note scolaire citée explicitement par le candidat (« j'ai eu 16 en maths »).
+
+    Modélisée en liste d'objets plutôt qu'en `dict` : le mode JSON contraint de
+    l'API Gemini ne gère pas un dictionnaire à clés libres."""
+
+    matiere: str = Field(description="Nom de la matière, tel que le candidat l'a formulé")
+    note: float = Field(description="Note ramenée sur 20 si une autre échelle est citée")
+
+
+class ProfilDeclareExtrait(BaseModel):
+    """Éléments de profil **explicitement déclarés** par le candidat dans un
+    message, extraits pour compléter automatiquement `ProfilCandidat`
+    (`src.extraction_profil`).
+
+    Volontairement limité aux champs déclaratifs de `ProfilCandidat` : aucun
+    champ ne porte un attribut sensible, et la consigne d'extraction interdit
+    d'en inférer un ou de déduire un trait à partir du style d'écriture (§16,
+    SEC-4). Un message sans information exploitable produit un objet vide."""
+
+    matieres_preferees: list[str] = Field(default_factory=list)
+    competences_declarees: list[str] = Field(default_factory=list)
+    centres_interet: list[str] = Field(default_factory=list)
+    activites_projets: list[str] = Field(default_factory=list)
+    preferences_professionnelles: list[str] = Field(default_factory=list)
+    environnement_travail_recherche: str | None = None
+    serie_bac: str | None = None
+    resultats_scolaires: list[NoteMatiereDeclaree] = Field(default_factory=list)
+
+
 class RecommandationParcours(BaseModel):
     """Une proposition de parcours, avec son score d'adéquation.
 
@@ -237,7 +267,14 @@ class OrientationReponse(BaseModel):
 
     `trace_id` est une métadonnée de routage (observabilité), pas une donnée
     métier : elle n'appartient pas à `RecommandationDecision`, sur le même
-    principe que `TicketReponse` dans EXAM-S2."""
+    principe que `TicketReponse` dans EXAM-S2.
+
+    `profil` est le profil **effectivement utilisé** pour cette réponse : celui
+    reçu de l'appelant, complété des éléments que le candidat a déclarés dans son
+    message (`src.extraction_profil`). Le client stateless le renvoie tel quel au
+    tour suivant — c'est ainsi que le panneau « Mon profil » se remplit au fil de
+    la conversation sans que l'utilisateur ait à ressaisir ce qu'il vient d'écrire."""
 
     trace_id: str
     decision: RecommandationDecision
+    profil: ProfilCandidat = Field(default_factory=ProfilCandidat)

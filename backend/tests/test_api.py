@@ -57,6 +57,18 @@ def test_health_expose_la_mention_obligatoire(client):
     assert reponse.json()["mention_obligatoire"] == MENTION_OBLIGATOIRE
 
 
+def test_health_expose_les_marqueurs_ml(client):
+    """Les mêmes constantes que `front_office._marqueurs()` lit aujourd'hui
+    par import direct, exposées ici pour un frontend qui ne peut pas
+    importer de code Python (voir `src.admin_api`)."""
+    from src.ml.hybride import MARQUEUR_REGLE_ADMISSION
+    from src.ml.outils import AVERTISSEMENT_NON_EXPLOITABLE
+
+    corps = client.get("/health").json()
+    assert corps["marqueur_regle_admission"] == MARQUEUR_REGLE_ADMISSION
+    assert corps["avertissement_non_exploitable"] == AVERTISSEMENT_NON_EXPLOITABLE
+
+
 def test_traiter_appelle_l_orchestrateur_et_retourne_sa_reponse(client, monkeypatch):
     decision = _decision()
     monkeypatch.setattr(

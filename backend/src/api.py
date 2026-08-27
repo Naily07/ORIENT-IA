@@ -17,8 +17,11 @@ from typing import Annotated
 
 from fastapi import FastAPI, Query
 
+from src.admin_api import router as admin_router
 from src.config import MENTION_OBLIGATOIRE, config
 from src.llm_client import set_log_llm_call
+from src.ml.hybride import MARQUEUR_REGLE_ADMISSION
+from src.ml.outils import AVERTISSEMENT_NON_EXPLOITABLE
 from src.models import charger_corpus
 from src.observability import lire_dernieres_traces, log_llm_call, log_tool_call, log_trace
 from src.orchestrator import set_log_trace, traiter_demande
@@ -57,6 +60,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="ORIENT'IA", lifespan=lifespan)
+app.include_router(admin_router)
 
 
 @app.post("/orientation/traiter", response_model=OrientationReponse)
@@ -104,4 +108,11 @@ def health():
         # SEC-5 : source unique du texte exact, à afficher par le frontend
         # (FE-1, pas encore construit) plutôt que de le retaper à la main.
         "mention_obligatoire": MENTION_OBLIGATOIRE,
+        # Marqueurs internes lus par le frontend (front_office._marqueurs) pour
+        # masquer un score creux / signaler une admissibilité à vérifier sur
+        # une carte de parcours — exposés ici pour la même raison que la
+        # mention obligatoire : source unique plutôt que recopiée en dur côté
+        # frontend, où une désynchronisation silencieuse passerait inaperçue.
+        "marqueur_regle_admission": MARQUEUR_REGLE_ADMISSION,
+        "avertissement_non_exploitable": AVERTISSEMENT_NON_EXPLOITABLE,
     }

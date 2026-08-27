@@ -10,3 +10,9 @@ backend/data/ml/*.joblib
 .pytest_cache/
 .ruff_cache/
 .streamlit/secrets.toml
+
+# Captures de session Playwright (outil de vérification, pas un livrable)
+.playwright-mcp/
+
+# Sortie intermédiaire de l'extraction OCR (le livrable est matieres.json + programme_matieres.json)
+backend/data/matieres_brut.json

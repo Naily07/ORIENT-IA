@@ -1,0 +1,74 @@
+{
+  "date": "2026-08-27T03:43:58.752817+00:00",
+  "corpus_reel_ispm": {
+    "nombre_parcours": 16,
+    "detecter_incoherences": {
+      "sans_graphe": "mécanisme inexistant : aucun outil de tools.py n'examinait la cohérence structurelle du corpus avant ONTO-4",
+      "avec_graphe": {
+        "statut": "trouve",
+        "nombre": 16,
+        "par_type": {
+          "parcours_sans_debouche": 16
+        },
+        "dont_donnees_non_collectees": 16,
+        "dont_contradictions_reelles": 0,
+        "message": "16 incohérence(s) structurelle(s) détectée(s). Les entrées marquées `donnee_manquante` signalent une information pas encore collectée (voir BACKLOG.md, DATA-1), pas une contradiction du corpus."
+      }
+    },
+    "lecture": "Les constats remontés sur le corpus réel sont aujourd'hui tous des données non encore collectées (débouchés, DATA-1), pas des contradictions : le champ `donnee_manquante` et le message de l'outil les distinguent explicitement pour que l'agent ne présente pas un chantier de collecte comme un défaut de fiabilité. Zéro contradiction réelle est le résultat attendu sur un corpus dont chaque entrée a été saisie avec sa source (DATA-2)."
+  },
+  "corpus_jouet_complet": {
+    "objectif": "Démontrer expliquer_recommandation/ONTO-5 sur un corpus aussi complet que celui visé par DATA-1 à terme, puisque le corpus réel ne l'est pas encore sur les compétences/métiers.",
+    "expliquer_recommandation_IGGLIA": {
+      "sans_graphe_avant_onto5": {
+        "statut": "trouve",
+        "parcours": "IGGLIA",
+        "score_adequation": 0.0625,
+        "points_forts": []
+      },
+      "avec_graphe_onto5": {
+        "statut": "trouve",
+        "parcours": "IGGLIA",
+        "score_adequation": 0.0625,
+        "profil_exploitable": false,
+        "points_forts": [],
+        "raisonnement_graphe": [
+          {
+            "parcours": "IGGLIA",
+            "competence": "programmation",
+            "metier": "Développeur logiciel",
+            "chemin": [
+              "Parcours:IGGLIA",
+              "Competence:COMP-PROG",
+              "Metier:METIER-DEV"
+            ]
+          }
+        ],
+        "avertissement": "Profil trop peu renseigné pour que le modèle produise un score informatif. Les scores ci-dessous reflètent la distribution générale des parcours, pas ce candidat — ils ne doivent pas fonder une recommandation."
+      },
+      "apport_mesure": {
+        "champs_ajoutes": [
+          "avertissement",
+          "profil_exploitable",
+          "raisonnement_graphe"
+        ],
+        "nombre_de_chemins_competence_metier": 1
+      }
+    },
+    "detecter_incoherences": {
+      "nombre": 1,
+      "par_type": {
+        "parcours_sans_debouche": 1
+      },
+      "detail": [
+        {
+          "type": "parcours_sans_debouche",
+          "parcours": "TEH",
+          "donnee_manquante": true,
+          "message": "Aucun débouché professionnel n'est encore renseigné pour le parcours TEH : information non collectée à ce stade du projet (voir BACKLOG.md, DATA-1), et non une contradiction du corpus."
+        }
+      ]
+    }
+  },
+  "conclusion": "Le graphe ajoute deux capacités qu'aucun outil sans graphe ne couvrait : (1) une détection systématique d'incohérences structurelles (ONTO-4), exercée dès aujourd'hui sur le corpus réel ISPM via l'outil que l'agent appelle ; (2) un chemin explicite Compétence -> Parcours -> Métier dans l'explication d'une recommandation (ONTO-5), mesuré comme l'écart entre la sortie de expliquer_recommandation avant et après le graphe, sur un corpus complet en attendant que DATA-1 fournisse compétences et métiers pour le corpus réel."
+}

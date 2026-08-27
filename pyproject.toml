@@ -1,0 +1,56 @@
+[project]
+name = "orientia"
+version = "0.1.0"
+description = "Assistant intelligent d'orientation pédagogique — hackathon ISPM ORIENT'IA"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "pydantic-settings",
+    "google-genai",
+    "chromadb",
+    "onnxruntime",
+    "tokenizers",
+    "streamlit",
+    "requests",
+    "python-dotenv",
+    "numpy",
+    "scikit-learn",
+    "joblib",
+    "networkx",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx", "ruff"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "backend"}
+packages = ["src", "src.ml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Sans ce réglage, ruff ne reconnaît plus `src` comme premier-parti et fusionne
+# son groupe d'imports avec les bibliothèques tierces. `frontend` y figure pour
+# la même raison : ses modules (`noyau`, `front_office`, `back_office`) sont
+# importés à plat, sans préfixe de paquet.
+src = ["backend", "frontend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+# Les tests touchant le réseau (quota LLM, téléchargement du modèle
+# d'embedding ONNX au premier lancement) sont désactivés par défaut :
+# `pytest -m reseau` ou `pytest -m index` pour les lancer explicitement.
+markers = [
+    "reseau: test effectuant un appel réel à l'API Gemini",
+    "index: test nécessitant le modèle d'embedding et un index Chroma (lent, télécharge le modèle au premier lancement)",
+]
+addopts = "-m 'not reseau'"

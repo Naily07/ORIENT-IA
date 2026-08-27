@@ -1,0 +1,44 @@
+[
+  {
+    "id": "MENTION-INFO-TELECOM",
+    "nom": "Informatique et Télécommunications",
+    "niveau": "Licence (Bac+3) puis Master ou Diplôme d'Ingénieur (Bac+5)",
+    "diplome": "Licence / Master / Diplôme d'Ingénieur",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "MENTION-GENIE-INDUSTRIEL",
+    "nom": "Génie Industriel",
+    "niveau": "Licence (Bac+3) puis Master ou Diplôme d'Ingénieur (Bac+5)",
+    "diplome": "Licence / Master / Diplôme d'Ingénieur",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "MENTION-GENIE-CIVIL-ARCHI",
+    "nom": "Génie Civil et Architecture",
+    "niveau": "Licence (Bac+3) puis Master ou Diplôme d'Ingénieur (Bac+5)",
+    "diplome": "Licence / Master / Diplôme d'Ingénieur",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "MENTION-DROIT-TECH-AFFAIRES",
+    "nom": "Droit et Techniques des Affaires",
+    "niveau": "Licence (Bac+3) puis Master (Bac+5)",
+    "diplome": "Licence / Master",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "MENTION-BIOTECH-AGRO",
+    "nom": "Biotechnologie et Agronomie",
+    "niveau": "Licence (Bac+3) puis Master ou Diplôme d'Ingénieur (Bac+5)",
+    "diplome": "Licence / Master / Diplôme d'Ingénieur",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "MENTION-TOURISME",
+    "nom": "Tourisme",
+    "niveau": "Licence (Bac+3) puis Master (Bac+5)",
+    "diplome": "Licence / Master",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  }
+]

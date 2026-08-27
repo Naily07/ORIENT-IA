@@ -1,0 +1,1728 @@
+{
+  "date": "2026-08-27T02:56:01.575461+00:00",
+  "taille_jeu_de_donnees": 800,
+  "taille_test": 200,
+  "avertissement": "Évaluation sur données synthétiques uniquement (voir donnees_synthetiques.py) : mesure la capacité du modèle à retrouver les hypothèses de génération, pas sa capacité à orienter de vrais candidats. La validation sur l'enquête réelle (ML-7) reste à faire une fois DATA-4/DATA-7 disponibles.",
+  "modele_de_production_calibre": {
+    "exactitude": 0.995,
+    "precision_macro": 0.9951923076923077,
+    "rappel_macro": 0.9951923076923077,
+    "f1_macro": 0.995,
+    "par_classe": {
+      "AEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "CAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "DTJA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMII": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "ESIIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "FIC": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "GCA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "ICMP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "IGGLIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IMTICIA": {
+        "precision": 0.9230769230769231,
+        "rappel": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "ISAIA": {
+        "precision": 1.0,
+        "rappel": 0.9230769230769231,
+        "f1": 0.96,
+        "support": 13
+      },
+      "PIP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEH": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      }
+    },
+    "top_3_accuracy": 1.0,
+    "mrr": 0.9975,
+    "ndcg_3": 0.9981546487678572,
+    "rang_median_bonne_classe": 1.0,
+    "pr_auc_macro": 1.0,
+    "calibration": {
+      "confiance_moyenne_predictions_correctes": 0.964790554430005,
+      "confiance_moyenne_predictions_erronees": 0.5065049069031037,
+      "ece": 0.03339734797860132,
+      "ecart_signe_confiance_moins_exactitude": -0.03250087380762923,
+      "score_de_brier": 0.016295130938172458,
+      "tranches": [
+        {
+          "intervalle": [
+            0.4,
+            0.5
+          ],
+          "effectif": 1,
+          "confiance_moyenne": 0.4197864597695103,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.5,
+            0.6
+          ],
+          "effectif": 2,
+          "confiance_moyenne": 0.5448237085485991,
+          "exactitude": 0.5
+        },
+        {
+          "intervalle": [
+            0.6,
+            0.7
+          ],
+          "effectif": 3,
+          "confiance_moyenne": 0.6631611437703682,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.7,
+            0.8
+          ],
+          "effectif": 8,
+          "confiance_moyenne": 0.7681767213439057,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.8,
+            0.9
+          ],
+          "effectif": 7,
+          "confiance_moyenne": 0.8623529824545545,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.9,
+            1.0
+          ],
+          "effectif": 179,
+          "confiance_moyenne": 0.9878157725271687,
+          "exactitude": 1.0
+        }
+      ]
+    },
+    "matrice_confusion": {
+      "labels": [
+        "AEE",
+        "CAA",
+        "DTJA",
+        "EMII",
+        "EMP",
+        "ESIIA",
+        "FIC",
+        "GCA",
+        "IAA",
+        "ICMP",
+        "IGGLIA",
+        "IMTICIA",
+        "ISAIA",
+        "PIP",
+        "TEE",
+        "TEH"
+      ],
+      "matrice": [
+        [
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          12,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13
+        ]
+      ],
+      "par_vraie_classe": {
+        "AEE": {
+          "AEE": 12
+        },
+        "CAA": {
+          "CAA": 12
+        },
+        "DTJA": {
+          "DTJA": 13
+        },
+        "EMII": {
+          "EMII": 13
+        },
+        "EMP": {
+          "EMP": 13
+        },
+        "ESIIA": {
+          "ESIIA": 12
+        },
+        "FIC": {
+          "FIC": 13
+        },
+        "GCA": {
+          "GCA": 13
+        },
+        "IAA": {
+          "IAA": 12
+        },
+        "ICMP": {
+          "ICMP": 12
+        },
+        "IGGLIA": {
+          "IGGLIA": 13
+        },
+        "IMTICIA": {
+          "IMTICIA": 12
+        },
+        "ISAIA": {
+          "IMTICIA": 1,
+          "ISAIA": 12
+        },
+        "PIP": {
+          "PIP": 12
+        },
+        "TEE": {
+          "TEE": 12
+        },
+        "TEH": {
+          "TEH": 13
+        }
+      }
+    }
+  },
+  "baseline_regression_logistique": {
+    "exactitude": 0.995,
+    "precision_macro": 0.9951923076923077,
+    "rappel_macro": 0.9947916666666666,
+    "f1_macro": 0.9947826086956522,
+    "par_classe": {
+      "AEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "CAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "DTJA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMII": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "EMP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "ESIIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "FIC": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "GCA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IAA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "ICMP": {
+        "precision": 0.9230769230769231,
+        "rappel": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "IGGLIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IMTICIA": {
+        "precision": 1.0,
+        "rappel": 0.9166666666666666,
+        "f1": 0.9565217391304348,
+        "support": 12
+      },
+      "ISAIA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "PIP": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEE": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "TEH": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      }
+    },
+    "top_3_accuracy": 1.0,
+    "mrr": 0.9975,
+    "ndcg_3": 0.9981546487678572,
+    "rang_median_bonne_classe": 1.0,
+    "pr_auc_macro": 0.999599358974359,
+    "calibration": {
+      "confiance_moyenne_predictions_correctes": 0.8813976794512616,
+      "confiance_moyenne_predictions_erronees": 0.3343680308502501,
+      "ece": 0.11968114910024602,
+      "ecart_signe_confiance_moins_exactitude": -0.11633746879174356,
+      "score_de_brier": 0.03362210992723294,
+      "tranches": [
+        {
+          "intervalle": [
+            0.3,
+            0.4
+          ],
+          "effectif": 1,
+          "confiance_moyenne": 0.3343680308502501,
+          "exactitude": 0.0
+        },
+        {
+          "intervalle": [
+            0.4,
+            0.5
+          ],
+          "effectif": 1,
+          "confiance_moyenne": 0.4360204858544446,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.5,
+            0.6
+          ],
+          "effectif": 5,
+          "confiance_moyenne": 0.5552752821226726,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.6,
+            0.7
+          ],
+          "effectif": 12,
+          "confiance_moyenne": 0.6592642035833611,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.7,
+            0.8
+          ],
+          "effectif": 20,
+          "confiance_moyenne": 0.7583496988250169,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.8,
+            0.9
+          ],
+          "effectif": 46,
+          "confiance_moyenne": 0.8653855197131084,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.9,
+            1.0
+          ],
+          "effectif": 115,
+          "confiance_moyenne": 0.9504334172872138,
+          "exactitude": 1.0
+        }
+      ]
+    },
+    "matrice_confusion": {
+      "labels": [
+        "AEE",
+        "CAA",
+        "DTJA",
+        "EMII",
+        "EMP",
+        "ESIIA",
+        "FIC",
+        "GCA",
+        "IAA",
+        "ICMP",
+        "IGGLIA",
+        "IMTICIA",
+        "ISAIA",
+        "PIP",
+        "TEE",
+        "TEH"
+      ],
+      "matrice": [
+        [
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          11,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13
+        ]
+      ],
+      "par_vraie_classe": {
+        "AEE": {
+          "AEE": 12
+        },
+        "CAA": {
+          "CAA": 12
+        },
+        "DTJA": {
+          "DTJA": 13
+        },
+        "EMII": {
+          "EMII": 13
+        },
+        "EMP": {
+          "EMP": 13
+        },
+        "ESIIA": {
+          "ESIIA": 12
+        },
+        "FIC": {
+          "FIC": 13
+        },
+        "GCA": {
+          "GCA": 13
+        },
+        "IAA": {
+          "IAA": 12
+        },
+        "ICMP": {
+          "ICMP": 12
+        },
+        "IGGLIA": {
+          "IGGLIA": 13
+        },
+        "IMTICIA": {
+          "ICMP": 1,
+          "IMTICIA": 11
+        },
+        "ISAIA": {
+          "ISAIA": 13
+        },
+        "PIP": {
+          "PIP": 12
+        },
+        "TEE": {
+          "TEE": 12
+        },
+        "TEH": {
+          "TEH": 13
+        }
+      }
+    }
+  },
+  "modele_foret_aleatoire": {
+    "exactitude": 0.86,
+    "precision_macro": 0.8737092768342769,
+    "rappel_macro": 0.859375,
+    "f1_macro": 0.8602170574996661,
+    "par_classe": {
+      "AEE": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "CAA": {
+        "precision": 0.7857142857142857,
+        "rappel": 0.9166666666666666,
+        "f1": 0.8461538461538461,
+        "support": 12
+      },
+      "DTJA": {
+        "precision": 0.65,
+        "rappel": 1.0,
+        "f1": 0.7878787878787878,
+        "support": 13
+      },
+      "EMII": {
+        "precision": 0.9285714285714286,
+        "rappel": 1.0,
+        "f1": 0.9629629629629629,
+        "support": 13
+      },
+      "EMP": {
+        "precision": 0.7692307692307693,
+        "rappel": 0.7692307692307693,
+        "f1": 0.7692307692307693,
+        "support": 13
+      },
+      "ESIIA": {
+        "precision": 0.8888888888888888,
+        "rappel": 0.6666666666666666,
+        "f1": 0.7619047619047619,
+        "support": 12
+      },
+      "FIC": {
+        "precision": 1.0,
+        "rappel": 0.9230769230769231,
+        "f1": 0.96,
+        "support": 13
+      },
+      "GCA": {
+        "precision": 1.0,
+        "rappel": 1.0,
+        "f1": 1.0,
+        "support": 13
+      },
+      "IAA": {
+        "precision": 1.0,
+        "rappel": 0.75,
+        "f1": 0.8571428571428571,
+        "support": 12
+      },
+      "ICMP": {
+        "precision": 0.9230769230769231,
+        "rappel": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "IGGLIA": {
+        "precision": 0.7142857142857143,
+        "rappel": 0.7692307692307693,
+        "f1": 0.7407407407407407,
+        "support": 13
+      },
+      "IMTICIA": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "ISAIA": {
+        "precision": 0.9,
+        "rappel": 0.6923076923076923,
+        "f1": 0.782608695652174,
+        "support": 13
+      },
+      "PIP": {
+        "precision": 0.8461538461538461,
+        "rappel": 0.9166666666666666,
+        "f1": 0.88,
+        "support": 12
+      },
+      "TEE": {
+        "precision": 0.9090909090909091,
+        "rappel": 0.8333333333333334,
+        "f1": 0.8695652173913043,
+        "support": 12
+      },
+      "TEH": {
+        "precision": 0.8461538461538461,
+        "rappel": 0.8461538461538461,
+        "f1": 0.8461538461538461,
+        "support": 13
+      }
+    },
+    "top_3_accuracy": 0.995,
+    "mrr": 0.9254166666666666,
+    "ndcg_3": 0.9424383265892885,
+    "rang_median_bonne_classe": 1.0,
+    "pr_auc_macro": 0.9660827526636723,
+    "calibration": {
+      "confiance_moyenne_predictions_correctes": 0.6572674418604652,
+      "confiance_moyenne_predictions_erronees": 0.3192857142857143,
+      "ece": 0.2642500000000001,
+      "ecart_signe_confiance_moins_exactitude": -0.25005,
+      "score_de_brier": 0.257538,
+      "tranches": [
+        {
+          "intervalle": [
+            0.1,
+            0.2
+          ],
+          "effectif": 4,
+          "confiance_moyenne": 0.1925,
+          "exactitude": 0.75
+        },
+        {
+          "intervalle": [
+            0.2,
+            0.3
+          ],
+          "effectif": 13,
+          "confiance_moyenne": 0.2630769230769231,
+          "exactitude": 0.15384615384615385
+        },
+        {
+          "intervalle": [
+            0.3,
+            0.4
+          ],
+          "effectif": 26,
+          "confiance_moyenne": 0.34096153846153854,
+          "exactitude": 0.5
+        },
+        {
+          "intervalle": [
+            0.4,
+            0.5
+          ],
+          "effectif": 14,
+          "confiance_moyenne": 0.4532142857142857,
+          "exactitude": 0.8571428571428571
+        },
+        {
+          "intervalle": [
+            0.5,
+            0.6
+          ],
+          "effectif": 23,
+          "confiance_moyenne": 0.5645652173913044,
+          "exactitude": 0.9565217391304348
+        },
+        {
+          "intervalle": [
+            0.6,
+            0.7
+          ],
+          "effectif": 40,
+          "confiance_moyenne": 0.6553749999999999,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.7,
+            0.8
+          ],
+          "effectif": 46,
+          "confiance_moyenne": 0.7438043478260868,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.8,
+            0.9
+          ],
+          "effectif": 29,
+          "confiance_moyenne": 0.8458620689655173,
+          "exactitude": 1.0
+        },
+        {
+          "intervalle": [
+            0.9,
+            1.0
+          ],
+          "effectif": 5,
+          "confiance_moyenne": 0.929,
+          "exactitude": 1.0
+        }
+      ]
+    },
+    "matrice_confusion": {
+      "labels": [
+        "AEE",
+        "CAA",
+        "DTJA",
+        "EMII",
+        "EMP",
+        "ESIIA",
+        "FIC",
+        "GCA",
+        "IAA",
+        "ICMP",
+        "IGGLIA",
+        "IMTICIA",
+        "ISAIA",
+        "PIP",
+        "TEE",
+        "TEH"
+      ],
+      "matrice": [
+        [
+          10,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          11,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          1,
+          8,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          9,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          11,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          11
+        ]
+      ],
+      "par_vraie_classe": {
+        "AEE": {
+          "AEE": 10,
+          "CAA": 1,
+          "IGGLIA": 1
+        },
+        "CAA": {
+          "CAA": 11,
+          "IGGLIA": 1
+        },
+        "DTJA": {
+          "DTJA": 13
+        },
+        "EMII": {
+          "EMII": 13
+        },
+        "EMP": {
+          "DTJA": 2,
+          "EMP": 10,
+          "ICMP": 1
+        },
+        "ESIIA": {
+          "DTJA": 1,
+          "EMP": 1,
+          "ESIIA": 8,
+          "IGGLIA": 1,
+          "TEH": 1
+        },
+        "FIC": {
+          "FIC": 12,
+          "IGGLIA": 1
+        },
+        "GCA": {
+          "GCA": 13
+        },
+        "IAA": {
+          "CAA": 1,
+          "DTJA": 2,
+          "IAA": 9
+        },
+        "ICMP": {
+          "ICMP": 12
+        },
+        "IGGLIA": {
+          "EMP": 2,
+          "ESIIA": 1,
+          "IGGLIA": 10
+        },
+        "IMTICIA": {
+          "DTJA": 1,
+          "IMTICIA": 10,
+          "ISAIA": 1
+        },
+        "ISAIA": {
+          "DTJA": 1,
+          "EMII": 1,
+          "IMTICIA": 1,
+          "ISAIA": 9,
+          "TEH": 1
+        },
+        "PIP": {
+          "PIP": 11,
+          "TEE": 1
+        },
+        "TEE": {
+          "AEE": 1,
+          "CAA": 1,
+          "TEE": 10
+        },
+        "TEH": {
+          "PIP": 2,
+          "TEH": 11
+        }
+      }
+    }
+  },
+  "erreurs_frequentes_foret_aleatoire": [
+    {
+      "vrai": "IAA",
+      "predit": "DTJA",
+      "occurrences": 2
+    },
+    {
+      "vrai": "EMP",
+      "predit": "DTJA",
+      "occurrences": 2
+    },
+    {
+      "vrai": "IGGLIA",
+      "predit": "EMP",
+      "occurrences": 2
+    },
+    {
+      "vrai": "TEH",
+      "predit": "PIP",
+      "occurrences": 2
+    },
+    {
+      "vrai": "IAA",
+      "predit": "CAA",
+      "occurrences": 1
+    }
+  ],
+  "stabilite_foret_aleatoire": {
+    "exactitude_moyenne": 0.858,
+    "exactitude_ecart_type": 0.02420743687382043,
+    "exactitudes": [
+      0.89,
+      0.84,
+      0.855,
+      0.825,
+      0.88
+    ]
+  },
+  "apport_de_la_calibration": {
+    "lecture": "La régression logistique brute est nettement sous-confiante sur ce jeu : elle réussit plus souvent qu'elle ne l'annonce, donc le score montré à un candidat ne correspond à aucune fréquence réelle. La calibration isotonique (bornée, voir ml/entrainement.ModeleBorne) corrige cet écart sans toucher à l'exactitude ni neutraliser le garde-fou d'escalade.",
+    "ece_avant": 0.11968114910024602,
+    "ece_apres": 0.03339734797860132
+  },
+  "chemin_de_production": {
+    "classement": {
+      "effectif": 200,
+      "top_1": 0.995,
+      "top_3": 1.0,
+      "mrr": 0.9975,
+      "ndcg_3": 0.9981546487678572,
+      "rang_median_bonne_classe": 1.0,
+      "profils_juges_inexploitables": 0,
+      "parcours_absents_du_classement": 0
+    },
+    "stabilite_des_recommandations": {
+      "profils_compares": 200,
+      "perturbation": "retrait d'un trait déclaré au hasard",
+      "top_1_inchange": 0.995,
+      "selection_presentee_inchangee": 0.955,
+      "top_3_fixe_inchange": 0.855
+    },
+    "profils_de_test_avec_serie_bac_declaree": 0,
+    "lecture": "Mesuré à travers ml.outils.analyser_profil : vocabulaire ouvert, garde-fou d'exploitabilité et règles d'admission compris. 0 profil(s) de test sur 200 déclarent une série de baccalauréat : les règles d'admission (ml/hybride.py) ne s'appliquent qu'à ceux-là et sont donc inertes sur ce jeu, faute d'une série générée par donnees_synthetiques.py. L'écart attendu entre estimateur et chemin de production ne sera mesurable qu'une fois l'enquête réelle disponible (DATA-4, ML-7) — c'est une limite du jeu synthétique, pas une absence d'effet des règles, dont l'effet est démontré à part dans backend/tests/ml/test_hybride.py."
+  }
+}

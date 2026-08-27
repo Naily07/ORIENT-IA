@@ -1,0 +1,146 @@
+[
+  {
+    "id": "DOC-IGGLIA",
+    "titre": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "categorie": "informatique_telecom",
+    "contenu": "Le parcours IGGLIA forme des ingénieurs et des techniciens supérieurs maîtrisant les techniques informatiques, avec une orientation vers la gestion, le génie logiciel et l'intelligence artificielle. Il fait partie de la mention Informatique et Télécommunications.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-ESIIA",
+    "titre": "ESIIA — Électronique, Systèmes Informatiques et Intelligence Artificielle",
+    "categorie": "informatique_telecom",
+    "contenu": "Le parcours ESIIA combine électronique et informatique : les diplômés maîtrisent l'électronique et la structure des ordinateurs, avec une ouverture vers l'intelligence artificielle. Il fait partie de la mention Informatique et Télécommunications.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-IMTICIA",
+    "titre": "IMTICIA — Informatique, Multimédia, Technologies de l'Information et de la Communication et Intelligence Artificielle",
+    "categorie": "informatique_telecom",
+    "contenu": "Le parcours IMTICIA est centré sur l'informatique multimédia et les technologies modernes de communication. Il fait partie de la mention Informatique et Télécommunications.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-ISAIA",
+    "titre": "ISAIA — Informatique, Statistique Appliquée et Intelligence Artificielle",
+    "categorie": "informatique_telecom",
+    "contenu": "Le parcours ISAIA met l'accent sur les méthodes statistiques appliquées par l'informatique dans les secteurs économiques (banque, industrie, commerce). Il fait partie de la mention Informatique et Télécommunications.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-EMII",
+    "titre": "EMII — Électromécanique et Techniques Industrielles Informatisées",
+    "categorie": "genie_industriel",
+    "contenu": "Le parcours EMII forme des spécialistes en mécanique et technologies industrielles, associées à l'informatique industrielle. Il fait partie de la mention Génie Industriel.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-ICMP",
+    "titre": "ICMP — Industries Chimiques, Minières et Pétrolières",
+    "categorie": "genie_industriel",
+    "contenu": "Le parcours ICMP forme des experts pour les industries chimique, minière et pétrolière. Il fait partie de la mention Génie Industriel.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-GCA",
+    "titre": "GCA — Génie Civil et Architecture",
+    "categorie": "genie_civil_architecture",
+    "contenu": "Le parcours GCA prépare des professionnels pour le développement des infrastructures et l'aménagement urbain et rural. Il constitue à lui seul la mention Génie Civil et Architecture.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-CAA",
+    "titre": "CAA — Commerce et Administration des Affaires",
+    "categorie": "droit_techniques_affaires",
+    "contenu": "Le parcours CAA forme des professionnels aux stratégies commerciales et à la gestion d'entreprise. Il fait partie de la mention Droit et Techniques des Affaires. Note de traçabilité : le développement exact du sigle diverge selon les sources consultées (« Commerce et Administration des Affaires » ou « Commerce et Affaires ») — à confirmer directement auprès de l'ISPM.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ANNUAIRE-MG"
+  },
+  {
+    "id": "DOC-FIC",
+    "titre": "FIC — Finance et Comptabilité des Entreprises",
+    "categorie": "droit_techniques_affaires",
+    "contenu": "Le parcours FIC développe une expertise dans les techniques quantitatives de gestion des entreprises. Il fait partie de la mention Droit et Techniques des Affaires.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-DTJA",
+    "titre": "DTJA — Droit et Techniques Juridiques des Affaires",
+    "categorie": "droit_techniques_affaires",
+    "contenu": "Le parcours DTJA forme des techniciens juridiques combinant techniques juridiques et outils informatiques. Il fait partie de la mention Droit et Techniques des Affaires.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-EMP",
+    "titre": "EMP — Économie et Management de Projet",
+    "categorie": "droit_techniques_affaires",
+    "contenu": "Le parcours EMP prépare des économistes capables de travaux d'analyse dans les secteurs public et privé. Il fait partie de la mention Droit et Techniques des Affaires.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-IAA",
+    "titre": "IAA — Industries Agro-Alimentaires",
+    "categorie": "biotechnologie_agronomie",
+    "contenu": "Le parcours IAA forme des cadres pour les industries de transformation alimentaire. Il fait partie de la mention Biotechnologie et Agronomie.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-PIP",
+    "titre": "PIP — Pharmacologie et Industries Pharmaceutiques",
+    "categorie": "biotechnologie_agronomie",
+    "contenu": "Le parcours PIP est centré sur les propriétés thérapeutiques des plantes médicinales endémiques de Madagascar. Il fait partie de la mention Biotechnologie et Agronomie.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-AEE",
+    "titre": "AEE - Agriculture et Elevage",
+    "categorie": "biotechnologie_agronomie",
+    "contenu": "Le parcours AEE vise les professionnels du développement rural appliquant des technologies agricoles modernes. Il fait partie de la mention Biotechnologie et Agronomie. Note de traçabilité : le développement complet du sigle AEE n'a pas pu être confirmé dans les sources consultées.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-TEE",
+    "titre": "TEE — Tourisme de l'Environnement",
+    "categorie": "tourisme",
+    "contenu": "Le parcours TEE met en avant le patrimoine environnemental unique de Madagascar pour les professionnels du tourisme. Il fait partie de la mention Tourisme.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-TEH",
+    "titre": "TEH — Tourisme et Hôtellerie",
+    "categorie": "tourisme",
+    "contenu": "Le parcours TEH met en avant le patrimoine culturel de Madagascar pour les professionnels de l'hôtellerie et du tourisme. Il fait partie de la mention Tourisme.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-FILIERES"
+  },
+  {
+    "id": "DOC-NIVEAUX-DIPLOMES",
+    "titre": "Niveaux de diplômes délivrés par l'ISPM",
+    "categorie": "informations_generales",
+    "contenu": "L'ISPM délivre des diplômes à trois niveaux. La Licence (Bac+3) correspond à trois années de formation théorique et pratique suivies d'un stage de trois mois en entreprise, validées par une soutenance de mémoire. Le Master ou le Diplôme d'Ingénieur (Bac+5) correspond à deux années supplémentaires d'approfondissement, suivies d'un stage généralement consacré à des travaux de recherche de six mois, conclu par une soutenance publique. Le Doctorat correspond à des années de recherche supplémentaires.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-PRESENTATION"
+  },
+  {
+    "id": "DOC-CONDITIONS-ADMISSION",
+    "titre": "Conditions d'admission à l'ISPM",
+    "categorie": "informations_generales",
+    "contenu": "L'admission en première année exige le baccalauréat, avec des séries spécifiques selon la mention visée : Bac C, D, S ou techniques industrielles pour Informatique et Télécommunications ainsi que pour Génie Industriel ; Bac C, D, S ou techniques du génie civil pour Génie Civil et Architecture ; Bac C, D, S, techniques agricoles, ou A2 avec une note de mathématiques d'au moins 12/20 pour Biotechnologie et Agronomie ; Bac toute série pour Droit et Techniques des Affaires ainsi que pour Tourisme. Les candidats doivent fournir leur diplôme ou attestation ou relevé de notes du baccalauréat, au moins un bulletin scolaire (première ou terminale), une lettre de motivation adressée au Recteur, et s'acquitter d'un droit d'inscription de 30 000 Ariary. L'accès se fait par voie de sélection sur dossier.",
+    "derniere_maj": "2026-08-26T00:00:00",
+    "source_id": "SRC-ISPM-INSCRIPTION"
+  }
+]

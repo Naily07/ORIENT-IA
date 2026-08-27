@@ -8,6 +8,7 @@ plus que la boucle fonctionne réellement contre l'API Gemini — à lancer avec
 import pytest
 
 from src.agent import run_agent
+from src.ml.features import analyser_couverture
 from src.schemas import ProfilCandidat, RecommandationDecision
 
 
@@ -247,10 +248,15 @@ def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
     assert 1 <= len(resultat.parcours_recommandes) <= 3
 
 
-def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, profil):
-    """À l'inverse, une action `demande_information` (ou `information`,
-    `renvoi_administration`) ne doit pas déclencher le garde-fou : consulter
-    le modèle ML n'a pas de sens tant que le profil est jugé insuffisant."""
+def test_demande_information_sur_profil_trop_mince_ne_consulte_pas_le_ml(
+    monkeypatch, profil
+):
+    """`demande_information` sur un profil que le compte déterministe de traits
+    juge inexploitable (ici une seule matière déclarée, seuil à 2) : le
+    garde-fou ne se déclenche pas. Classer un profil que le modèle ne peut pas
+    exploiter reviendrait à présenter la distribution a priori comme un
+    résultat (ML-9)."""
+    assert not analyser_couverture(profil).exploitable  # prémisse du test
     decision = _decision_type(action="demande_information", confiance=0.6)
     monkeypatch.setattr(
         "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
@@ -259,6 +265,42 @@ def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, pr
     resultat = run_agent("Question", profil, None, "trace-9")
 
     assert "analyser_profil_ml" not in resultat.outils_utilises
+    assert resultat.action == "demande_information"
+
+
+def test_demande_information_sur_profil_suffisant_consulte_le_ml_et_recommande(
+    monkeypatch,
+):
+    """Défaut EVAL-11, reproduit ici sans réseau : sur un profil que le compte
+    déterministe juge exploitable, le modèle de langage répondait « dites-m'en
+    plus » sans consulter le modèle ML — qui rend pourtant un classement fondé
+    sur ce même profil. Le code contresigne : il consulte, et la recommandation
+    fondée n'est plus tue au profit d'une question."""
+    profil_suffisant = ProfilCandidat(
+        matieres_preferees=["biologie", "chimie"],
+        centres_interet=["sante", "recherche"],
+        serie_bac="D",
+    )
+    assert analyser_couverture(profil_suffisant).exploitable  # prémisse du test
+    decision = _decision_type(
+        action="demande_information",
+        confiance=0.4,
+        parcours_recommandes=[],
+        informations_manquantes=["résultats scolaires"],
+        reponse="Pouvez-vous me dire vos résultats scolaires ?",
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Quel parcours me conseilles-tu ?", profil_suffisant, None, "trace-11")
+
+    assert "analyser_profil_ml" in resultat.outils_utilises
+    assert resultat.action == "recommandation"
+    assert resultat.parcours_recommandes
+    # La demande de précisions n'est pas effacée : elle accompagne la
+    # recommandation au lieu de la remplacer.
+    assert resultat.informations_manquantes == ["résultats scolaires"]
 
 
 def test_information_confiance_faible_ne_bascule_pas_en_escalade(monkeypatch, profil):

@@ -46,6 +46,7 @@ from google.genai import types
 from src.config import config
 from src.llm_client import LLMError, llm_call_with_tools
 from src.ml.archetypes import PARCOURS_CONNUS
+from src.ml.features import analyser_couverture
 from src.ml.outils import analyser_profil as analyser_profil_ml
 from src.ml.outils import selectionner_significatifs
 from src.schemas import (
@@ -377,13 +378,32 @@ def _forcer_consultation_du_modele_ml(
     défendable qu'une recommandation qui ne le serait pas (§2 du sujet :
     recommandation *argumentée*, §6 : distinguer les résultats du modèle du
     texte généré — une décision de ne pas recommander en est aussi une).
-    `demande_information`/`information`/`renvoi_administration` ne sont pas
-    concernées : consulter le modèle ML n'a pas de sens tant que le profil
-    est jugé insuffisant ou que la question est purement factuelle ou
-    administrative."""
+    `information`/`renvoi_administration` ne sont pas concernées : consulter le
+    modèle ML n'a pas de sens sur une question purement factuelle ou
+    administrative.
+
+    `demande_information` est un cas à part, et c'est un défaut mesuré :
+    EVAL-11 (« Quel parcours me conseilles-tu ? » sur un profil déclarant
+    biologie, chimie, santé, recherche et une série D) répondait « dites-m'en
+    plus » sans jamais consulter le modèle — qui, interrogé sur ce même profil,
+    rend un classement à **0,81 de confiance**. Cette branche était donc exclue
+    sur la seule parole du modèle de langage (« le profil est trop mince »),
+    exactement le genre d'auto-déclaration que le reste de ce module refuse de
+    croire. L'autorité sur la question « ce profil est-il exploitable ? » est
+    `features.analyser_couverture().exploitable`, un compte déterministe de
+    traits reconnus (ML-9) — pas l'avis du modèle. Quand ce compte dit oui, on
+    consulte, et une recommandation fondée ne peut plus être tue au profit
+    d'une question : la question reste posée dans la prose et
+    `informations_manquantes` reste renseigné, la recommandation s'y ajoute."""
+    if "analyser_profil_ml" in outils_utilises:
+        return decision, outils_utilises
+
+    demande_alors_que_le_profil_suffit = (
+        decision.action == "demande_information" and analyser_couverture(profil).exploitable
+    )
     if (
         decision.action not in _ACTIONS_NECESSITANT_LE_MODELE_ML
-        or "analyser_profil_ml" in outils_utilises
+        and not demande_alors_que_le_profil_suffit
     ):
         return decision, outils_utilises
 
@@ -394,6 +414,18 @@ def _forcer_consultation_du_modele_ml(
         if decision.parcours_recommandes
         else "consulté après coup : aucun score n'avait été calculé avant cette décision."
     )
+    action = decision.action
+    if (
+        demande_alors_que_le_profil_suffit
+        and analyse.profil_exploitable
+        and analyse.parcours_candidats
+    ):
+        action = "recommandation"
+        note += (
+            " Le profil déclaré était suffisant pour le modèle : la demande de "
+            "précisions ne remplace pas la recommandation qu'il fonde, elle "
+            "l'accompagne."
+        )
     decision = decision.model_copy(
         update={
             # Seuls les parcours réellement distinguables du leader, et non les
@@ -403,6 +435,7 @@ def _forcer_consultation_du_modele_ml(
             # liste instable au moindre changement de profil.
             "parcours_recommandes": selectionner_significatifs(analyse.parcours_candidats),
             "confiance": analyse.confiance,
+            "action": action,
             "explication": (
                 f"{decision.explication}\n[Contrôle automatique] Le modèle ML a été {note}"
             ),

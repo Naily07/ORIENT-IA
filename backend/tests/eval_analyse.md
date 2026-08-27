@@ -8,13 +8,11 @@ couverture sans réseau des mêmes mécanismes.
 
 ## Résultat global
 
-**30/32 cas réussis (93,75 %)**, latence moyenne 9,1 s par requête (min proche de 0 ms
-pour les injections détectées par mots-clés, qui court-circuitent tout appel LLM ; max
-22,3 s).
+**31/32 cas réussis (96,9 %)**.
 
 | Catégorie | Résultat |
 |---|---|
-| Questions factuelles | 4/5 |
+| Questions factuelles | 5/5 |
 | Comparaisons entre parcours | 4/4 |
 | Profils nécessitant le ML | 6/6 |
 | Multi-sources / multi-étapes | 3/4 |
@@ -24,16 +22,31 @@ pour les injections détectées par mots-clés, qui court-circuitent tout appel 
 | Cas sensibles aux biais | 2/2 |
 | Provenance et refus du profilage | 2/2 |
 
-Répartition des actions retenues sur les 32 cas : 12 `information`, 5 `recommandation`,
-14 `escalade_conseiller`, 1 `demande_information`, 0 `renvoi_administration`.
+Répartition des actions retenues sur les 32 cas : 14 `information`,
+14 `escalade_conseiller`, 3 `recommandation`, 1 `demande_information`,
+0 `renvoi_administration`.
 
-**Ce chiffre a été obtenu après un premier run à 27/32** — trois défauts réels ont été
-trouvés et corrigés entre les deux, détaillés ci-dessous plutôt que masqués.
+**La latence de ce run n'est pas exploitable** et ne doit pas être citée comme mesure
+de performance : le quota journalier du Free Tier a été atteint en cours d'exécution
+(`429 RESOURCE_EXHAUSTED`, reprises imposées de 55 à 59 s), ce qui porte la moyenne à
+31,2 s et le maximum à 120,1 s. Le run du 26/08, mené sans saturation de quota, donnait
+**9,1 s de moyenne** (min proche de 0 ms pour les injections détectées par mots-clés,
+qui court-circuitent tout appel LLM ; max 22,3 s) : c'est cet ordre de grandeur qui
+décrit le système.
+
+Deux enseignements de cette dégradation, plutôt que de la masquer : deux cas ont dégradé
+sur budget de temps et la vérification anti-injection est retombée sur sa seule couche
+mots-clés — et le total reste **31/32**. Les chemins de repli d'ORCH-3 tiennent en
+conditions réellement dégradées, ce qu'un run confortable ne démontre pas.
+
+**Ce chiffre a été obtenu après un premier run à 27/32, puis un passage à 28/32** —
+trois défauts de code trouvés et corrigés avant les fusions du 27/08, deux autres après,
+plus un angle mort du jeu de test RAG. Tous sont détaillés ci-dessous plutôt que masqués.
 
 **Ces chiffres sont ceux du système fusionné**, mesurés après l'intégration des blocs
 Ontologie (`graphe.py`, outils `detecter_incoherences` / `verifier_prerequis` sur
 graphe) et Observabilité livrés en parallèle. Une première mesure avait été faite avant
-cette fusion et donnait le même total (30/32) avec une répartition différente
+cette fusion et donnait 30/32 avec une répartition différente
 (`profils_ml` 5/6, `questions_factuelles` 5/5) : conserver ces chiffres-là aurait
 signifié publier des résultats ne correspondant pas au code livré, d'où la remesure.
 L'apport des outils d'ontologie est visible sur la catégorie `profils_ml`, passée de
@@ -62,6 +75,38 @@ L'apport des outils d'ontologie est visible sur la catégorie `profils_ml`, pass
    fondée qu'une recommandation inventée. Étendu pour couvrir aussi
    `escalade_conseiller` (voir `agent._forcer_consultation_du_modele_ml`).
 
+Trois autres défauts ont été révélés par la remesure du 27/08, après les fusions des
+blocs conversation, calibration ML et frontend — le total était alors retombé à 28/32 :
+
+6. **Le modèle ML n'était pas consulté sur un profil pourtant exploitable (`EVAL-11`).**
+   Sur « biologie, chimie, santé, recherche, série D », l'agent répondait
+   `demande_information` sans jamais appeler `analyser_profil_ml` — alors que le modèle,
+   interrogé sur ce même profil, rend un classement à 0,81 de confiance.
+   `_forcer_consultation_du_modele_ml` excluait `demande_information` au motif que le
+   profil était « jugé insuffisant » : jugé par le modèle de langage lui-même, donc une
+   auto-déclaration, exactement ce que le reste du module refuse de croire. L'autorité
+   est désormais `features.analyser_couverture().exploitable`, un compte déterministe de
+   traits reconnus (ML-9), et une recommandation fondée n'est plus tue au profit d'une
+   question — la question reste posée, la recommandation s'y ajoute.
+
+7. **Les fiches thématiques évinçaient un parcours nommé (`EVAL-06`, `EVAL-09`).** Sur
+   « Compare ISAIA et IGGLIA », le top-k était saturé par `ISAIA-DEBOUCHES`, `ISAIA`,
+   `ISAIA-MATIERES`, `DOMAINE-INFO` et `MENTION-INFO` : IGGLIA, moitié de la comparaison
+   demandée, n'était pas cité du tout. `_diversifier` plafonne les fragments par
+   document, mais l'enrichissement du corpus a créé plusieurs documents distincts pour
+   un même parcours, chacun comptant pour une source différente. Le défaut n'est pas la
+   pertinence de chaque fragment mais la **couverture** : classer par similarité seule
+   ne garantit rien sur une question portant explicitement sur plusieurs entités. La
+   fiche d'identité d'un parcours nommé est maintenant garantie dans le contexte
+   (`rag._garantir_fiches_des_parcours_nommes`), les fiches thématiques la complétant au
+   lieu de la remplacer. `EVAL-17` se corrige par la même règle.
+
+8. **Le jeu RAG-6 ne pouvait pas voir ce défaut.** Les métriques de `eval_rag.py` sont
+   restées identiques au caractère près avant et après le correctif 7 — parce que ce jeu
+   figé ne contient **aucune question multi-entités**. Il a fallu l'évaluation système
+   pour révéler le problème. Angle mort du jeu de test, pas du système, et signalé comme
+   tel plutôt que corrigé en douce : y ajouter des cas de comparaison reste à décider.
+
 Deux cas du jeu de test lui-même étaient également mal conçus, trouvés en analysant
 les échecs plutôt que supposés corrects a priori :
 
@@ -80,10 +125,13 @@ les échecs plutôt que supposés corrects a priori :
    le comportement réellement attendu (escalade, aucun outil appelé) plutôt que
    l'absence d'une sous-chaîne.
 
-## Les 2 échecs restants : deux causes distinctes, aucune n'est une régression
+## Les 2 échecs du run du 26/08 : deux causes distinctes, aucune n'était une régression
 
-Les deux échecs du run post-fusion portent sur le même critère (`sources_attendues`
-absentes de la réponse), mais pour des raisons différentes.
+Les deux échecs de ce run portaient sur le même critère (`sources_attendues` absentes
+de la réponse), mais pour des raisons différentes. **Les deux sont résolus depuis** —
+`EVAL-01` par la garantie de couverture (défaut 7 ci-dessus), `EVAL-17` par la
+traçabilité des outils structurés (AGT-6) puis par cette même garantie. L'analyse est
+conservée ici parce qu'elle nomme une cause structurelle qui valait d'être comprise.
 
 **`EVAL-01` — non-déterminisme du modèle.** La question (« Qu'est-ce que le parcours
 IGGLIA ? ») reçoit une réponse correcte (`action: information`, confiance 1.0,
@@ -117,8 +165,14 @@ par le bloc Ontologie ; le faire ici élargirait la PR et risquerait un nouveau 
 À traiter comme un ticket dédié.
 
 **Décision sur le score** : ne pas relancer jusqu'à obtenir 32/32 — un chiffre
-« parfait » arraché en réessayant serait moins honnête que 30/32 avec les causes
-documentées. À noter que les runs précédents avaient échoué sur `EVAL-11` et `EVAL-17`
+« parfait » arraché en réessayant serait moins honnête que 31/32 avec les causes
+documentées. Le cas restant, `EVAL-16`, n'est d'ailleurs pas un défaut du système :
+`DOC-GCA` est bien présent dans le contexte fourni au modèle (vérifié directement),
+mais celui-ci ne le cite pas — il répond sur les prérequis et les matières, qui vivent
+désormais dans la fiche de mention et dans `DOC-GCA-MATIERES` depuis la séparation du
+corpus en fiches thématiques. Sa réponse est correctement sourcée pour ce qu'elle
+affirme ; l'attente du jeu de test, elle, date d'avant cette séparation. Le forcer à
+citer une fiche qu'il n'a pas utilisée serait de l'inflation de citation. À noter que les runs précédents avaient échoué sur `EVAL-11` et `EVAL-17`
 pour une **autre** cause encore (instabilité réseau réelle : `504 DEADLINE_EXCEEDED`
 répété, `ReadTimeout`, `ConnectError: getaddrinfo failed`), absorbée dans la plupart
 des cas par le budget de reprise de `llm_client._appeler_avec_reprise()`. Quand elle
@@ -145,11 +199,17 @@ comportement attendu de `orchestrator._decision_repli()`.
   `DOC-DOMAINE-INFORMATIQUE_TELECOM`, comptés comme du bruit par la métrique stricte
   alors qu'ils portent sur le bon parcours. Compromis accepté : sans ces fiches, une
   question factuelle sur les matières d'un parcours restait sans réponse.
-- **Le modèle ML n'a été validé que sur des données synthétiques** (voir
-  `backend/src/ml/donnees_synthetiques.py`) : les scores d'adéquation mesurés ici
-  reflètent la capacité du modèle à retrouver les hypothèses de génération, pas une
-  validation sur de vrais candidats. Ce point reste bloqué sur l'enquête réelle
-  (DATA-4/DATA-7, ML-7), comme documenté depuis le bloc ML.
+- **Le modèle ML est entraîné sur des données synthétiques, et l'écart de
+  généralisation est désormais mesuré, plus supposé.** Les scores élevés du split
+  synthétique (voir `backend/src/ml/donnees_synthetiques.py`) reflètent la capacité
+  du modèle à retrouver les hypothèses de génération, pas une validation sur de vrais
+  candidats. Confronté aux 79 profils réels de l'enquête, gelés et jamais vus à
+  l'entraînement (ML-7), le modèle de production tombe à **1,3 % de top-1** et
+  **7,6 % de top-3**, rang médian de la bonne classe **11** — et le garde-fou
+  d'exploitabilité juge **56 des 79 profils** trop pauvres pour être classés. La
+  cause est identifiée : l'enquête ne recueille que 1 à 4 matières préférées et une
+  note combinée maths/info, très en-deçà des cinq dimensions d'un profil
+  synthétique. Chiffres complets dans `eval_results_ml.json`.
 - **Dépendance au réseau et au Free Tier Gemini**, illustrée ci-dessus par les 2 échecs
   transitoires — un facteur de risque à connaître avant la démonstration finale (voir
   la feuille de route : prévoir une capture d'écran ou une vidéo de secours).

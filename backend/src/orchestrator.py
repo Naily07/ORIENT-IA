@@ -93,6 +93,11 @@ def _escalade_injection(message: str, risque: dict) -> RecommandationDecision:
             "Demande non traitée automatiquement : tentative de manipulation "
             f"détectée. Extrait reçu : « {extrait} »"
         ),
+        reponse=(
+            "Je ne peux pas traiter cette demande : elle contient des consignes "
+            "qui cherchent à modifier mon fonctionnement. Posez-moi votre "
+            "question d'orientation directement et j'y répondrai."
+        ),
         parcours_recommandes=[],
         confiance=1.0,
         informations_manquantes=[],
@@ -114,6 +119,11 @@ def _decision_repli(motif: str) -> RecommandationDecision:
     l'utilisateur lui-même."""
     return RecommandationDecision(
         resume="Une erreur technique est survenue ; votre demande est transmise à un conseiller.",
+        reponse=(
+            "Désolé, un problème technique m'a empêché de traiter votre demande. "
+            "Réessayez dans un instant, ou adressez-vous à un conseiller "
+            "pédagogique de l'ISPM si cela persiste."
+        ),
         parcours_recommandes=[],
         confiance=0.0,
         informations_manquantes=[],
@@ -134,7 +144,7 @@ def _appliquer_controle_de_sortie(decision: RecommandationDecision) -> Recommand
     l'utilisateur — après le plafonnement de confiance, pas avant, pour que
     la raison de l'escalade reste celle réellement en cause plutôt qu'être
     masquée par une dégradation de pipeline sans rapport."""
-    textes = [decision.resume, decision.explication] + [
+    textes = [decision.resume, decision.reponse, decision.explication] + [
         p.justification for p in decision.parcours_recommandes
     ]
     verdict = verifier_sortie(*textes)
@@ -145,6 +155,14 @@ def _appliquer_controle_de_sortie(decision: RecommandationDecision) -> Recommand
         update={
             "action": "escalade_conseiller",
             "incertitude_declaree": True,
+            # Le texte produit contient un motif signalé (critère sensible,
+            # profilage) : on ne le montre pas tel quel à l'utilisateur, on le
+            # remplace par un renvoi neutre vers un conseiller.
+            "reponse": (
+                "Je préfère ne pas répondre en l'état : cette recommandation doit "
+                "être revue par un conseiller pédagogique de l'ISPM avant d'être "
+                "présentée. Adressez-vous à lui pour un accompagnement fiable."
+            ),
             "explication": (
                 f"{decision.explication}\n[Contrôle automatique] Réponse retenue pour "
                 f"revue humaine : {verdict['raison']}."
@@ -197,6 +215,38 @@ def _finaliser(
 # --- Pipeline complet (ORCH-1) -----------------------------------------------
 
 
+def _historique_sain(entree: OrientationInput) -> tuple[list, str | None]:
+    """Écarte de l'historique rejoué les tours dont la question porte un motif
+    d'injection, plutôt que de bloquer toute la requête.
+
+    L'historique vient du client : rien n'empêche un appelant d'y glisser une
+    consigne de manipulation qui n'apparaîtrait jamais dans `message` (§11). Le
+    premier correctif contrôlait donc message **et** historique concaténés —
+    mais une conversation réelle où l'utilisateur a tapé « ignore les
+    documents… » au tour 3 (tentative détectée et refusée à ce moment-là) se
+    retrouvait ensuite bloquée à *tous* les tours suivants, la question fautive
+    restant dans l'historique rejoué. Observé en démonstration.
+
+    On filtre plutôt : une question d'historique qui trip la couche mots-clés
+    (déterministe, sans appel LLM) n'est simplement pas rejouée à l'agent. Le
+    message courant, lui, reste contrôlé en entier par `check_injection`.
+
+    Seules les **questions** sont examinées, pas les réponses : celles-ci sont
+    notre propre prose, déjà filtrée par `verifier_sortie`.
+    """
+    sains = []
+    retires = 0
+    for tour in entree.historique:
+        if tour.question.strip() and check_injection(tour.question, avec_llm=False)["danger"]:
+            retires += 1
+            continue
+        sains.append(tour)
+    note = (
+        f"{retires} tour(s) d'historique écarté(s) (motif d'injection)" if retires else None
+    )
+    return sains, note
+
+
 def traiter_demande(entree: OrientationInput) -> OrientationReponse:
     """Traite une demande de bout en bout et retourne la décision et sa trace.
 
@@ -231,6 +281,10 @@ def _traiter_demande_dans_budget(
         decision = _escalade_injection(entree.message, risque)
         return _finaliser(trace_id, entree, None, decision, depart)
 
+    historique_sain, note_historique = _historique_sain(entree)
+    if note_historique:
+        degradations.append(note_historique)
+
     if risque.get("verification_llm") == "indisponible":
         degradations.append("vérification anti-injection LLM indisponible")
 
@@ -250,7 +304,9 @@ def _traiter_demande_dans_budget(
         decision = _decision_repli("budget de temps dépassé")
     else:
         try:
-            decision = run_agent(entree.message, entree.profil, contexte, trace_id)
+            decision = run_agent(
+                entree.message, entree.profil, contexte, trace_id, historique_sain
+            )
         except LLMError as e:
             logger.warning("Agent indisponible (trace_id=%s) : %s", trace_id, e)
             degradations.append(f"agent indisponible ({type(e).__name__})")

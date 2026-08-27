@@ -36,6 +36,22 @@ def test_rechercher_formation_aucun_resultat(corpus):
     assert resultat["statut"] == "aucun_resultat"
 
 
+def test_rechercher_formation_cible_renvoie_matieres_et_debouches_nommes(corpus):
+    """Une recherche qui ne vise qu'un parcours renvoie sa fiche complète avec
+    les intitulés en clair : sans cela, une question de suivi sur « les
+    matières de cette filière » n'avait aucune donnée exploitable."""
+    resultat = tools.rechercher_formation("IGGLIA")
+    fiche = resultat["parcours"][0]
+    assert fiche["id"] == "IGGLIA"
+    assert fiche["matieres_nommees"] == ["informatique"]
+    assert "matieres_nommees" in fiche and "debouches_nommes" in fiche
+
+
+def test_fiche_parcours_publique_resout_ou_rend_none(corpus):
+    assert tools.fiche_parcours_publique("IGGLIA")["nom"]
+    assert tools.fiche_parcours_publique("PARCOURS-INEXISTANT") is None
+
+
 # --- comparer_parcours ---------------------------------------------------
 
 

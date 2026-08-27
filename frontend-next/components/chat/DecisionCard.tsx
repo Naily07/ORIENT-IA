@@ -21,10 +21,6 @@ const TONALITE_CLASSES: Record<TonaliteAction, string> = {
   violet: "bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-200",
 };
 
-// Ensemble fermé (correspond exactement aux `icone` de `lib/actions-labels.ts`) :
-// une table statique plutôt qu'une résolution dynamique dans tout l'espace de
-// noms `lucide-react`, pour que chaque composant d'icône reste déclaré une
-// fois pour toutes au niveau module.
 const ICONES_ACTION: Record<string, LucideIcon> = {
   BookOpen,
   Target,
@@ -74,7 +70,12 @@ function CarteParcours({
   );
 }
 
-/** Port fidèle de `front_office._afficher_decision`/`_carte_parcours`. */
+/**
+ * Affiche la réponse de l'assistant façon conversation : le texte rédigé
+ * (`decision.reponse`) en premier, les scores de parcours quand il y en a, et
+ * toute la traçabilité (résumé technique, explication, sources, outils,
+ * confiance, JSON brut) repliée dans un `<details>` pour le jury.
+ */
 export function DecisionCard({
   reponse,
   marqueurs,
@@ -91,35 +92,46 @@ export function DecisionCard({
   const sources = decision.sources ?? [];
   const outils = Array.from(new Set(decision.outils_utilises ?? []));
 
+  // `decision.reponse` est rempli par l'agent dans la quasi-totalité des cas ;
+  // repli sur le résumé si jamais il manque.
+  const texte = (decision.reponse || decision.resume || "").trim();
+  const paragraphes = texte.split(/\n{2,}/).filter(Boolean);
+
   return (
     <div className="space-y-4">
-      <span
-        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${TONALITE_CLASSES[tonalite]}`}
-      >
-        <Icone className="size-3.5" aria-hidden="true" />
-        {libelle}
-      </span>
+      <div className="space-y-3 text-sm leading-relaxed text-neutral-800 dark:text-neutral-100">
+        {paragraphes.length > 0 ? (
+          paragraphes.map((p, i) => (
+            <p key={i} className="whitespace-pre-wrap">
+              {p}
+            </p>
+          ))
+        ) : (
+          <p>—</p>
+        )}
+      </div>
 
-      {decision.resume && <p className="text-sm">{decision.resume}</p>}
-
-      {decision.incertitude_declaree && (
-        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-          <p>
-            <strong>L&apos;assistant n&apos;est pas certain de cette réponse.</strong> Les
-            informations dont il dispose ne suffisent pas à conclure — prenez-la comme une piste à
-            confirmer, pas comme un conseil arrêté.
-          </p>
-        </div>
-      )}
+      {/* Bandeau de prudence réservé aux réponses qui *conseillent* : sur une
+          question factuelle ou une demande de précisions, la nuance est déjà
+          portée par le texte, un bandeau en plus n'est que du bruit. */}
+      {decision.incertitude_declaree &&
+        (decision.action === "recommandation" || decision.action === "escalade_conseiller") && (
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <p>
+              À confirmer avec un conseiller : les informations disponibles ne suffisent pas à en
+              faire un conseil arrêté.
+            </p>
+          </div>
+        )}
 
       {parcours.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <h3 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-            Parcours suggérés
+            Scores du modèle
           </h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            {parcours.slice(0, 5).map((candidat, index) => (
+            {parcours.slice(0, 4).map((candidat, index) => (
               <CarteParcours
                 key={`${candidat.parcours}-${index}`}
                 candidat={candidat}
@@ -131,77 +143,101 @@ export function DecisionCard({
         </div>
       )}
 
-      {manquantes.length > 0 && (
-        <div>
-          <h3 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-            Ce qui aiderait à mieux vous répondre
-          </h3>
-          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm">
-            {manquantes.map((element) => (
-              <li key={element}>{element}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* `informations_manquantes` n'est pas affiché comme une liste : la
+          question à l'utilisateur vit dans `decision.reponse`, en langage
+          naturel. La liste reste dans la traçabilité ci-dessous, pour le jury. */}
 
-      <div>
-        <h3 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-          Pourquoi cette réponse
-        </h3>
-        <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
-          {decision.explication || "—"}
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <h3 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-            Documents cités
-          </h3>
-          {sources.length > 0 ? (
-            <ul className="mt-1 space-y-0.5 text-sm">
-              {sources.map((source) => (
-                <li key={source}>
-                  <code className="text-xs">{source}</code>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-1 text-xs text-neutral-500">
-              Aucun document du corpus n&apos;a été cité pour cette réponse.
-            </p>
-          )}
-        </div>
-        <div>
-          <h3 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
-            Ce que l&apos;assistant a consulté
-          </h3>
-          {outils.length > 0 ? (
-            <ul className="mt-1 space-y-0.5 text-sm">
-              {outils.map((outil) => (
-                <li key={outil}>
-                  <code className="text-xs">{outil}</code>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-1 text-xs text-neutral-500">Aucun outil appelé.</p>
-          )}
-        </div>
-      </div>
-
-      <p className="text-xs text-neutral-500">
-        Confiance déclarée : {Math.round((decision.confiance ?? 0) * 100)} % · trace{" "}
-        <code>{reponse.trace_id}</code>
-      </p>
-
-      <details className="text-xs">
-        <summary className="cursor-pointer text-neutral-500">
-          Réponse brute (JSON) — pour le jury
+      <details className="group rounded-lg border border-neutral-200 text-sm dark:border-neutral-800">
+        <summary className="flex cursor-pointer items-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-500 select-none">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 ${TONALITE_CLASSES[tonalite]}`}
+          >
+            <Icone className="size-3.5" aria-hidden="true" />
+            {libelle}
+          </span>
+          <span className="ml-auto group-open:hidden">Voir la traçabilité</span>
+          <span className="ml-auto hidden group-open:inline">Masquer la traçabilité</span>
         </summary>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-neutral-100 p-3 dark:bg-neutral-900">
-          {JSON.stringify(reponse, null, 2)}
-        </pre>
+
+        <div className="space-y-4 border-t border-neutral-200 px-3 py-3 dark:border-neutral-800">
+          {decision.resume && (
+            <div>
+              <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Demande comprise
+              </h4>
+              <p className="mt-1 text-neutral-700 dark:text-neutral-300">{decision.resume}</p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+              Ce qui fonde la réponse
+            </h4>
+            <p className="mt-1 whitespace-pre-wrap text-neutral-700 dark:text-neutral-300">
+              {decision.explication || "—"}
+            </p>
+          </div>
+
+          {manquantes.length > 0 && (
+            <div>
+              <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Informations manquantes (suivi interne)
+              </h4>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-neutral-700 dark:text-neutral-300">
+                {manquantes.map((element) => (
+                  <li key={element}>{element}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Documents cités
+              </h4>
+              {sources.length > 0 ? (
+                <ul className="mt-1 space-y-0.5">
+                  {sources.map((source) => (
+                    <li key={source}>
+                      <code className="text-xs">{source}</code>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-xs text-neutral-500">Aucun document du corpus cité.</p>
+              )}
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">
+                Outils consultés
+              </h4>
+              {outils.length > 0 ? (
+                <ul className="mt-1 space-y-0.5">
+                  {outils.map((outil) => (
+                    <li key={outil}>
+                      <code className="text-xs">{outil}</code>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-xs text-neutral-500">Aucun outil appelé.</p>
+              )}
+            </div>
+          </div>
+
+          <p className="text-xs text-neutral-500">
+            Confiance déclarée : {Math.round((decision.confiance ?? 0) * 100)} % · trace{" "}
+            <code>{reponse.trace_id}</code>
+          </p>
+
+          <details className="text-xs">
+            <summary className="cursor-pointer text-neutral-500">Réponse brute (JSON)</summary>
+            <pre className="mt-2 overflow-x-auto rounded-lg bg-neutral-100 p-3 dark:bg-neutral-900">
+              {JSON.stringify(reponse, null, 2)}
+            </pre>
+          </details>
+        </div>
       </details>
     </div>
   );

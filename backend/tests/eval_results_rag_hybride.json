@@ -1,9 +1,9 @@
 {
-  "date": "2026-08-27T08:02:18.713472+00:00",
+  "date": "2026-08-27T13:28:20.024109+00:00",
   "mode": "hybride",
   "corpus": {
-    "documents": 18,
-    "fragments": 18
+    "documents": 63,
+    "fragments": 63
   },
   "configuration": {
     "seuil_vectoriel": 0.56,
@@ -11,7 +11,7 @@
   },
   "metriques": {
     "rappel_sources": 1.0,
-    "precision_sources": 0.6694444444444444,
+    "precision_sources": 0.33749999999999997,
     "silence_correct_hors_corpus": 1.0,
     "compromis_rappel_silence": 1.0,
     "cas_reussis": 16,
@@ -25,13 +25,14 @@
         "DOC-IGGLIA"
       ],
       "sources_obtenues": [
-        "DOC-ESIIA",
         "DOC-IGGLIA",
-        "DOC-ISAIA",
-        "DOC-IMTICIA"
+        "DOC-IGGLIA-DEBOUCHES",
+        "DOC-DOMAINE-INFORMATIQUE_TELECOM",
+        "DOC-ESIIA",
+        "DOC-ISAIA-DEBOUCHES"
       ],
       "rappel": 1.0,
-      "precision": 0.25,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -41,10 +42,14 @@
         "DOC-ESIIA"
       ],
       "sources_obtenues": [
-        "DOC-ESIIA"
+        "DOC-ESIIA",
+        "DOC-ESIIA-MATIERES",
+        "DOC-ESIIA-DEBOUCHES",
+        "DOC-IGGLIA-MATIERES",
+        "DOC-ISAIA-MATIERES"
       ],
       "rappel": 1.0,
-      "precision": 1.0,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -54,11 +59,14 @@
         "DOC-ISAIA"
       ],
       "sources_obtenues": [
-        "DOC-CAA",
-        "DOC-ISAIA"
+        "DOC-CAA-MATIERES",
+        "DOC-ISAIA",
+        "DOC-DOMAINE-DROIT_TECHNIQUES_AFFAIRES",
+        "DOC-ISAIA-DEBOUCHES",
+        "DOC-CAA"
       ],
       "rappel": 1.0,
-      "precision": 0.5,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -68,11 +76,14 @@
         "DOC-IMTICIA"
       ],
       "sources_obtenues": [
+        "DOC-IMTICIA-DEBOUCHES",
         "DOC-IMTICIA",
-        "DOC-ESIIA"
+        "DOC-DOMAINE-INFORMATIQUE_TELECOM",
+        "DOC-IMTICIA-MATIERES",
+        "DOC-MENTION-INFO-TELECOM"
       ],
       "rappel": 1.0,
-      "precision": 0.5,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -82,13 +93,14 @@
         "DOC-ICMP"
       ],
       "sources_obtenues": [
+        "DOC-ICMP-DEBOUCHES",
         "DOC-ICMP",
-        "DOC-IAA",
-        "DOC-PIP",
-        "DOC-ISAIA"
+        "DOC-DOMAINE-GENIE_INDUSTRIEL",
+        "DOC-TOUTES-FILIERES",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE"
       ],
       "rappel": 1.0,
-      "precision": 0.25,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -99,11 +111,13 @@
       ],
       "sources_obtenues": [
         "DOC-PIP",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE",
         "DOC-TEE",
+        "DOC-PIP-MATIERES",
         "DOC-TEH"
       ],
       "rappel": 1.0,
-      "precision": 0.3333333333333333,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -113,10 +127,14 @@
         "DOC-GCA"
       ],
       "sources_obtenues": [
-        "DOC-GCA"
+        "DOC-TOUTES-FILIERES",
+        "DOC-GCA",
+        "DOC-DOMAINE-INFORMATIQUE_TELECOM",
+        "DOC-GCA-MATIERES",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE"
       ],
       "rappel": 1.0,
-      "precision": 1.0,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -126,10 +144,13 @@
         "DOC-TEH"
       ],
       "sources_obtenues": [
-        "DOC-TEH"
+        "DOC-TEH",
+        "DOC-DOMAINE-TOURISME",
+        "DOC-TEH-DEBOUCHES",
+        "DOC-TEH-MATIERES"
       ],
       "rappel": 1.0,
-      "precision": 1.0,
+      "precision": 0.25,
       "succes": true
     },
     {
@@ -152,10 +173,14 @@
         "DOC-CONDITIONS-ADMISSION"
       ],
       "sources_obtenues": [
-        "DOC-CONDITIONS-ADMISSION"
+        "DOC-CONDITIONS-ADMISSION",
+        "DOC-MENTION-GENIE-CIVIL-ARCHI",
+        "DOC-MENTION-GENIE-INDUSTRIEL",
+        "DOC-MENTION-BIOTECH-AGRO",
+        "DOC-MENTION-INFO-TELECOM"
       ],
       "rappel": 1.0,
-      "precision": 1.0,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -179,10 +204,10 @@
       ],
       "sources_obtenues": [
         "DOC-DTJA",
-        "DOC-ISAIA",
-        "DOC-EMP",
-        "DOC-ESIIA",
-        "DOC-IGGLIA"
+        "DOC-TOUTES-FILIERES",
+        "DOC-DOMAINE-DROIT_TECHNIQUES_AFFAIRES",
+        "DOC-DTJA-DEBOUCHES",
+        "DOC-DTJA-MATIERES"
       ],
       "rappel": 1.0,
       "precision": 0.2,

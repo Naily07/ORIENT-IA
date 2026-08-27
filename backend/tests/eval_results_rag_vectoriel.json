@@ -1,9 +1,9 @@
 {
-  "date": "2026-08-27T07:59:00.361563+00:00",
+  "date": "2026-08-27T13:28:07.641179+00:00",
   "mode": "vectoriel",
   "corpus": {
-    "documents": 18,
-    "fragments": 18
+    "documents": 63,
+    "fragments": 63
   },
   "configuration": {
     "seuil_vectoriel": 0.56,
@@ -11,7 +11,7 @@
   },
   "metriques": {
     "rappel_sources": 0.75,
-    "precision_sources": 0.48194444444444445,
+    "precision_sources": 0.35833333333333334,
     "silence_correct_hors_corpus": 1.0,
     "compromis_rappel_silence": 0.8571428571428571,
     "cas_reussis": 13,
@@ -26,12 +26,13 @@
       ],
       "sources_obtenues": [
         "DOC-ESIIA",
+        "DOC-ISAIA-DEBOUCHES",
         "DOC-IGGLIA",
-        "DOC-ISAIA",
-        "DOC-IMTICIA"
+        "DOC-ESIIA-DEBOUCHES",
+        "DOC-IGGLIA-DEBOUCHES"
       ],
       "rappel": 1.0,
-      "precision": 0.25,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -54,6 +55,8 @@
         "DOC-ISAIA"
       ],
       "sources_obtenues": [
+        "DOC-CAA-MATIERES",
+        "DOC-DOMAINE-DROIT_TECHNIQUES_AFFAIRES",
         "DOC-CAA"
       ],
       "rappel": 0.0,
@@ -67,11 +70,14 @@
         "DOC-IMTICIA"
       ],
       "sources_obtenues": [
+        "DOC-IMTICIA-DEBOUCHES",
         "DOC-IMTICIA",
-        "DOC-ESIIA"
+        "DOC-DOMAINE-INFORMATIQUE_TELECOM",
+        "DOC-IMTICIA-MATIERES",
+        "DOC-MENTION-INFO-TELECOM"
       ],
       "rappel": 1.0,
-      "precision": 0.5,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -81,11 +87,14 @@
         "DOC-ICMP"
       ],
       "sources_obtenues": [
+        "DOC-ICMP-DEBOUCHES",
         "DOC-ICMP",
-        "DOC-IAA"
+        "DOC-IAA-DEBOUCHES",
+        "DOC-DOMAINE-GENIE_INDUSTRIEL",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE"
       ],
       "rappel": 1.0,
-      "precision": 0.5,
+      "precision": 0.2,
       "succes": true
     },
     {
@@ -96,11 +105,12 @@
       ],
       "sources_obtenues": [
         "DOC-PIP",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE",
         "DOC-TEE",
         "DOC-TEH"
       ],
       "rappel": 1.0,
-      "precision": 0.3333333333333333,
+      "precision": 0.25,
       "succes": true
     },
     {
@@ -109,7 +119,13 @@
       "sources_attendues": [
         "DOC-GCA"
       ],
-      "sources_obtenues": [],
+      "sources_obtenues": [
+        "DOC-TOUTES-FILIERES",
+        "DOC-DOMAINE-INFORMATIQUE_TELECOM",
+        "DOC-DOMAINE-BIOTECHNOLOGIE_AGRONOMIE",
+        "DOC-DOMAINE-DROIT_TECHNIQUES_AFFAIRES",
+        "DOC-EMII-DEBOUCHES"
+      ],
       "rappel": 0.0,
       "precision": 0.0,
       "succes": false
@@ -121,10 +137,13 @@
         "DOC-TEH"
       ],
       "sources_obtenues": [
-        "DOC-TEH"
+        "DOC-TEH",
+        "DOC-TEH-DEBOUCHES",
+        "DOC-TEH-MATIERES",
+        "DOC-DOMAINE-TOURISME"
       ],
       "rappel": 1.0,
-      "precision": 1.0,
+      "precision": 0.25,
       "succes": true
     },
     {
@@ -171,11 +190,11 @@
         "DOC-DTJA"
       ],
       "sources_obtenues": [
+        "DOC-ISAIA-DEBOUCHES",
+        "DOC-DTJA-DEBOUCHES",
+        "DOC-DOMAINE-DROIT_TECHNIQUES_AFFAIRES",
         "DOC-DTJA",
-        "DOC-ISAIA",
-        "DOC-EMP",
-        "DOC-CAA",
-        "DOC-CONDITIONS-ADMISSION"
+        "DOC-TOUTES-FILIERES"
       ],
       "rappel": 1.0,
       "precision": 0.2,

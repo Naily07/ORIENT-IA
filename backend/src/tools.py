@@ -330,13 +330,20 @@ def rechercher_formation(mot_cle: str) -> dict:
     parcours = [p for p in corpus.parcours if texte in p.nom.lower() or texte in p.id.lower()]
     if not mentions and not parcours:
         return {"statut": "aucun_resultat", "message": f"Aucune formation pour « {mot_cle} »."}
+    # Jusqu'à deux parcours ciblés : on renvoie la fiche complète (matières et
+    # débouchés en clair, prérequis). Au-delà, seulement l'entrée courte —
+    # renvoyer 16 fiches entières noierait la réponse. Sans cela, une question
+    # de suivi (« et les matières de cette filière ? ») n'avait aucune donnée
+    # à exploiter : `rechercher_formation` ne renvoyait qu'un sigle.
+    fiches = [_fiche_parcours(p) for p in parcours] if len(parcours) <= 2 else None
     return {
         "statut": "trouve",
         "mentions": [
             {"id": m.id, "nom": m.nom, "niveau": m.niveau, "source_id": m.source_id}
             for m in mentions
         ],
-        "parcours": [
+        "parcours": fiches
+        or [
             {"id": p.id, "nom": p.nom, "mention_id": p.mention_id, "source_id": p.source_id}
             for p in parcours
         ],
@@ -349,6 +356,24 @@ def _parcours_par_id_ou_nom(identifiant: str):
         if texte == p.id.lower() or texte in p.nom.lower():
             return p
     return None
+
+
+def _noms_depuis_ids(ids: list[str], attribut: str) -> list[str]:
+    """Résout une liste d'identifiants (`MAT-…`, `MET-…`) en intitulés lisibles.
+
+    Les listes `Parcours.matieres` / `Parcours.debouches` ne portent que des
+    identifiants ; l'agent ne peut pas répondre « les matières sont Algèbre,
+    Java… » s'il ne reçoit que `MAT-ALGEBRE`, `MAT-JAVASD`. Les identifiants
+    non résolus sont ignorés plutôt qu'affichés bruts."""
+    table = {item.id: item.nom for item in getattr(_base(), attribut)}
+    vus: set[str] = set()
+    noms: list[str] = []
+    for identifiant in ids:
+        nom = table.get(identifiant)
+        if nom and nom.lower() not in vus:
+            vus.add(nom.lower())
+            noms.append(nom)
+    return noms
 
 
 def _mention_de(parcours) -> dict | None:
@@ -382,9 +407,14 @@ def _fiche_parcours(parcours) -> dict:
         # parcours ? » finiraient par diverger, et l'agent peut appeler les
         # deux outils dans une même conversation.
         "prerequis": prerequis_du_parcours(_graphe_actuel(), parcours.id),
+        # Identifiants bruts **et** intitulés lisibles : l'agent rédige sa
+        # réponse à partir des seconds, le reste du code (graphe, ontologie)
+        # continue de s'appuyer sur les premiers.
         "matieres": parcours.matieres,
+        "matieres_nommees": _noms_depuis_ids(parcours.matieres, "matieres"),
         "competences": parcours.competences,
         "debouches": parcours.debouches,
+        "debouches_nommes": _noms_depuis_ids(parcours.debouches, "metiers"),
         "note_completude": (
             "Matières, compétences et débouchés précis pas encore collectés pour ce "
             "parcours (voir BACKLOG.md, DATA-1)."
@@ -392,6 +422,22 @@ def _fiche_parcours(parcours) -> dict:
             else None
         ),
     }
+
+
+def fiche_parcours_publique(identifiant: str) -> dict | None:
+    """Fiche structurée d'un parcours (matières et débouchés en clair), ou
+    `None` s'il est introuvable ou si le corpus n'est pas chargé.
+
+    Point d'accès pour `agent._construire_prompt_initial`, qui injecte la fiche
+    des parcours nommés directement dans le contexte : le modèle
+    `flash-lite` n'appelle pas toujours `rechercher_formation` sur une question
+    de suivi (« et les matières de cette filière ? »), et la donnée doit alors
+    être devant lui sans dépendre de ce choix."""
+    try:
+        parcours = _parcours_par_id_ou_nom(identifiant)
+        return _fiche_parcours(parcours) if parcours else None
+    except OutilIndisponible:
+        return None
 
 
 def comparer_parcours(parcours_a: str, parcours_b: str) -> dict:

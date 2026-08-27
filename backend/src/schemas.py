@@ -132,6 +132,21 @@ class AnalyseProfil(BaseModel):
         description="Certitude globale de l'analyse, 0 = incertain, 1 = certain"
     )
     justification: str = Field(description="Une phrase courte expliquant l'analyse")
+    # Signal structuré plutôt que seulement rédigé dans `justification` : les
+    # outils qui n'exposent qu'un score (`calculer_adequation`) doivent pouvoir
+    # dire que ce score ne porte sur rien, sans avoir à relire une phrase.
+    profil_exploitable: bool = Field(
+        default=True,
+        description=(
+            "false si trop peu de traits déclarés ont pu être rattachés au "
+            "vocabulaire du modèle : les scores existent numériquement mais "
+            "reflètent la distribution a priori des classes, pas ce candidat"
+        ),
+    )
+    elements_non_reconnus: list[str] = Field(
+        default_factory=list,
+        description="Traits déclarés qu'aucune couche de résolution n'a su rattacher",
+    )
 
 
 class RecommandationDecision(BaseModel):

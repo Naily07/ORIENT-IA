@@ -8,17 +8,26 @@ absent du vocabulaire était **silencieusement ignoré** : un candidat déclaran
 bloc ML (voir `backend/tests/eval_analyse.md`) : ce n'est pas une simple limite de
 couverture, c'est un défaut visible dès qu'un humain tape un profil à la main.
 
-**Trois couches, de la plus précise à la plus tolérante :**
+**Quatre couches, de la plus précise à la plus tolérante :**
 
 1. **Normalisation** — casse, accents, séparateurs (`« Mathématiques »` →
    `mathematiques`). Déterministe, sans coût.
-2. **Alias curés** — abréviations et synonymes français courants (`maths`, `info`,
-   `SVT`, `python`). Haute précision : c'est cette couche qui rattrape les cas que la
-   couche 3 rate, mesuré (« info » ne ressort qu'à 0,386 de similarité sémantique,
+2. **Appartenance directe au vocabulaire du champ** — si le terme normalisé est
+   déjà dans le vocabulaire cible, il est retenu tel quel, **avant toute
+   réécriture**. Cette couche existe parce que son absence provoquait un défaut
+   réel : `communication` est une matière (archétype IMTICIA), et l'alias
+   `communication → communication_numerique`, prévu pour les compétences, la
+   remplaçait par un terme absent de `VOCAB_MATIERES` — 80 des 800 profils
+   d'entraînement partaient alors au repli sémantique pour un terme parfaitement
+   valide.
+3. **Alias curés** — abréviations et synonymes français courants (`maths`, `info`,
+   `SVT`, `python`), retenus seulement si leur cible appartient au vocabulaire du
+   champ interrogé. Haute précision : c'est cette couche qui rattrape les cas que la
+   couche 4 rate, mesuré (« info » ne ressort qu'à 0,386 de similarité sémantique,
    sous le seuil, alors que c'est un synonyme évident).
-3. **Repli sémantique** — plus proche voisin dans le vocabulaire du champ, via le
+4. **Repli sémantique** — plus proche voisin dans le vocabulaire du champ, via le
    modèle d'embedding ONNX déjà présent pour le RAG. Chargé **paresseusement** :
-   aucun coût tant que les couches 1 et 2 suffisent.
+   aucun coût tant que les couches 1 à 3 suffisent.
 
 **Le seuil est mesuré, pas supposé.** À 0,50 : « maths » (0,72), « physique-chimie »
 (0,72) et « anglais » (0,51) sont acceptés ; « SVT » (0,33 vers *gestion*),
@@ -160,6 +169,67 @@ def _resoudre_semantiquement(
     return correspondances
 
 
+def correspondances(
+    termes: list[str],
+    vocabulaire: tuple[str, ...],
+    seuil: float = SEUIL_SIMILARITE_SEMANTIQUE,
+    avec_semantique: bool = True,
+) -> tuple[dict[str, str], list[str]]:
+    """Associe chaque terme déclaré au terme du vocabulaire qui lui correspond.
+
+    Retourne `(trouvees, non_reconnus)` où les **clés de `trouvees` sont les termes
+    tels qu'ils ont été déclarés** — c'est ce qui permet à un appelant de rattacher
+    une valeur au terme d'origine (`features._notes` doit savoir que la note saisie
+    sous « maths » appartient à `mathematiques`).
+
+    Les termes inconnus sont résolus en **un seul lot** : un appel au modèle
+    d'embedding par terme multiplierait la latence sans rien apporter.
+    """
+    ensemble_vocabulaire = set(vocabulaire)
+    trouvees: dict[str, str] = {}
+    # normalisé -> terme d'origine, pour pouvoir remonter le terme tel que tapé.
+    a_tenter: dict[str, str] = {}
+
+    for terme in termes:
+        normalise = normaliser(terme)
+        if not normalise:
+            continue
+
+        # **Le vocabulaire du champ prime sur les alias.** Un terme qui figure déjà
+        # dans le vocabulaire cible ne doit jamais être réécrit : `communication`
+        # est une matière réelle (archétype IMTICIA), que l'alias
+        # `communication → communication_numerique` — prévu pour les compétences —
+        # envoyait vers un terme absent de VOCAB_MATIERES. La couche « haute
+        # précision » détruisait alors un terme valide, à charge pour le repli
+        # sémantique de le rattraper, ce qu'il ne garantit pas.
+        if normalise in ensemble_vocabulaire:
+            trouvees[terme] = normalise
+            continue
+
+        alias = ALIAS.get(normalise)
+        if alias is not None and alias in ensemble_vocabulaire:
+            trouvees[terme] = alias
+            continue
+
+        a_tenter[normalise] = terme
+
+    non_reconnus: list[str] = []
+    if a_tenter:
+        resolues = (
+            _resoudre_semantiquement(list(a_tenter), vocabulaire, seuil)
+            if avec_semantique
+            else {}
+        )
+        for normalise, origine in a_tenter.items():
+            correspondance = resolues.get(normalise)
+            if correspondance is not None:
+                trouvees[origine] = correspondance
+            else:
+                non_reconnus.append(origine)
+
+    return trouvees, non_reconnus
+
+
 def resoudre(
     termes: list[str],
     vocabulaire: tuple[str, ...],
@@ -175,40 +245,11 @@ def resoudre(
     `avec_semantique=False` désactive la couche 3 — utile pour tester les couches
     déterministes sans charger le modèle d'embedding.
     """
+    trouvees, non_reconnus = correspondances(termes, vocabulaire, seuil, avec_semantique)
+
     reconnus: list[str] = []
-    non_reconnus: list[str] = []
-    a_tenter_semantiquement: list[str] = []
-    # Le terme d'origine est conservé pour pouvoir le remonter tel qu'il a été tapé.
-    origine: dict[str, str] = {}
-
-    ensemble_vocabulaire = set(vocabulaire)
-
     for terme in termes:
-        normalise = normaliser(terme)
-        if not normalise:
-            continue
-
-        candidat = ALIAS.get(normalise, normalise)
-        if candidat in ensemble_vocabulaire:
-            if candidat not in reconnus:
-                reconnus.append(candidat)
-        else:
-            a_tenter_semantiquement.append(normalise)
-            origine[normalise] = terme
-
-    if a_tenter_semantiquement:
-        if avec_semantique:
-            correspondances = _resoudre_semantiquement(
-                a_tenter_semantiquement, vocabulaire, seuil
-            )
-        else:
-            correspondances = {}
-        for normalise in a_tenter_semantiquement:
-            correspondance = correspondances.get(normalise)
-            if correspondance is not None:
-                if correspondance not in reconnus:
-                    reconnus.append(correspondance)
-            else:
-                non_reconnus.append(origine[normalise])
-
+        correspondance = trouvees.get(terme)
+        if correspondance is not None and correspondance not in reconnus:
+            reconnus.append(correspondance)
     return reconnus, non_reconnus

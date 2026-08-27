@@ -9,7 +9,7 @@ charger le modèle d'embedding. Les tests du repli sémantique sont marqués `in
 import pytest
 
 from src.ml.archetypes import VOCAB_COMPETENCES, VOCAB_MATIERES
-from src.ml.vocabulaire import normaliser, resoudre
+from src.ml.vocabulaire import correspondances, normaliser, resoudre
 
 # --- Couche 1 : normalisation ------------------------------------------------
 
@@ -120,3 +120,50 @@ def test_seuil_configurable_change_la_tolerance():
     reconnus_laxistes, _ = resoudre(["philosophie"], VOCAB_MATIERES, seuil=0.1)
     assert reconnus_stricts == []
     assert reconnus_laxistes != []
+
+
+# --- Priorité du vocabulaire cible sur les alias (correctif d'audit) ----------
+
+
+def test_un_terme_deja_dans_le_vocabulaire_n_est_jamais_reecrit_par_un_alias():
+    """Non-régression : `communication` est une matière réelle (archétype
+    IMTICIA), que l'alias `communication → communication_numerique` — prévu pour
+    les compétences — envoyait vers un terme absent de VOCAB_MATIERES. La couche
+    déterministe détruisait un terme valide, à charge pour le repli sémantique de
+    le rattraper, ce qu'il ne garantit pas.
+
+    `avec_semantique=False` est essentiel ici : le test doit prouver que les
+    couches déterministes suffisent, pas que l'embedding répare le dégât."""
+    assert "communication" in VOCAB_MATIERES
+    reconnus, non_reconnus = resoudre(["communication"], VOCAB_MATIERES, avec_semantique=False)
+    assert reconnus == ["communication"]
+    assert non_reconnus == []
+
+
+def test_l_alias_reste_actif_quand_sa_cible_appartient_au_vocabulaire():
+    """L'alias ne doit pas être désactivé par le correctif : « communication »
+    déclarée comme *compétence* doit toujours donner `communication_numerique`."""
+    reconnus, _ = resoudre(["communication"], VOCAB_COMPETENCES, avec_semantique=False)
+    assert reconnus == ["communication_numerique"]
+
+
+def test_un_alias_dont_la_cible_est_hors_champ_part_au_repli():
+    """« maths » n'est pas une compétence : l'alias vise `mathematiques`, absent
+    de VOCAB_COMPETENCES, donc le terme doit être déclaré non reconnu plutôt que
+    rattaché de force."""
+    reconnus, non_reconnus = resoudre(["maths"], VOCAB_COMPETENCES, avec_semantique=False)
+    assert reconnus == []
+    assert non_reconnus == ["maths"]
+
+
+# --- correspondances() : la clé d'origine est conservée -----------------------
+
+
+def test_correspondances_conserve_le_terme_tel_que_declare():
+    """`features._notes` doit pouvoir rattacher la note saisie sous « maths » à
+    `mathematiques` : la correspondance est donc indexée par le terme d'origine."""
+    trouvees, non_reconnus = correspondances(
+        ["Maths", "cuisine"], VOCAB_MATIERES, avec_semantique=False
+    )
+    assert trouvees["Maths"] == "mathematiques"
+    assert non_reconnus == ["cuisine"]

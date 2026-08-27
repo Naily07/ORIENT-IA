@@ -24,7 +24,7 @@ from src.ml.archetypes import (
     VOCAB_MATIERES,
     VOCAB_PREFERENCES_PRO,
 )
-from src.ml.vocabulaire import resoudre
+from src.ml.vocabulaire import correspondances, resoudre
 from src.schemas import ProfilCandidat
 
 
@@ -65,24 +65,28 @@ def _multi_hot(valeurs: list[str], vocabulaire: tuple[str, ...]) -> list[float]:
     return [1.0 if v in presents else 0.0 for v in vocabulaire]
 
 
-def _notes(
-    resultats: dict[str, float], matieres_reconnues: list[str], vocabulaire: tuple[str, ...]
-) -> list[float]:
+def _notes(resultats: dict[str, float], vocabulaire: tuple[str, ...]) -> list[float]:
     """Notes ramenées sur [0, 1], sur les matières effectivement reconnues.
 
     Les clés de `resultats_scolaires` passent par la même résolution que les
     matières préférées : un candidat qui écrit « maths: 16 » doit voir sa note
-    prise en compte comme `mathematiques`. On s'appuie sur la résolution déjà
-    faite pour les matières préférées quand la clé y correspond, et on résout les
-    clés restantes à part.
+    prise en compte comme `mathematiques`. La résolution se fait en **un seul
+    lot** — une résolution par clé déclenchait autant de passages dans le modèle
+    d'embedding qu'il y avait de matières hors vocabulaire.
     """
+    if not resultats:
+        return [0.0] * len(vocabulaire)
+
+    trouvees, _ = correspondances(list(resultats), vocabulaire)
+
     notes_par_matiere: dict[str, float] = {}
     for matiere_declaree, note in resultats.items():
-        reconnues, _ = resoudre([matiere_declaree], vocabulaire)
-        for reconnue in reconnues:
-            # Si deux libellés retombent sur la même matière, on garde la meilleure
-            # note plutôt que la dernière rencontrée (ordre de dict arbitraire).
-            notes_par_matiere[reconnue] = max(notes_par_matiere.get(reconnue, 0.0), note)
+        reconnue = trouvees.get(matiere_declaree)
+        if reconnue is None:
+            continue
+        # Si deux libellés retombent sur la même matière, on garde la meilleure
+        # note plutôt que la dernière rencontrée (ordre de dict arbitraire).
+        notes_par_matiere[reconnue] = max(notes_par_matiere.get(reconnue, 0.0), note)
 
     # Une échelle homogène avec le multi-hot évite qu'une note sur 20 domine
     # artificiellement les autres traits dans les modèles sensibles à l'échelle.
@@ -136,15 +140,21 @@ def analyser_couverture(profil: ProfilCandidat) -> CouvertureProfil:
     )
 
 
-def vectoriser(profil: ProfilCandidat) -> np.ndarray:
-    """Transforme un profil en vecteur numérique de taille `len(noms_features())`."""
-    couverture = analyser_couverture(profil)
+def vectoriser(profil: ProfilCandidat, couverture: CouvertureProfil | None = None) -> np.ndarray:
+    """Transforme un profil en vecteur numérique de taille `len(noms_features())`.
+
+    `couverture` est injectable pour éviter de refaire la résolution quand
+    l'appelant l'a déjà calculée (`outils.analyser_profil`) : chaque résolution
+    peut déclencher le modèle d'embedding, et la refaire deux fois par appel
+    doublait la latence sur un profil contenant un terme hors vocabulaire.
+    """
+    couverture = couverture if couverture is not None else analyser_couverture(profil)
     vecteur = (
         _multi_hot(couverture.matieres, VOCAB_MATIERES)
         + _multi_hot(couverture.competences, VOCAB_COMPETENCES)
         + _multi_hot(couverture.centres_interet, VOCAB_CENTRES_INTERET)
         + _multi_hot(couverture.preferences_professionnelles, VOCAB_PREFERENCES_PRO)
-        + _notes(profil.resultats_scolaires, couverture.matieres, VOCAB_MATIERES)
+        + _notes(profil.resultats_scolaires, VOCAB_MATIERES)
         + _one_hot(couverture.environnement, VOCAB_ENVIRONNEMENTS)
     )
     return np.array(vecteur, dtype=float)

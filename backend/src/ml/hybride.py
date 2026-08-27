@@ -81,12 +81,17 @@ def evaluer_admissibilite(
     )
 
 
+# Marqueur repris tel quel par l'interface pour signaler un parcours
+# retrograde : une constante partagee plutot qu'une chaine devinee des deux cotes.
+MARQUEUR_REGLE_ADMISSION = "[Règle d'admission]"
+
+
 def _justification_annotee(
     candidat: RecommandationParcours, verdict: VerdictAdmission
 ) -> str:
     prerequis = verdict.prerequis[0] if verdict.prerequis else "prérequis non précisés"
     return (
-        f"{candidat.justification} [Règle d'admission] Ce parcours est classé après les "
+        f"{candidat.justification} {MARQUEUR_REGLE_ADMISSION} Ce parcours est classé après les "
         f"parcours accessibles : la série de baccalauréat déclarée ne correspond pas "
         f"aux prérequis connus ({prerequis}). Une équivalence ou une passerelle relève "
         "de l'administration de l'ISPM."

@@ -48,6 +48,10 @@ from src.ml.features import vectoriser
 from src.schemas import ProfilCandidat
 
 RANDOM_STATE_DEFAUT = 42
+
+# Deux probabilités plus proches que cela ne désignent plus un vainqueur : la
+# différence est du bruit de virgule flottante, pas un écart de modèle.
+_TOLERANCE_EX_AEQUO = 1e-9
 CHEMIN_MODELE_DEFAUT = config.dossier_data / "ml" / "modele_recommandation.joblib"
 
 
@@ -138,7 +142,11 @@ def entrainer_baseline_calibree(
         method="isotonic",
         cv=5,
     ).fit(X_train, y_train)
-    return ModeleBorne(calibre, len(y_train))
+    # Modèle de secours pour les profils que l'isotonique ne sait pas départager
+    # (voir `ModeleBorne.predict_proba`). Entraîné sur les mêmes données, donc
+    # sans fuite : c'est la même information, lue avant l'escalier.
+    secours = entrainer_baseline(X_train, y_train, random_state=random_state)
+    return ModeleBorne(calibre, len(y_train), secours)
 
 
 class ModeleBorne:
@@ -165,28 +173,73 @@ class ModeleBorne:
     l'écart « modèle évalué ≠ modèle servi » que le §8 interdit.
     """
 
-    def __init__(self, modele, n_entrainement: int):
+    def __init__(self, modele, n_entrainement: int, secours=None):
         self._modele = modele
+        # Régression logistique non calibrée, consultée uniquement quand
+        # l'escalier isotonique ne départage plus rien (voir `predict_proba`).
+        self._secours = secours
         # Règle de trois, bornée pour rester sensée sur un très petit jeu.
         self.marge = min(3.0 / max(n_entrainement, 1), 0.05)
         self.classes_ = modele.classes_
 
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        """Mélange avec la distribution uniforme : `(1-m)·p + m/K`.
+    def _rangs_perdus(self, probabilites: np.ndarray) -> np.ndarray:
+        """Lignes où la sortie calibrée ne désigne plus de premier parcours.
 
-        Un simple `clip` par le bas serait faux ici : avec K = 16 classes, un
+        L'isotonique est une fonction en escalier, ajustée un-contre-tous :
+        chacun des 16 calibrateurs projette le score brut sur une marche. Quand
+        les scores bruts d'un profil tombent tous dans la même bande basse,
+        les 16 calibrateurs renvoient la même valeur et la normalisation rend
+        la distribution **exactement uniforme**. L'`argmax` échoit alors au
+        premier parcours par ordre alphabétique — AEE — quel que soit le profil.
+        """
+        if probabilites.shape[1] < 2:
+            return np.zeros(len(probabilites), dtype=bool)
+        deux_premiers = np.partition(probabilites, -2, axis=1)[:, -2:]
+        return np.isclose(deux_premiers[:, 1], deux_premiers[:, 0], atol=_TOLERANCE_EX_AEQUO)
+
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        """Probabilités calibrées, bornées, et réparées quand elles sont muettes.
+
+        **Le mélange uniforme** `(1-m)·p + m/K` empêche d'atteindre 0 ou 1. Un
+        simple `clip` par le bas serait faux ici : avec K = 16 classes, un
         plancher de 0,005 force 7,5 % de masse dans la queue, et la
         renormalisation fait tomber le sommet à 0,93 — l'ECE remontait alors à
         0,094. Le mélange, lui, somme exactement à 1 par construction, préserve
         l'ordre des classes, et ne déplace la masse qu'à hauteur de `marge`.
+
+        **La réparation** substitue les probabilités brutes sur les seules
+        lignes où la calibration ne distingue plus le premier parcours du
+        deuxième. Mesuré : ce cas ne survient **jamais** sur le jeu synthétique
+        (0/200 profils de test), mais frappe **4 profils réels sur 14** — les
+        profils peu fournis, que le sujet traite comme normaux. Le défaut était
+        donc invisible à la mesure synthétique tout en produisant, en
+        production, un classement sans rapport avec le candidat.
+
+        Le repli ne fabrique aucune confiance : les probabilités brutes sont
+        **sous-confiantes** (0,22 là où l'escalier annonçait 0,0625 pour tout le
+        monde), restent sous `orchestrateur_seuil_confiance` et déclenchent donc
+        toujours l'escalade vers un conseiller. Ce qui change est l'**ordre** —
+        le candidat voit enfin le parcours qui lui correspond, signalé comme
+        à confirmer, au lieu d'un parcours tiré par ordre alphabétique.
         """
         probabilites = self._modele.predict_proba(X)
+        if self._secours is not None:
+            a_reparer = self._rangs_perdus(probabilites)
+            if a_reparer.any():
+                probabilites = probabilites.copy()
+                probabilites[a_reparer] = self._secours.predict_proba(X[a_reparer])
         nombre_de_classes = probabilites.shape[1]
         return (1.0 - self.marge) * probabilites + self.marge / nombre_de_classes
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        # Le bornage est monotone et uniforme : il ne change aucune décision.
-        return self._modele.predict(X)
+        """Classe retenue, **toujours** l'`argmax` de `predict_proba`.
+
+        Déléguer au modèle calibré serait un piège : sur une ligne réparée, il
+        renverrait le parcours alphabétique que la réparation vient d'écarter,
+        et le système servirait un `predict` en contradiction avec les scores
+        qu'il affiche.
+        """
+        return self.classes_[np.argmax(self.predict_proba(X), axis=1)]
 
 
 def entrainer_foret(

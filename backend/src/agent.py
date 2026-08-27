@@ -35,6 +35,7 @@ from src.config import config
 from src.llm_client import LLMError, llm_call_with_tools
 from src.ml.archetypes import PARCOURS_CONNUS
 from src.ml.outils import analyser_profil as analyser_profil_ml
+from src.ml.outils import selectionner_significatifs
 from src.schemas import ProfilCandidat, RecommandationDecision
 from src.tools import declarer_outils, definir_profil_courant, executer_outil
 
@@ -46,7 +47,15 @@ CONTEXTE FOURNI :
 - la question ou la demande de l'utilisateur ;
 - le profil déclaré jusqu'ici (matières préférées, résultats, compétences, centres \
 d'intérêt, préférences professionnelles, environnement recherché) ;
-- des passages du corpus pédagogique, avec leur identifiant [FORM-XXX] ou [DOC-XXX].
+- des passages du corpus pédagogique, avec leur identifiant [DOC-XXX] suivi du \
+statut de leur source : « officiel » (site ou document de l'ISPM), \
+« institutionnel », « externe » (source tierce), ou « provenance non enregistrée ».
+
+TRAÇABILITÉ DES SOURCES (§4 du sujet, règle non négociable) : ne présente jamais \
+comme une information officielle ce qui provient d'une source « externe » ou dont la \
+provenance n'est pas enregistrée. Sur un point d'admission, de diplôme ou de \
+procédure appuyé sur une telle source, dis explicitement que l'information demande \
+confirmation auprès de l'ISPM.
 
 DISTINCTION OBLIGATOIRE DES SOURCES (§6 du sujet) — ta réponse finale doit permettre \
 de séparer clairement :
@@ -113,13 +122,27 @@ ou si ta confiance reste faible ;
 permettent pas de conclure avec certitude, indépendamment de la valeur de `confiance`."""
 
 
+def _formater_passage(fragment: dict) -> str:
+    """Un passage annoté de sa provenance déclarée au registre (§4).
+
+    Le statut (officiel / institutionnel / externe) accompagne le passage
+    jusque dans le prompt : sans lui, le modèle ne peut pas respecter la règle
+    non négociable du §4, qui lui interdit de présenter comme officielle une
+    information qui ne l'est pas. Absent pour un document sans entrée de
+    registre — dit explicitement plutôt que passé sous silence.
+    """
+    statut = fragment.get("statut_source")
+    provenance = f" · source {statut}" if statut else " · provenance non enregistrée"
+    return f"[{fragment['source_id']}{provenance}] {fragment['contenu']}"
+
+
 def _construire_prompt_initial(
     description: str,
     profil: ProfilCandidat,
     contexte: list[dict] | None,
 ) -> list[types.Content]:
     if contexte:
-        passages = "\n\n".join(f"[{c['source_id']}] {c['contenu']}" for c in contexte)
+        passages = "\n\n".join(_formater_passage(c) for c in contexte)
     else:
         passages = "(aucun passage pertinent retrouvé dans le corpus)"
 
@@ -189,7 +212,12 @@ def _forcer_consultation_du_modele_ml(
     )
     decision = decision.model_copy(
         update={
-            "parcours_recommandes": analyse.parcours_candidats,
+            # Seuls les parcours réellement distinguables du leader, et non les
+            # 16 classes : au-delà du premier, les scores tombent sous 2 % et
+            # se séparent de fractions de point. Les remonter tous revenait à
+            # présenter du bruit comme des recommandations — et à rendre la
+            # liste instable au moindre changement de profil.
+            "parcours_recommandes": selectionner_significatifs(analyse.parcours_candidats),
             "confiance": analyse.confiance,
             "explication": (
                 f"{decision.explication}\n[Contrôle automatique] Le modèle ML a été {note}"

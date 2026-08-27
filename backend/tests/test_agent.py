@@ -195,7 +195,10 @@ def test_recommandation_sans_outil_ml_est_corrigee(monkeypatch, profil):
     # vrai modèle ML — jamais garanti d'être identique (et surtout pas de
     # rester à 0.99 sur un profil qui ne pointe pas franchement vers TEH).
     assert resultat.parcours_recommandes != decision.parcours_recommandes
-    assert len(resultat.parcours_recommandes) == 16  # les 16 parcours réels, classés
+    # Seuls les parcours significatifs, plus les 16 classes : au-delà du
+    # leader les scores tombent sous 2 %, les remonter tous revenait à
+    # présenter du bruit comme des recommandations.
+    assert 1 <= len(resultat.parcours_recommandes) <= 3
 
 
 def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
@@ -216,7 +219,7 @@ def test_escalade_sans_outil_ml_est_aussi_corrigee(monkeypatch, profil):
     resultat = run_agent("Question", profil, None, "trace-8")
 
     assert "analyser_profil_ml" in resultat.outils_utilises
-    assert len(resultat.parcours_recommandes) == 16
+    assert 1 <= len(resultat.parcours_recommandes) <= 3
 
 
 def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, profil):

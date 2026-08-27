@@ -41,7 +41,7 @@ from src.admission import serie_satisfait_prerequis
 from src.graphe import chemin_competence_parcours_metier, prerequis_du_parcours
 from src.graphe import construire_graphe as _construire_graphe
 from src.graphe import detecter_incoherences as _detecter_incoherences_graphe
-from src.ml.outils import analyser_profil, calculer_adequation, identifier_points_forts
+from src.ml.outils import analyser_profil, identifier_points_forts
 from src.models import CorpusFormations, charger_corpus_formations
 from src.schemas import ProfilCandidat
 
@@ -357,8 +357,24 @@ def analyser_profil_ml() -> dict:
 
 
 def calculer_score_adequation(parcours: str) -> dict:
-    score = calculer_adequation(_profil(), parcours)
-    return {"parcours": parcours, "score_adequation": score}
+    """Score d'adéquation ML pour un parcours précis.
+
+    Passe par `analyser_profil` plutôt que par `calculer_adequation` afin de
+    récupérer le diagnostic d'exploitabilité : un score isolé, sorti d'un profil
+    que le modèle n'a pas su exploiter, est indiscernable d'un score informatif
+    pour l'agent qui le lit."""
+    analyse = analyser_profil(_profil())
+    score = next(
+        (c.score_adequation for c in analyse.parcours_candidats if c.parcours == parcours), 0.0
+    )
+    resultat = {
+        "parcours": parcours,
+        "score_adequation": score,
+        "profil_exploitable": analyse.profil_exploitable,
+    }
+    if not analyse.profil_exploitable:
+        resultat["avertissement"] = analyse.justification
+    return resultat
 
 
 def verifier_prerequis(parcours: str) -> dict:
@@ -475,13 +491,24 @@ def expliquer_recommandation(parcours: str) -> dict:
         return {"statut": "aucun_resultat", "message": f"Parcours « {parcours} » introuvable."}
 
     profil = _profil()
-    return {
+    # Une seule analyse ML pour le score et le diagnostic : appeler
+    # `calculer_adequation` puis `identifier_points_forts` relançait la
+    # résolution du profil trois fois au total.
+    analyse = analyser_profil(profil)
+    score = next(
+        (c.score_adequation for c in analyse.parcours_candidats if c.parcours == p.id), 0.0
+    )
+    resultat = {
         "statut": "trouve",
         "parcours": p.id,
-        "score_adequation": calculer_adequation(profil, p.id),
+        "score_adequation": score,
+        "profil_exploitable": analyse.profil_exploitable,
         "points_forts": identifier_points_forts(profil),
         "raisonnement_graphe": _raisonnement_graphe(p.id),
     }
+    if not analyse.profil_exploitable:
+        resultat["avertissement"] = analyse.justification
+    return resultat
 
 
 def detecter_incoherences() -> dict:

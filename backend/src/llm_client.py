@@ -13,6 +13,8 @@ import logging
 import re
 import threading
 import time
+from contextlib import contextmanager
+from contextvars import ContextVar
 from functools import lru_cache
 from typing import Any
 
@@ -48,6 +50,58 @@ class SchemaNonConforme(LLMError):
     """
 
 
+class BudgetTempsDepasse(LLMError):
+    """Le budget global de la requête ne permet plus un appel LLM.
+
+    Distinct d'un timeout isolé : réessayer ne ferait qu'aggraver le
+    dépassement. L'orchestrateur le traite comme tout ``LLMError`` et produit
+    sa réponse de repli contrôlée.
+    """
+
+
+_echeance_llm: ContextVar[float | None] = ContextVar("echeance_llm", default=None)
+
+
+@contextmanager
+def limiter_temps_llm(duree_s: float, *, depart: float | None = None):
+    """Applique un budget cumulé à tous les appels LLM du contexte courant.
+
+    ``ContextVar`` isole l'échéance de chaque requête FastAPI, y compris
+    lorsque plusieurs requêtes synchrones sont servies dans des threads
+    différents. Le point de départ peut être celui de l'orchestrateur afin
+    que le garde-fou, le RAG et l'agent partagent exactement le même budget.
+    """
+    origine = time.monotonic() if depart is None else depart
+    jeton = _echeance_llm.set(origine + max(0.0, duree_s))
+    try:
+        yield
+    finally:
+        _echeance_llm.reset(jeton)
+
+
+def _temps_restant_s() -> float | None:
+    echeance = _echeance_llm.get()
+    if echeance is None:
+        return None
+    return max(0.0, echeance - time.monotonic())
+
+
+def _exiger_temps_restant() -> float | None:
+    restant = _temps_restant_s()
+    if restant is not None and restant <= 0:
+        raise BudgetTempsDepasse("Budget de temps global dépassé avant l'appel LLM")
+    return restant
+
+
+def _dormir_dans_budget(duree_s: float) -> None:
+    restant = _exiger_temps_restant()
+    if restant is not None and duree_s >= restant:
+        raise BudgetTempsDepasse(
+            f"Budget de temps global insuffisant pour attendre {duree_s:.1f} s"
+        )
+    time.sleep(duree_s)
+
+
 def _delai_suggere(message: str) -> float | None:
     """Extrait le délai que l'API elle-même recommande d'attendre.
 
@@ -58,8 +112,8 @@ def _delai_suggere(message: str) -> float | None:
     return float(correspondance.group(1)) if correspondance else None
 
 
-@lru_cache(maxsize=1)
-def _get_client() -> genai.Client:
+@lru_cache(maxsize=32)
+def _get_client(timeout_ms: int | None = None) -> genai.Client:
     # Construction différée : genai.Client() exige une clé valide dès
     # l'instanciation, donc la construire au chargement du module
     # empêcherait d'importer src.llm_client tant que GEMINI_API_KEY n'est pas
@@ -69,12 +123,13 @@ def _get_client() -> genai.Client:
             "GEMINI_API_KEY absente. Copier .env.example vers .env et y coller "
             "la clé obtenue sur https://aistudio.google.com/apikey"
         )
+    delai_ms = timeout_ms or int(config.llm_timeout_s * 1000)
     return genai.Client(
         api_key=config.gemini_api_key,
         # Borne haute sur chaque appel : sans elle, une API qui ne répond pas
         # fige la requête FastAPI et la réponse dégradée ne part jamais. Le
         # SDK attend des millisecondes.
-        http_options=types.HttpOptions(timeout=int(config.llm_timeout_s * 1000)),
+        http_options=types.HttpOptions(timeout=delai_ms),
     )
 
 
@@ -94,11 +149,20 @@ def _attendre_son_tour() -> None:
 
     intervalle = 60.0 / config.llm_requetes_par_minute
     global _dernier_appel
-    with _verrou_debit:
+    restant = _exiger_temps_restant()
+    if restant is None:
+        verrou_acquis = _verrou_debit.acquire()
+    else:
+        verrou_acquis = _verrou_debit.acquire(timeout=restant)
+    if not verrou_acquis:
+        raise BudgetTempsDepasse("Budget de temps global dépassé en attendant le débit LLM")
+    try:
         attente = intervalle - (time.monotonic() - _dernier_appel)
         if attente > 0:
-            time.sleep(attente)
+            _dormir_dans_budget(attente)
         _dernier_appel = time.monotonic()
+    finally:
+        _verrou_debit.release()
 
 
 # Motifs d'erreur transitoires, qui se résolvent en général en réessayant le
@@ -128,11 +192,20 @@ def _appeler_avec_reprise(contenu: str, parametres: types.GenerateContentConfig)
     for tentative in range(config.llm_max_tentatives):
         try:
             _attendre_son_tour()
-            return _get_client().models.generate_content(
+            restant = _exiger_temps_restant()
+            timeout_s = config.llm_timeout_s if restant is None else min(
+                config.llm_timeout_s, restant
+            )
+            # Le SDK attend des millisecondes entières. Un minimum de 1 ms
+            # conserve une borne valide quand l'échéance est imminente.
+            timeout_ms = max(1, int(timeout_s * 1000))
+            return _get_client(timeout_ms).models.generate_content(
                 model=config.gemini_model,
                 contents=contenu,
                 config=parametres,
             )
+        except BudgetTempsDepasse:
+            raise
         except Exception as e:
             message = str(e)
             reessayable = any(
@@ -154,7 +227,7 @@ def _appeler_avec_reprise(contenu: str, parametres: types.GenerateContentConfig)
                 attente,
                 message,
             )
-            time.sleep(attente)
+            _dormir_dans_budget(attente)
 
     raise QuotaDepasseError(
         f"Appel LLM toujours en échec après {config.llm_max_tentatives} tentatives "

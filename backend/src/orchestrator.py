@@ -31,7 +31,7 @@ from typing import Any
 from src.agent import run_agent
 from src.config import config
 from src.guardrails import check_injection, masquer_donnees_sensibles
-from src.llm_client import LLMError
+from src.llm_client import LLMError, limiter_temps_llm
 from src.rag import retrieve_context
 from src.schemas import OrientationInput, OrientationReponse, RecommandationDecision
 from src.securite import verifier_sortie
@@ -201,9 +201,20 @@ def traiter_demande(entree: OrientationInput) -> OrientationReponse:
     """Traite une demande de bout en bout et retourne la décision et sa trace.
 
     Ne lève jamais : chaque échec possible a une réponse dégradée (ORCH-3).
+    Tous les appels LLM partagent la même échéance : leur timeout, leur
+    lissage de débit et leurs reprises ne peuvent plus prolonger la requête
+    au-delà du budget global (ORCH-5).
     """
-    trace_id = str(uuid.uuid4())
     depart = time.monotonic()
+    with limiter_temps_llm(config.orchestrateur_budget_s, depart=depart):
+        return _traiter_demande_dans_budget(entree, depart)
+
+
+def _traiter_demande_dans_budget(
+    entree: OrientationInput, depart: float
+) -> OrientationReponse:
+    """Implémentation du pipeline sous l'échéance installée par l'entrée publique."""
+    trace_id = str(uuid.uuid4())
     degradations: list[str] = []
 
     # 1. Garde-fous en entrée, avant toute autre étape : une demande qui

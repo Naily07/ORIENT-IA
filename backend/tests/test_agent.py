@@ -261,6 +261,62 @@ def test_demande_information_ne_declenche_pas_la_consultation_ml(monkeypatch, pr
     assert "analyser_profil_ml" not in resultat.outils_utilises
 
 
+def test_information_confiance_faible_ne_bascule_pas_en_escalade(monkeypatch, profil):
+    """Observé en démonstration : une question factuelle à laquelle l'assistant
+    ne répondait que partiellement (« liste des matières ? ») finissait « voyez
+    un conseiller pédagogique ». Une confiance faible ne force l'escalade que
+    sur une *recommandation*, pas sur une question factuelle."""
+    decision = _decision_type(
+        action="information", confiance=0.2, incertitude_declaree=False,
+        reponse="Voici ce que je sais des matières de ce parcours.",
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Liste des matières ?", profil, None, "trace-info-faible")
+
+    assert resultat.action == "information"
+    assert resultat.incertitude_declaree is True
+
+
+def test_reponse_conversationnelle_est_composee_si_absente(monkeypatch, profil):
+    """`reponse` est le texte montré à l'utilisateur. Si le modèle ne l'a pas
+    rempli (sortie tronquée), le code en compose une plutôt que d'afficher une
+    bulle vide."""
+    decision = _decision_type(
+        action="information", confiance=0.8, reponse="",
+        resume="Question sur la mention Informatique.",
+        explication="La mention regroupe quatre parcours.",
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Question", profil, None, "trace-reponse-vide")
+
+    assert resultat.reponse.strip()
+    assert "[Contrôle automatique]" not in resultat.reponse
+
+
+def test_escalade_ajoute_une_phrase_conseiller_a_la_reponse(monkeypatch, profil):
+    """Quand un contrôle déterministe passe l'action à `escalade_conseiller`,
+    la version parlée (`reponse`) ne doit pas rester muette sur ce point."""
+    decision = _decision_type(
+        action="recommandation", confiance=0.1, incertitude_declaree=False,
+        outils_utilises=["analyser_profil_ml"],
+        reponse="Le parcours X vous conviendrait.",
+    )
+    monkeypatch.setattr(
+        "src.agent.llm_call_with_tools", lambda *a, **k: _reponse_finale(decision)
+    )
+
+    resultat = run_agent("Quel parcours ?", profil, None, "trace-escalade-reponse")
+
+    assert resultat.action == "escalade_conseiller"
+    assert "conseiller" in resultat.reponse.lower()
+
+
 # --- Politique de refus / incertitude / renvoi (AGT-4) -----------------------
 
 

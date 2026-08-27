@@ -37,7 +37,7 @@ from pathlib import Path
 
 from src import rag
 from src.config import config
-from src.models import charger_corpus
+from src.models import charger_corpus_rag
 
 # Questions dont la source attendue est connue, écrites à partir du corpus réel
 # (`backend/data/corpus.json`) sans recopier ses formulations : une question qui
@@ -132,7 +132,7 @@ def _mesurer(seuil: float, k: int) -> dict:
 
 
 def calibrer() -> dict:
-    documents = charger_corpus()
+    documents = charger_corpus_rag()
     if not documents:
         raise RuntimeError("Corpus documentaire vide : rien à calibrer.")
     rag.ingerer(documents)

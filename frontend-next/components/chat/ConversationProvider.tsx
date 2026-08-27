@@ -29,10 +29,10 @@ import {
 /**
  * Condense les tours déjà joués pour l'agent.
  *
- * Ce qui est renvoyé n'est pas la carte de décision complète mais ce dont une
- * question de suivi a besoin : le résumé et les parcours nommés. « Quelles
- * matières dans cette filière ? » n'est résoluble que si le tour précédent dit
- * encore de quelle filière il s'agit.
+ * On rejoue `decision.reponse` — le texte réellement lu par l'utilisateur —
+ * complété des parcours nommés. Une question de suivi (« et les matières de
+ * cette filière ? ») n'est résoluble que si le tour précédent dit encore de
+ * quelle filière il s'agit.
  *
  * Les tours en erreur sont écartés : rejouer une question restée sans réponse
  * ferait croire à l'agent qu'il y a déjà répondu.
@@ -44,10 +44,7 @@ function construireHistorique(messages: TourConversation[]): TourHistorique[] {
     .map((tour) => {
       const decision = tour.reponse!.decision;
       const parcours = decision.parcours_recommandes.map((p) => p.parcours).join(", ");
-      // `explication` plutôt que `resume` : le résumé reformule la *question*
-      // posée (« l'utilisateur souhaite savoir… »), pas la réponse donnée.
-      // Le rejouer laissait l'agent sans aucune trace de ce qui avait été dit.
-      const morceaux = [decision.explication || decision.resume];
+      const morceaux = [decision.reponse || decision.explication || decision.resume];
       if (parcours) morceaux.push(`Parcours cités : ${parcours}.`);
       return { question: tour.message, reponse: morceaux.join(" ") };
     });

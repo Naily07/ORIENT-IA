@@ -154,6 +154,22 @@ class RecommandationDecision(BaseModel):
     §2 : « une recommandation argumentée, traçable et prudente »)."""
 
     resume: str = Field(description="Reformulation du besoin, tel que compris par le système")
+    # Réponse rédigée pour l'utilisateur, en langage courant. C'est ce que le
+    # frontend affiche en premier : une vraie réponse de conversation, pas un
+    # empilement de sections techniques. `resume`/`explication`/`sources` restent
+    # la version tracée pour le jury, `reponse` est la version parlée.
+    reponse: str = Field(
+        default="",
+        description=(
+            "Ta réponse à l'utilisateur, rédigée comme si tu lui parlais : phrases "
+            "complètes, ton posé et bienveillant, vocabulaire d'un lycéen. Réponds "
+            "d'abord à ce qu'il demande, intègre les noms de filières, les matières "
+            "ou les sources dans le fil du texte. N'écris jamais « l'utilisateur "
+            "demande… », ne mentionne ni JSON, ni champ, ni nom d'outil. Si tu n'es "
+            "pas sûr ou s'il manque une information, dis-le simplement dans la "
+            "conversation."
+        ),
+    )
     parcours_recommandes: list[RecommandationParcours] = Field(default_factory=list)
     confiance: confloat(ge=0, le=1)
     informations_manquantes: list[str] = Field(default_factory=list)

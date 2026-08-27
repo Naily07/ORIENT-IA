@@ -72,10 +72,13 @@ def test_verifier_provenance_signale_les_references_orphelines():
 
 
 def test_le_corpus_reel_ne_contient_aucune_source_orpheline():
-    from src.models import charger_corpus, charger_corpus_formations
+    from src.models import charger_corpus_formations, charger_corpus_rag
 
     registre = charger_registre_sources()
-    documents = charger_corpus()
+    # `charger_corpus_rag()` : corpus rédigé + fiches générées (DATA-3), pour
+    # qu'une fiche générée référençant une source hors registre soit refusée
+    # au même titre qu'une fiche rédigée à la main.
+    documents = charger_corpus_rag()
     corpus = charger_corpus_formations()
 
     source_ids = (

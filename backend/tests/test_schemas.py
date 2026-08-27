@@ -81,3 +81,20 @@ def test_recommandation_decision_valide():
     )
     assert decision.action == "recommandation"
     assert decision.incertitude_declaree is False
+
+
+def test_recommandation_decision_reponse_par_defaut_vide():
+    """`reponse` (texte conversationnel montré à l'utilisateur) est optionnel
+    au niveau du schéma — l'agent le remplit, un filet le compose sinon —
+    mais reste une chaîne, jamais `None`."""
+    decision = RecommandationDecision(
+        resume="x", confiance=0.5, explication="x", action="information",
+        incertitude_declaree=False,
+    )
+    assert decision.reponse == ""
+
+    avec = RecommandationDecision(
+        resume="x", reponse="Bonjour, voici votre réponse.", confiance=0.5,
+        explication="x", action="information", incertitude_declaree=False,
+    )
+    assert avec.reponse == "Bonjour, voici votre réponse."

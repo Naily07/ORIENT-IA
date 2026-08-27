@@ -52,6 +52,12 @@ export interface RecommandationParcours {
 
 export interface RecommandationDecision {
   resume: string;
+  /**
+   * Réponse rédigée pour l'utilisateur, en langage courant. C'est ce que le
+   * chat affiche en premier ; `resume`/`explication`/`sources` restent la
+   * version tracée pour le jury.
+   */
+  reponse: string;
   parcours_recommandes: RecommandationParcours[];
   confiance: number;
   informations_manquantes: string[];

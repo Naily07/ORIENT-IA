@@ -17,7 +17,7 @@ from pathlib import Path
 
 from src import rag
 from src.config import config
-from src.models import charger_corpus
+from src.models import charger_corpus_rag
 
 DOSSIER_TESTS = Path(__file__).parent
 JEU_PAR_DEFAUT = DOSSIER_TESTS / "eval_rag.json"
@@ -29,7 +29,7 @@ def charger_jeu(chemin: Path = JEU_PAR_DEFAUT) -> list[dict]:
 
 
 def evaluer(mode: str = "vectoriel") -> dict:
-    documents = charger_corpus()
+    documents = charger_corpus_rag()
     if not documents:
         raise RuntimeError("Corpus documentaire vide : rien à évaluer.")
     rag.ingerer(documents)

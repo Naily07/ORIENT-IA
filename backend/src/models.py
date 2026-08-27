@@ -57,6 +57,22 @@ def charger_corpus(
         return [DocumentSource.model_validate(d) for d in json.load(f)]
 
 
+def charger_corpus_rag() -> list[DocumentSource]:
+    """Corpus RAG effectivement indexé : fiches rédigées à la main
+    (`corpus.json`) **plus** fiches générées depuis le corpus structuré
+    (`corpus_genere.json`, produit par `scripts/generer_corpus_rag.py`).
+
+    Les fiches manuelles priment : en cas de collision d'`id`, la version de
+    `corpus.json` est conservée (elle porte les notes de traçabilité curées à
+    la main). `corpus_genere.json` absent = simple retour aux 20 fiches
+    manuelles, aucun échec.
+    """
+    manuels = charger_corpus("corpus.json")
+    connus = {d.id for d in manuels}
+    generes = [d for d in charger_corpus("corpus_genere.json") if d.id not in connus]
+    return manuels + generes
+
+
 # --- Modèles structurés (§3 du sujet, ML et ontologie) -----------------------
 
 

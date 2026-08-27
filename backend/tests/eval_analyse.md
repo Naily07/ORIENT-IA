@@ -128,12 +128,23 @@ comportement attendu de `orchestrator._decision_repli()`.
 
 ## Limites qui ne sont pas des bugs
 
-- **Pas de mémoire de conversation entre appels.** Chaque cas de `eval_dataset.json`
-  est un appel isolé à `traiter_demande()` ; une question qui présuppose un échange
-  précédent (comme la version initiale d'EVAL-19) ne peut pas être traitée
-  correctement tant qu'un mécanisme de session (FE-2, pas encore construit) ne
-  conserve pas l'historique. Le comportement observé (demander plus de contexte
-  plutôt qu'halluciner un historique) est le comportement sûr en attendant.
+- **Mémoire de conversation : ajoutée depuis.** `OrientationInput.historique`
+  transporte désormais les tours précédents (client stateful, serveur toujours sans
+  état), rejoués à l'agent comme de vrais tours `user`/`model`. Une question de suivi
+  (« et les matières de cette filière ? ») se rattache maintenant au parcours du tour
+  précédent. `eval_dataset.json` reste une suite d'appels isolés — les cas qui
+  présupposaient un échange (EVAL-19) restent reformulés autoportants — mais le chat
+  du frontend, lui, tient la conversation.
+- **Précision RAG en baisse assumée après enrichissement du corpus.** `corpus.json`
+  ne portait que 20 fiches d'une phrase ; `scripts/generer_corpus_rag.py` ajoute une
+  fiche « matières » et une fiche « débouchés » par parcours, plus des index par
+  domaine (`corpus_genere.json`). Le rappel des sources et le silence hors corpus
+  restent à 1,00 en mode hybride (mode de production), mais la *précision* mesurée par
+  `eval_rag.py` tombe (~0,67 → ~0,34) : pour « quelle filière mêle informatique de
+  gestion et IA ? », on retrouve aussi `DOC-IGGLIA-MATIERES` et
+  `DOC-DOMAINE-INFORMATIQUE_TELECOM`, comptés comme du bruit par la métrique stricte
+  alors qu'ils portent sur le bon parcours. Compromis accepté : sans ces fiches, une
+  question factuelle sur les matières d'un parcours restait sans réponse.
 - **Le modèle ML n'a été validé que sur des données synthétiques** (voir
   `backend/src/ml/donnees_synthetiques.py`) : les scores d'adéquation mesurés ici
   reflètent la capacité du modèle à retrouver les hypothèses de génération, pas une

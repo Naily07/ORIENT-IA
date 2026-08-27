@@ -22,7 +22,7 @@ from src.config import MENTION_OBLIGATOIRE, config
 from src.llm_client import set_log_llm_call
 from src.ml.hybride import MARQUEUR_REGLE_ADMISSION
 from src.ml.outils import AVERTISSEMENT_NON_EXPLOITABLE
-from src.models import charger_corpus
+from src.models import charger_corpus_rag
 from src.observability import lire_dernieres_traces, log_llm_call, log_tool_call, log_trace
 from src.orchestrator import set_log_trace, traiter_demande
 from src.rag import ingerer, nombre_de_fragments
@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
     # Ingestion automatique du corpus RAG s'il est vide au démarrage.
     try:
         if nombre_de_fragments() == 0:
-            documents = charger_corpus()
+            documents = charger_corpus_rag()
             if documents:
                 ingerer(documents)
     except Exception:

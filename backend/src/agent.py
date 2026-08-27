@@ -59,6 +59,7 @@ from src.tools import (
     declarer_outils,
     definir_profil_courant,
     executer_outil,
+    fiche_parcours_publique,
     verifier_prerequis,
 )
 
@@ -67,12 +68,58 @@ recommandes un ou plusieurs parcours à un candidat à partir de son profil déc
 du corpus pédagogique et d'un modèle de Machine Learning entraîné.
 
 CONTEXTE FOURNI :
+- les tours précédents de la conversation, s'il y en a (questions et réponses \
+déjà échangées) ;
 - la question ou la demande de l'utilisateur ;
 - le profil déclaré jusqu'ici (matières préférées, résultats, compétences, centres \
 d'intérêt, préférences professionnelles, environnement recherché) ;
 - des passages du corpus pédagogique, avec leur identifiant [DOC-XXX] suivi du \
 statut de leur source : « officiel » (site ou document de l'ISPM), \
 « institutionnel », « externe » (source tierce), ou « provenance non enregistrée ».
+
+COMPRENDS D'ABORD L'INTENTION. Avant d'agir, identifie ce que l'utilisateur \
+cherche vraiment, en tenant compte des tours précédents :
+- une **question factuelle** sur une filière, une mention, des matières, des \
+débouchés, une procédure → réponds avec les outils de consultation et les \
+passages ; `action = "information"`.
+- une **comparaison** entre deux parcours (« différence entre X et Y », « compare \
+X et Y ») → `comparer_parcours` ; `action = "information"`.
+- une **demande de conseil personnalisé** (« quel parcours pour moi ? », « est-ce \
+que X me convient ? », description de goûts suivie d'une demande d'orientation) → \
+`analyser_profil_ml` puis `action = "recommandation"` (ou `demande_information` \
+si le profil est trop mince).
+- une **question de suivi** qui renvoie à un tour précédent (« et les matières ? », \
+« cette filière », « et l'autre ? », « pourquoi ? ») → résous la référence à \
+partir de la conversation : « cette filière » = la dernière filière nommée. Ne \
+réponds jamais qu'aucune filière n'a été précisée si un tour précédent en \
+nomme une.
+- une **méta-question sur l'assistant** (« pourquoi recommandes-tu ça ? », « sur \
+quoi repose cette réponse ? », « données réelles ou générées ? », « que fais-tu \
+si le modèle et les règles se contredisent ? », « qu'est-ce qui te manque ? ») → \
+réponds franchement à partir de la section FONCTIONNEMENT DE L'ASSISTANT \
+ci-dessous ; `action = "information"`.
+- une **demande interdite** (recommander à partir du sexe, de l'âge ou d'un autre \
+critère sensible ; analyser la personnalité d'après les messages ; affirmer une \
+information contraire aux documents) → refuse clairement et explique pourquoi, \
+sans rien inventer.
+
+FONCTIONNEMENT DE L'ASSISTANT (faits sur ce système, utilise-les pour répondre \
+aux méta-questions) :
+- Les recommandations viennent d'un modèle de Machine Learning (régression \
+logistique) entraîné sur ~800 **profils synthétiques** construits à partir des \
+descriptions réelles des 16 parcours de l'ISPM. Il a été validé sur les réponses \
+**réelles** d'une enquête de terrain (étudiants et professionnels), gelées et \
+jamais utilisées pour l'entraînement. La généralisation aux profils réels est \
+limitée et connue : l'enquête recueille peu de dimensions par personne.
+- Les informations sur les filières, matières, débouchés et l'admission viennent \
+du corpus documentaire (site et documents ISPM = « officiel » ; calendriers \
+d'épreuves relayés par un groupe étudiant = « externe », à confirmer auprès de \
+l'ISPM).
+- Si le modèle ML et une règle pédagogique (prérequis d'admission) se \
+contredisent, l'assistant ne tranche pas seul : il signale la contradiction et \
+oriente vers un conseiller pédagogique.
+- Les scores d'adéquation sont ceux du modèle, jamais une estimation rédigée. Un \
+profil trop mince donne une confiance basse, dite explicitement.
 
 TRAÇABILITÉ DES SOURCES (§4 du sujet, règle non négociable) : ne présente jamais \
 comme une information officielle ce qui provient d'une source « externe » ou dont la \
@@ -90,6 +137,16 @@ ce sont des faits du corpus, pas une opinion du modèle) ;
 fait qui n'en proviendrait pas.
 
 RÈGLES D'UTILISATION DES OUTILS :
+- Pour toute question factuelle qui porte sur UN parcours précis — ses matières, \
+ses débouchés, son admission, sa mention — appelle `rechercher_formation` avec le \
+sigle concerné, **y compris quand ce sigle vient d'un tour précédent** (« et les \
+matières de cette filière ? » → `rechercher_formation("IGGLIA")` si IGGLIA était le \
+sujet). L'outil renvoie `matieres_nommees` et `debouches_nommes` : c'est la source \
+à privilégier. Ne réponds jamais « les matières ne sont pas dans le corpus » sans \
+avoir appelé cet outil.
+- Ne réponds sur un parcours qu'à partir des passages qui le concernent vraiment : \
+si les passages fournis décrivent d'autres parcours (TEE, FIC…) que celui demandé, \
+ils ne te renseignent pas — appelle l'outil.
 - Appelle `analyser_profil_ml` avant de recommander un parcours : ne recommande \
 jamais un parcours de ta propre initiative, sans passer par le modèle.
 - Utilise `verifier_prerequis` avant de confirmer qu'un candidat peut intégrer un \
@@ -123,22 +180,37 @@ formule ses phrases. Les seuls centres d'intérêt et préférences pris en comp
 ceux que le profil déclare explicitement — jamais une déduction de ta part.
 
 RÉPONSE FINALE — réponds en JSON strictement conforme au schéma RecommandationDecision :
-- `resume` reformule la demande telle que tu l'as comprise ;
+- `reponse` est LE texte que l'utilisateur lit. Rédige-le comme une vraie réponse \
+de conversation : adresse-toi à lui, réponds d'abord à sa question, en phrases \
+complètes et en langage clair. Nomme les filières, cite les matières ou les \
+sources dans le fil des phrases. N'y écris jamais « l'utilisateur demande… », ni \
+« action », ni « confiance », ni un nom d'outil, ni du JSON. Si tu recommandes, \
+dis quel parcours arrive en tête et pourquoi, en une ou deux phrases. Si tu n'es \
+pas sûr ou s'il manque une information, dis-le naturellement et pose ta question. \
+Reste bref : 2 à 6 phrases suffisent le plus souvent.
+- `resume` reformule la demande telle que tu l'as comprise (usage interne) ;
+- `explication` détaille, pour la traçabilité, ce qui fonde la réponse : résultat \
+du modèle, information documentaire, règle pédagogique, ta propre synthèse — en \
+les distinguant. `reponse` en est la version parlée, `explication` la version \
+tracée ;
 - `parcours_recommandes` reprend les parcours et scores retournés par le modèle ML, \
 jamais une estimation de ta part ;
 - `sources` ne contient que des identifiants de passages réellement fournis dans le \
 contexte, jamais inventés ;
 - `action` vaut :
-  - `information` si la demande est une question factuelle sur le corpus (une \
-formation, une comparaison, une procédure) qui ne nécessite aucune recommandation \
-personnalisée ;
+  - `information` si la demande est une question factuelle (une formation, une \
+comparaison, une procédure, une méta-question sur l'assistant) qui ne nécessite \
+aucune recommandation personnalisée — **même si tu ne peux répondre que \
+partiellement** : dans ce cas, réponds ce que tu sais et dis ce qui manque, ne \
+bascule pas en escalade ;
   - `recommandation` si le profil et le corpus permettent de recommander un parcours \
 personnalisé ;
-  - `demande_information` s'il manque une information importante (ex. série de \
-baccalauréat pour vérifier un prérequis, ou un profil encore trop vide pour que le \
-modèle ML soit pertinent) ;
-  - `escalade_conseiller` si le modèle ML et une règle pédagogique se contredisent, \
-ou si ta confiance reste faible ;
+  - `demande_information` s'il manque une information importante pour conseiller \
+(ex. série de baccalauréat, ou profil encore trop vide pour le modèle ML) ;
+  - `escalade_conseiller` uniquement si le modèle ML et une règle pédagogique se \
+contredisent, ou si tu t'apprêtes à recommander un parcours mais que ta confiance \
+reste vraiment faible. Jamais pour une simple question factuelle à laquelle il te \
+manque un détail ;
   - `renvoi_administration` si la question porte sur une décision officielle \
 (admission, dérogation, inscription) plutôt que sur un conseil pédagogique.
 - `incertitude_declaree` est `true` dès que les informations disponibles ne \
@@ -180,6 +252,52 @@ def _tours_precedents(historique: list[TourConversation] | None) -> list[types.C
     return tours
 
 
+def _fiches_parcours_mentionnes(
+    description: str, historique: list[TourConversation] | None
+) -> str:
+    """Fiches structurées des parcours nommés dans la question ou le dernier
+    tour, injectées telles quelles dans le contexte.
+
+    Sur une question de suivi (« liste des matières de cette filière ? »), le
+    modèle `flash-lite` s'en tient souvent aux passages RAG et n'appelle pas
+    `rechercher_formation`, alors même que les passages portent parfois sur
+    d'autres parcours. Placer la fiche du bon parcours (matières et débouchés
+    en clair) directement dans le prompt rend la réponse possible sans
+    dépendre de ce choix. Deux parcours au plus, pour ne pas noyer le reste.
+    """
+    fenetre = [description]
+    for tour in (historique or [])[-2:]:
+        fenetre.append(f"{tour.question}\n{tour.reponse}")
+    sigles: list[str] = []
+    for sigle in _parcours_cites("\n".join(fenetre)):
+        if sigle not in sigles:
+            sigles.append(sigle)
+    if not sigles:
+        return ""
+
+    blocs: list[str] = []
+    for sigle in sigles[:2]:
+        fiche = fiche_parcours_publique(sigle)
+        if not fiche:
+            continue
+        mention = (fiche.get("mention") or {}).get("nom", "mention non précisée")
+        prerequis = "; ".join(fiche.get("prerequis") or []) or "non précisés"
+        matieres = ", ".join(fiche.get("matieres_nommees") or []) or "non collectées"
+        debouches = ", ".join(fiche.get("debouches_nommes") or []) or "non collectés"
+        blocs.append(
+            f"- {sigle} — {fiche.get('nom', sigle)} (mention {mention}).\n"
+            f"  Admission : {prerequis}.\n"
+            f"  Matières (source calendriers d'épreuves, externe) : {matieres}.\n"
+            f"  Débouchés (source externe) : {debouches}."
+        )
+    if not blocs:
+        return ""
+    return (
+        "Fiches structurées des parcours cités (corpus interne, à utiliser en "
+        "priorité pour ces parcours) :\n" + "\n".join(blocs)
+    )
+
+
 def _construire_prompt_initial(
     description: str,
     profil: ProfilCandidat,
@@ -191,10 +309,13 @@ def _construire_prompt_initial(
     else:
         passages = "(aucun passage pertinent retrouvé dans le corpus)"
 
+    fiches = _fiches_parcours_mentionnes(description, historique)
+
     contenu = (
         f"Demande de l'utilisateur :\n{description}\n\n"
         f"Profil déclaré jusqu'ici :\n{profil.model_dump()}\n\n"
-        f"Passages du corpus pédagogique :\n{passages}"
+        + (f"{fiches}\n\n" if fiches else "")
+        + f"Passages du corpus pédagogique :\n{passages}"
     )
     return [
         *_tours_precedents(historique),
@@ -318,21 +439,29 @@ def _verifier_coherence_prose_classement(
         return decision
 
     meilleur = decision.parcours_recommandes[0].parcours
-    prose = f"{decision.resume}\n{decision.explication}"
+    prose = f"{decision.resume}\n{decision.explication}\n{decision.reponse}"
     cites = _parcours_cites(prose)
 
     if not cites or meilleur in cites:
         return decision
 
+    score_tete = decision.parcours_recommandes[0].score_adequation
+    reponse = decision.reponse
+    if reponse.strip():
+        reponse = (
+            f"{reponse}\n\nPour être exact : d'après le modèle, c'est {meilleur} "
+            f"qui obtient le meilleur score d'adéquation ({score_tete:.0%})."
+        )
     return decision.model_copy(
         update={
+            "reponse": reponse,
             "explication": (
                 f"{decision.explication}\n[Contrôle automatique] L'explication ci-dessus "
                 f"met en avant {', '.join(cites)}, alors que le modèle place "
                 f"{meilleur} en tête du classement "
-                f"({decision.parcours_recommandes[0].score_adequation:.0%}). "
+                f"({score_tete:.0%}). "
                 "Le classement chiffré fait foi."
-            )
+            ),
         }
     )
 
@@ -411,8 +540,18 @@ def _recouper_avec_regles_pedagogiques(
 
     prerequis = verdict.get("prerequis") or []
     description_prerequis = prerequis[0] if prerequis else "prérequis non précisés"
+    reponse = decision.reponse
+    if reponse.strip():
+        reponse = (
+            f"{reponse}\n\nUn point de prudence : {tete.parcours} arrive en tête du "
+            f"modèle, mais ne semble pas correspondre aux conditions d'admission "
+            f"connues ({description_prerequis}) pour la série de baccalauréat "
+            "indiquée. Le mieux est d'en parler à un conseiller pédagogique de "
+            "l'ISPM pour vérifier."
+        )
     return decision.model_copy(
         update={
+            "reponse": reponse,
             "action": "escalade_conseiller",
             "incertitude_declaree": True,
             "explication": (
@@ -473,21 +612,94 @@ def _appliquer_controles_deterministes(
     action = decision.action
     incertitude = decision.incertitude_declaree
     if confiance < config.orchestrateur_seuil_confiance:
-        action = "escalade_conseiller"
+        # Une confiance faible force l'escalade **seulement** quand on est sur
+        # le point de recommander un parcours : c'est là que se joue le §2
+        # (recommandation argumentée). Une question factuelle qu'on n'a pu
+        # traiter qu'en partie n'a pas à finir « voyez un conseiller » — on
+        # répond ce qu'on sait et on déclare l'incertitude. Comportement
+        # observé en démonstration : « liste des matières ? » basculait en
+        # escalade au lieu de dire simplement ce qui manquait.
         incertitude = True
+        if action == "recommandation":
+            action = "escalade_conseiller"
 
-    return decision.model_copy(
+    decision = decision.model_copy(
         update={
             "outils_utilises": outils_utilises,
             "action": action,
             "incertitude_declaree": incertitude,
         }
     )
+    return _garantir_reponse_humaine(decision)
+
+
+def _garantir_reponse_humaine(decision: RecommandationDecision) -> RecommandationDecision:
+    """Garantit que `decision.reponse` porte un texte de conversation cohérent
+    avec la décision finale.
+
+    Le modèle remplit `reponse` dans la quasi-totalité des cas (consigne forte
+    du prompt système). Ce filet couvre les deux trous restants :
+    - `reponse` vide (sortie tronquée, modèle qui n'a rempli que les champs
+      « techniques ») : on en compose une à partir de `resume`, des parcours
+      et de `explication` — jamais une bulle vide côté utilisateur ;
+    - `action` passée à `escalade_conseiller` par un contrôle déterministe
+      sans que le texte n'en dise rien : on ajoute la phrase qui manque, pour
+      que la version parlée ne contredise pas la décision.
+    """
+    reponse = (decision.reponse or "").strip()
+
+    if not reponse:
+        morceaux: list[str] = []
+        if decision.resume:
+            morceaux.append(decision.resume)
+        if decision.parcours_recommandes:
+            tete = decision.parcours_recommandes[0]
+            morceaux.append(
+                f"D'après le modèle, {tete.parcours} obtient le meilleur score "
+                f"d'adéquation ({tete.score_adequation:.0%}) avec ce profil."
+            )
+        if decision.explication:
+            # On retire les annotations internes : elles ne s'adressent pas
+            # à l'utilisateur.
+            texte = "\n".join(
+                ligne
+                for ligne in decision.explication.splitlines()
+                if not ligne.strip().startswith("[Contrôle automatique]")
+            ).strip()
+            if texte:
+                morceaux.append(texte)
+        if decision.informations_manquantes:
+            morceaux.append(
+                "Pour aller plus loin, il me faudrait : "
+                + ", ".join(decision.informations_manquantes)
+                + "."
+            )
+        reponse = " ".join(morceaux).strip() or (
+            "Je n'ai pas assez d'éléments pour répondre précisément. "
+            "Pouvez-vous préciser votre question ?"
+        )
+
+    mots_conseiller = ("conseiller", "conseillère")
+    if decision.action == "escalade_conseiller" and not any(
+        mot in reponse.lower() for mot in mots_conseiller
+    ):
+        reponse = (
+            f"{reponse}\n\nSur ce point, je préfère rester prudent : l'idéal est "
+            "d'en parler à un conseiller pédagogique de l'ISPM, qui pourra "
+            "confirmer avec votre dossier."
+        )
+
+    return decision.model_copy(update={"reponse": reponse})
 
 
 def _escalade(motif: str, outils_utilises: list[str]) -> RecommandationDecision:
     return RecommandationDecision(
         resume=motif,
+        reponse=(
+            "Je n'arrive pas à répondre de façon fiable à cette demande pour le "
+            "moment. Le mieux est d'en parler à un conseiller pédagogique de "
+            "l'ISPM, qui pourra vous accompagner directement."
+        ),
         parcours_recommandes=[],
         confiance=0.0,
         informations_manquantes=[],

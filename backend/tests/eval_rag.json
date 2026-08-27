@@ -1,0 +1,21 @@
+{
+  "description": "Jeu RAG-6 figé avant l'implémentation de RAG-4. Les cas avec source sont reformulés et les cas hors corpus doivent produire un silence.",
+  "cas": [
+    {"id": "RAG-01", "question": "Quelle filière mêle informatique de gestion et intelligence artificielle ?", "sources_attendues": ["DOC-IGGLIA"]},
+    {"id": "RAG-02", "question": "Quel parcours combine électronique et structure des ordinateurs ?", "sources_attendues": ["DOC-ESIIA"]},
+    {"id": "RAG-03", "question": "Où étudier les statistiques appliquées à la banque et au commerce ?", "sources_attendues": ["DOC-ISAIA"]},
+    {"id": "RAG-04", "question": "Quelle formation porte sur le multimédia et les technologies de communication ?", "sources_attendues": ["DOC-IMTICIA"]},
+    {"id": "RAG-05", "question": "Quel parcours prépare aux industries chimiques et minières ?", "sources_attendues": ["DOC-ICMP"]},
+    {"id": "RAG-06", "question": "Quelle filière traite des plantes médicinales de Madagascar ?", "sources_attendues": ["DOC-PIP"]},
+    {"id": "RAG-07", "question": "Quel parcours forme à l'aménagement urbain et aux infrastructures ?", "sources_attendues": ["DOC-GCA"]},
+    {"id": "RAG-08", "question": "Quelle formation vise l'hôtellerie et le patrimoine culturel ?", "sources_attendues": ["DOC-TEH"]},
+    {"id": "RAG-09", "question": "Quels sont les niveaux de diplôme délivrés par l'établissement ?", "sources_attendues": ["DOC-NIVEAUX-DIPLOMES"]},
+    {"id": "RAG-10", "question": "Quelle série de baccalauréat faut-il pour s'inscrire ?", "sources_attendues": ["DOC-CONDITIONS-ADMISSION"]},
+    {"id": "RAG-11", "question": "Combien coûtent les droits d'inscription ?", "sources_attendues": ["DOC-CONDITIONS-ADMISSION"]},
+    {"id": "RAG-12", "question": "Quel parcours mêle droit et outils informatiques ?", "sources_attendues": ["DOC-DTJA"]},
+    {"id": "RAG-HC-01", "question": "Quel est le programme de la filière de médecine vétérinaire ?", "sources_attendues": []},
+    {"id": "RAG-HC-02", "question": "Comment obtenir une bourse Erasmus pour partir au Canada ?", "sources_attendues": []},
+    {"id": "RAG-HC-03", "question": "Quelles sont les horaires d'ouverture de la piscine municipale ?", "sources_attendues": []},
+    {"id": "RAG-HC-04", "question": "Quel est le classement mondial de l'établissement en robotique ?", "sources_attendues": []}
+  ]
+}

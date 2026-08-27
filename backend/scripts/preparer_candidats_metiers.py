@@ -2,29 +2,22 @@
 correspondance filières ISPM généré automatiquement, hors corpus officiel.
 
 **Ce que c'est, et ce que ce n'est pas.** Le corpus structuré (DATA-1/DATA-3)
-n'avait jamais collecté les débouchés métiers par parcours : `metiers.json`
-n'existait pas, `Parcours.debouches` était vide partout, et `ONTO-6` recensait
-ce manque (16 constats `donnee_manquante`, 0 contradiction). Un fichier
-externe généré automatiquement (grand modèle de langage, sans confirmation
-ISPM) couvre les 16 parcours avec des intitulés de métiers plausibles — même
-statut de provenance que les matières issues des calendriers OCR
-(`SRC-CALENDRIERS-FACEBOOK`, déjà en production) : **externe**, jamais
-présenté comme officiel, mais utilisable par l'agent avec cette traçabilité
-(règle §4 du sujet).
+n'a jamais collecté les débouchés métiers par parcours : `metiers.json`
+n'existe pas, `Parcours.debouches` est vide partout, et `ONTO-6` recense ce
+manque (16 constats `donnee_manquante`, 0 contradiction). Un fichier externe
+généré automatiquement (grand modèle de langage, sans confirmation ISPM)
+couvre les 16 parcours avec des intitulés de métiers plausibles. La règle non
+négociable du §4 (« une information non vérifiée ne doit pas être présentée
+comme officielle ») interdit de le fusionner tel quel dans `metiers.json`.
 
-Par défaut, ce script produit des **candidats** dans
-`backend/data/a_valider/metiers_candidats.json` — que
+Ce script produit donc des **candidats à valider par un humain**, dans
+`backend/data/a_valider/metiers_candidats.json` — un fichier que
 `src.models.charger_corpus_formations()` ne charge jamais (nom de fichier
-différent de `metiers.json`). Avec `--ecrire-corpus`, il écrit en plus
-`backend/data/metiers.json` et met à jour `Parcours.debouches` dans
-`backend/data/parcours.json`, sur le même modèle que
-`scripts/extraire_matieres.py --ecrire-corpus` — décision produit du
-2026-08-27 : fusion telle quelle, sans relecture individuelle des intitulés,
-la source restant marquée `externe` au registre pour toute réponse qui les cite.
+différent de `metiers.json`), donc sans effet sur les réponses de l'agent
+tant que personne ne l'a relu et fusionné à la main.
 
 Usage :
-    cd backend && python -m scripts.preparer_candidats_metiers \
-        --source <fichier.json> --ecrire-corpus
+    cd backend && python -m scripts.preparer_candidats_metiers --source <fichier.json>
 """
 
 from __future__ import annotations
@@ -121,36 +114,6 @@ def construire_candidats_metiers(
     return metiers, par_parcours
 
 
-def ecrire_corpus(
-    metiers: list[dict], par_parcours: dict[str, list[str]], dossier_data: Path = RACINE_DATA
-) -> dict:
-    """Écrit `metiers.json` et met à jour `Parcours.debouches` dans
-    `parcours.json` — même geste que `extraire_matieres.ecrire_corpus` pour
-    les matières : réécriture intégrale et idempotente des deux fichiers,
-    rejouable à chaque nouvelle version de la source."""
-    (dossier_data / "metiers.json").write_text(
-        json.dumps(metiers, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
-
-    chemin_parcours = dossier_data / "parcours.json"
-    liste_parcours = json.loads(chemin_parcours.read_text(encoding="utf-8"))
-    rattaches = 0
-    for parcours in liste_parcours:
-        trouves = par_parcours.get(parcours["id"])
-        if trouves:
-            parcours["debouches"] = trouves
-            rattaches += 1
-    chemin_parcours.write_text(
-        json.dumps(liste_parcours, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
-
-    return {
-        "metiers": len(metiers),
-        "parcours_rattaches": rattaches,
-        "parcours_sans_debouche": [p["id"] for p in liste_parcours if not p.get("debouches")],
-    }
-
-
 def main() -> None:
     parseur = argparse.ArgumentParser(description=__doc__)
     parseur.add_argument(
@@ -161,11 +124,6 @@ def main() -> None:
         type=Path,
         default=RACINE_DATA / "a_valider" / "metiers_candidats.json",
         help="fichier JSON de candidats produit",
-    )
-    parseur.add_argument(
-        "--ecrire-corpus",
-        action="store_true",
-        help="écrit aussi metiers.json et met à jour parcours.json[].debouches",
     )
     arguments = parseur.parse_args()
 
@@ -183,12 +141,12 @@ def main() -> None:
     ignores = sorted({e.get("code_filiere") for e in entrees} - set(debouches_par_parcours))
 
     sortie = {
+        "a_valider": True,
         "avertissement": (
-            "Métiers (débouchés) extraits d'une source externe générée automatiquement, "
-            "non confirmée par l'ISPM (voir registre_sources.json, "
-            f"{SOURCE_ID_CANDIDATS}, statut externe). Ce fichier est un instantané des "
-            "candidats produits par ce script — la donnée qui fait foi, une fois "
-            "`--ecrire-corpus` exécuté, vit dans metiers.json/parcours.json[].debouches."
+            "Candidats de métiers (débouchés) extraits d'une source externe générée "
+            "automatiquement, non confirmée par l'ISPM (voir registre_sources.json, "
+            f"{SOURCE_ID_CANDIDATS}). Ne pas fusionner dans metiers.json ou "
+            "parcours.json[].debouches sans relecture humaine (règle §4)."
         ),
         "metiers": metiers,
         "debouches_par_parcours": par_parcours,
@@ -207,15 +165,6 @@ def main() -> None:
     )
     if ignores:
         print(f"Parcours de la source ignorés (absents de notre corpus) : {ignores}")
-
-    if arguments.ecrire_corpus:
-        bilan = ecrire_corpus(metiers, par_parcours)
-        print(
-            f"  metiers.json  : {bilan['metiers']} métiers\n"
-            f"  parcours.json : {bilan['parcours_rattaches']} parcours rattachés"
-        )
-        if bilan["parcours_sans_debouche"]:
-            print(f"  sans débouché : {', '.join(bilan['parcours_sans_debouche'])}")
 
 
 if __name__ == "__main__":

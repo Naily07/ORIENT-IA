@@ -67,9 +67,17 @@ function ChipListField({
 }
 
 /** Panneau « Mon profil » : équivalent conversationnel du formulaire à 6
- * champs de `front_office._formulaire_profil`, édité explicitement par
- * l'utilisateur — jamais déduit du texte libre du chat (SEC-4 : le backend
- * interdit d'inférer une préférence à partir du style d'écriture). */
+ * champs de `front_office._formulaire_profil`.
+ *
+ * Deux sources le remplissent, toutes deux déclaratives :
+ * - l'édition directe de l'utilisateur ici ;
+ * - l'extraction de ce qu'il a **explicitement déclaré** dans le chat
+ *   (« j'aime les maths », « je suis en bac D »), fusionnée côté backend
+ *   (`extraction_profil.py`) et renvoyée dans `reponse.profil`.
+ *
+ * Ni l'une ni l'autre n'infère un trait à partir du ton ou du style d'écriture,
+ * et aucun attribut sensible n'y entre (SEC-4, §16). L'utilisateur garde la
+ * main : tout ce qui apparaît ici est modifiable ou supprimable. */
 export function ProfilPanel() {
   const { profil, mettreAJourProfil } = useConversation();
 
@@ -82,8 +90,8 @@ export function ProfilPanel() {
       <div>
         <h2 className="font-medium">Mon profil</h2>
         <p className="mt-0.5 text-xs text-neutral-500">
-          Tout est facultatif — écrivez comme vous le diriez, l&apos;assistant vous dira ce
-          qu&apos;il n&apos;a pas su rattacher.
+          Tout est facultatif et se complète aussi depuis la conversation. Écrivez comme
+          vous le diriez ; l&apos;assistant vous dira ce qu&apos;il n&apos;a pas su rattacher.
         </p>
       </div>
 

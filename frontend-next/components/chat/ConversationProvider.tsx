@@ -19,6 +19,7 @@ import {
   type EtatConversation,
   type TourConversation,
 } from "@/lib/conversation-storage";
+import { fusionnerProfils } from "@/lib/profil";
 import {
   MAX_TOURS_HISTORIQUE,
   type OrientationReponse,
@@ -118,6 +119,13 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
         const reponse = corps as OrientationReponse;
         setEtat((precedent) => ({
           ...precedent,
+          // Le backend a pu compléter le profil depuis le message (matières,
+          // compétences, série du bac déclarées en langage naturel). On le
+          // reprend comme profil courant, en préservant une éventuelle édition
+          // manuelle faite pendant que la réponse arrivait.
+          profil: reponse.profil
+            ? fusionnerProfils(precedent.profil, reponse.profil)
+            : precedent.profil,
           messages: precedent.messages.map((tour) =>
             tour.id === id ? { ...tour, reponse } : tour,
           ),

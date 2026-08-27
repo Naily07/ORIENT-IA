@@ -93,6 +93,14 @@ export interface OrientationInput {
 export interface OrientationReponse {
   trace_id: string;
   decision: RecommandationDecision;
+  /**
+   * Profil effectivement utilisé pour cette réponse : celui envoyé par le
+   * client, complété des éléments que le candidat a déclarés dans son message
+   * (`backend/src/extraction_profil.py`). Le client le reprend tel quel comme
+   * nouveau profil courant — c'est ainsi que le panneau « Mon profil » se
+   * remplit au fil de la conversation.
+   */
+  profil: ProfilCandidat;
 }
 
 // --- backend/src/api.py : GET /health ---------------------------------------

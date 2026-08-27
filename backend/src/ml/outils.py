@@ -24,6 +24,7 @@ import logging
 
 import numpy as np
 
+from src.config import config
 from src.ml.entrainement import (
     entrainer_baseline,
     entrainer_baseline_calibree,
@@ -111,6 +112,42 @@ def imposer_modele_pour_evaluation(modele) -> None:
 
 def _modele_courant():
     return _modele_impose if _modele_impose is not None else _modele()
+
+
+# Graphe fourni par le propriétaire du corpus (`tools`), plutôt que reconstruit ici.
+_graphe_impose = None
+
+
+def definir_graphe_admission(graphe) -> None:
+    """Fixe le graphe utilisé par les règles d'admission.
+
+    **Défaut d'alignement corrigé.** Deux graphes du même corpus coexistaient :
+    celui de `tools`, reconstruit à chaque `initialiser_corpus()`, et celui-ci,
+    reconstruit *depuis le disque* et mis en cache une fois pour toutes.
+    Basculer le corpus ne rebâtissait que le premier — mesuré : 2 nœuds côté
+    outils contre 517 côté admission, pour un seul corpus censément courant.
+    Les règles d'admission jugeaient donc l'admissibilité d'après un corpus que
+    plus personne ne servait.
+
+    L'effet était silencieux plutôt que faux (un parcours inconnu de l'ancien
+    graphe n'a pas de prérequis, donc aucune rétrogradation), ce qui est pire :
+    un test croyait exercer les règles alors qu'elles ne s'appliquaient pas.
+
+    Invalider le cache n'aurait pas suffi, puisque la reconstruction relisait le
+    disque : il faut **une seule source**. `tools.initialiser_corpus()` pousse
+    donc son graphe ici. La dépendance ne va que dans ce sens — `tools` importe
+    déjà `ml.outils`, l'inverse créerait un cycle.
+
+    `None` rétablit le repli autonome (chargement depuis le disque), qui reste
+    nécessaire quand `ml.outils` est utilisé sans passer par l'API : notebooks,
+    scripts d'évaluation, tests unitaires du seul bloc ML.
+    """
+    global _graphe_impose
+    _graphe_impose = graphe
+
+
+def _graphe_courant():
+    return _graphe_impose if _graphe_impose is not None else _graphe_admission()
 
 
 @functools.lru_cache(maxsize=1)
@@ -207,7 +244,7 @@ def analyser_profil(candidat: ProfilCandidat) -> AnalyseProfil:
     # admissible passent derrière ceux qui lui sont accessibles. Le modèle ne
     # voit jamais la série de baccalauréat, il peut donc placer en tête une
     # formation dans laquelle le candidat ne pourrait pas s'inscrire.
-    candidats = appliquer_regles_admission(candidats, candidat, _graphe_admission())
+    candidats = appliquer_regles_admission(candidats, candidat, _graphe_courant())
 
     if not couverture.exploitable:
         return AnalyseProfil(
@@ -267,12 +304,11 @@ def _justification_profil_inexploitable(couverture: CouvertureProfil) -> str:
     )
 
 
-# Un parcours n'est proposé que si son score atteint cette fraction du score de
-# tête. Valeur **mesurée**, pas choisie : voir `selectionner_significatifs`.
-PART_MINIMALE_DU_LEADER = 0.20
-
-# Plafond de parcours proposés, même quand plusieurs sont significatifs.
-MAXIMUM_PROPOSES = 3
+# Seuils lus dans `config`, avec les autres réglages qui décident de ce que le
+# candidat voit. Valeurs **mesurées**, pas choisies : voir
+# `selectionner_significatifs` pour le balayage.
+PART_MINIMALE_DU_LEADER = config.ml_part_minimale_du_leader
+MAXIMUM_PROPOSES = config.ml_maximum_parcours_proposes
 
 
 def selectionner_significatifs(

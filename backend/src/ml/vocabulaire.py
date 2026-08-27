@@ -43,10 +43,12 @@ import unicodedata
 
 import numpy as np
 
-# Seuil de similarité cosinus du repli sémantique. Calibré à la main sur des termes
-# réalistes (voir le docstring du module) : au-dessus, on mappe ; en dessous, on
-# préfère déclarer le terme non reconnu plutôt que de fabriquer une correspondance.
-SEUIL_SIMILARITE_SEMANTIQUE = 0.50
+from src.config import config
+
+# Seuil du repli sémantique : lu dans `config`, avec les autres seuils de décision.
+# Au-dessus on mappe ; en dessous on préfère déclarer le terme non reconnu plutôt
+# que de fabriquer une correspondance.
+SEUIL_SIMILARITE_SEMANTIQUE = config.ml_seuil_similarite_semantique
 
 # Abréviations et synonymes français courants → terme du vocabulaire contrôlé.
 # Volontairement curé et non exhaustif : chaque entrée est un cas qu'un candidat a

@@ -146,7 +146,7 @@ comportement attendu de `orchestrator._decision_repli()`.
 ## Reproduire cette évaluation
 
 ```bash
-python -m backend.tests.eval_system
+cd backend && python -m tests.eval_system
 ```
 
 Consomme du quota LLM réel (~1 à 5 appels par cas selon les outils nécessaires) : à

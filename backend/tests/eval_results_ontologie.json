@@ -1,5 +1,5 @@
 {
-  "date": "2026-08-26T11:40:29.612667+00:00",
+  "date": "2026-08-27T03:43:58.752817+00:00",
   "corpus_reel_ispm": {
     "nombre_parcours": 16,
     "detecter_incoherences": {
@@ -23,18 +23,15 @@
       "sans_graphe_avant_onto5": {
         "statut": "trouve",
         "parcours": "IGGLIA",
-        "score_adequation": 0.12401951840320516,
-        "points_forts": [
-          "La compétence déclarée : programmation"
-        ]
+        "score_adequation": 0.0625,
+        "points_forts": []
       },
       "avec_graphe_onto5": {
         "statut": "trouve",
         "parcours": "IGGLIA",
-        "score_adequation": 0.12401951840320516,
-        "points_forts": [
-          "La compétence déclarée : programmation"
-        ],
+        "score_adequation": 0.0625,
+        "profil_exploitable": false,
+        "points_forts": [],
         "raisonnement_graphe": [
           {
             "parcours": "IGGLIA",
@@ -46,10 +43,13 @@
               "Metier:METIER-DEV"
             ]
           }
-        ]
+        ],
+        "avertissement": "Profil trop peu renseigné pour que le modèle produise un score informatif. Les scores ci-dessous reflètent la distribution générale des parcours, pas ce candidat — ils ne doivent pas fonder une recommandation."
       },
       "apport_mesure": {
         "champs_ajoutes": [
+          "avertissement",
+          "profil_exploitable",
           "raisonnement_graphe"
         ],
         "nombre_de_chemins_competence_metier": 1

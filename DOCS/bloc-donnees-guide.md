@@ -217,7 +217,7 @@ backend/
 │   ├── corpus.json                # existant (RAG) — ajouter des articles si utile
 │   ├── enquete/                   # à créer
 │   │   ├── questionnaire.md       # le questionnaire tel que diffusé (DATA-4)
-│   │   ├── reponses_anonymisees.json  # livrable — jamais de données brutes identifiantes ici
+│   │   ├── reponses_orientia.json     # livrable — jamais de données brutes identifiantes ici
 │   │   └── registre_collecte.json     # DATA-5
 │   └── ml/
 │       └── profils_synthetiques.json  # existant, ne pas modifier ici (DATA-7 fusionne ailleurs)

@@ -95,24 +95,5 @@
       "Extraction par OCR (RapidOCR) : une centaine d'intitulés sur 492 restent partiellement agglutinés faute des mots correspondants ailleurs dans le corpus (ex. « Economiebleu », « Gestiondurabledes ressourcesnaturelles »). Quelques fragments de cellules multi-lignes peuvent subsister.",
       "Les sessions photographiées ne datent pas toutes de la même année universitaire ; le programme reconstitué mélange donc potentiellement plusieurs millésimes."
     ]
-  },
-  {
-    "id": "SRC-EXTERNE",
-    "titre": "source externe — dataset ISPM et enquête terrain (équipe tierce, MIT License, Copyright (c) 2026 source externe)",
-    "url": "source externe",
-    "date_consultation": "2026-08-26",
-    "statut": "externe",
-    "donnees_extraites": [
-      "Débouchés professionnels des 16 parcours (66 métiers) — comble un manque de DATA-1",
-      "Séries de baccalauréat recommandées par filière, utilisées en recoupement de nos prérequis officiels",
-      "86 réponses d'enquête anonymisées (71 étudiants, 15 professionnels), importées via src/enquete_import.py"
-    ],
-    "limites": [
-      "Travail étudiant tiers publié sous licence MIT (Copyright (c) 2026 source externe — notice conservée dans NOTICE.md à la racine du dépôt, comme la licence l'exige), sans registre de sources propre : aucune de ces données n'est confirmée par l'ISPM et ne doit être présentée comme officielle",
-      "Recoupement des prérequis avec notre source officielle (ispm-edu.com) : 14 concordances sur 16, mais divergence sur EMII et ESIIA, où ce dataset omet la série D que le site officiel accepte — en cas de conflit, notre source officielle fait foi",
-      "L'enquête n'a demandé ni série de baccalauréat, ni compétences, ni centres d'intérêt, ni environnement de travail : ces champs sont absents des réponses réelles",
-      "Les professionnels n'ont renseigné aucun trait de profil exploitable — seulement leur parcours et leur métier",
-      "Le questionnaire diffusé n'est pas le nôtre (backend/data/enquete/questionnaire.md) : le montage des questions, l'ordre et les formulations diffèrent, ce qui limite la comparabilité avec une collecte que nous mènerions nous-mêmes"
-    ]
   }
 ]

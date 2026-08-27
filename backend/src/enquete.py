@@ -112,7 +112,7 @@ class RegistreCollecte(BaseModel):
     limites: list[str] = Field(default_factory=list)
 
 
-def charger_reponses(nom_fichier: str = "reponses_anonymisees.json") -> list[ReponseEnquete]:
+def charger_reponses(nom_fichier: str = "reponses_orientia.json") -> list[ReponseEnquete]:
     """Charge les réponses d'enquête. Tolère un fichier absent (liste vide)."""
     chemin = config.dossier_data / "enquete" / nom_fichier
     if not chemin.exists():
@@ -126,11 +126,10 @@ def charger_registres_collecte(
 ) -> dict[str, RegistreCollecte]:
     """Les registres de collecte, indexés par enquête.
 
-    Le fichier en contient plusieurs — une enquête tierce réutilisée et la
-    nôtre — parce que les fusionner effacerait ce qui les distingue :
-    profondeur des profils, questions posées, conditions de diffusion. Deux
-    registres honnêtes valent mieux qu'un seul qui moyennerait des collectes
-    incomparables.
+    Un dictionnaire plutôt qu'un objet unique : le sujet demande un registre
+    par collecte, et rien ne garantit qu'il n'y en aura qu'une (une seconde
+    vague de diffusion produirait sa propre période, son propre volume et ses
+    propres biais).
     """
     chemin = config.dossier_data / "enquete" / nom_fichier
     if not chemin.exists():
@@ -153,7 +152,7 @@ def jeu_evaluation(reponses: list[ReponseEnquete] | None = None) -> list[Reponse
 def sauvegarder_reponses(
     reponses: list[ReponseEnquete], chemin: Path | None = None
 ) -> Path:
-    chemin = chemin or (config.dossier_data / "enquete" / "reponses_anonymisees.json")
+    chemin = chemin or (config.dossier_data / "enquete" / "reponses_orientia.json")
     chemin.parent.mkdir(parents=True, exist_ok=True)
     with open(chemin, "w", encoding="utf-8") as f:
         json.dump(

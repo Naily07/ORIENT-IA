@@ -1,39 +1,4 @@
 {
-  "enquete_tierce": {
-    "source": "Enquête menée par une équipe tierce (source externe, licence MIT) sur le même sujet ISPM. Importée par `python -m src.enquete_import`, voir l'entrée SRC-EXTERNE du registre des sources.",
-    "populations_visees": [
-      "Étudiants de l'ISPM, interrogés sur leur profil avant l'entrée en formation et leur satisfaction actuelle",
-      "Professionnels diplômés de l'ISPM, interrogés sur leur parcours suivi et le métier réellement exercé"
-    ],
-    "mode_diffusion": "Formulaire en ligne diffusé par l'équipe tierce ; le mode de diffusion précis par population ne nous est pas connu — c'est une limite de la réutilisation d'une collecte que nous n'avons pas menée.",
-    "periode_collecte": "Non documentée par l'équipe d'origine. Les horodatages des réponses figurent dans l'export brut mais n'ont pas été conservés à l'import (donnée non nécessaire, et potentiellement ré-identifiante croisée avec d'autres sources).",
-    "reponses_recues": 86,
-    "reponses_retenues": 68,
-    "reponses_ecartees": 18,
-    "repartition_populations": {
-      "etudiant": 71,
-      "professionnel": 15
-    },
-    "texte_consentement": "J'accepte que mes réponses anonymisées soient utilisées dans le cadre d'un projet académique de l'ISPM (hackathon ORIENT'IA). Aucune information permettant de m'identifier ne sera collectée.",
-    "procedure_anonymisation": "Aucune donnée identifiante n'a été collectée à la source (ni nom, ni adresse e-mail, ni téléphone), et aucune donnée personnelle sensible. À l'import, les horodatages sont écartés et chaque réponse reçoit un identifiant séquentiel sans lien avec l'ordre de soumission d'origine. Un champ de texte libre (« métier exercé ») contient une auto-déclaration : une réponse y vaut littéralement « Anonyme », ce qui confirme que les répondants ont compris le cadre.",
-    "traitements_posterieurs": [
-      "Résolution de l'étiquette : le parcours est extrait des réponses libres (« Igglia 2014-2019 », « ESIIA - 2017 ») par correspondance de sigle avec frontière de mot. 79 réponses sur 86 résolues ; les 7 autres sont écartées plutôt que devinées.",
-      "Deux réponses non résolues désignent une *mention* et non un parcours (« Biotechnologie et Agronomie 2022 », « Informatique et télécommunications 2025 »). Une mention regroupant plusieurs parcours, la rattacher à l'un d'eux aurait fabriqué l'étiquette.",
-      "Conversion de l'échelle de résultats 1–5 en note /20 (1→6, 2→10, 3→13, 4→16, 5→19), reprise de la table de l'équipe d'origine pour rester comparable à ses propres résultats. Marquée `derivee` : le répondant n'a jamais donné de note sur 20.",
-      "La note globale « maths/info » est reportée sur chacune des matières que le répondant a déclaré préférer, faute de notes par matière.",
-      "La colonne de motivation en texte libre est volontairement ignorée : en extraire des centres d'intérêt exigerait une interprétation, donc une invention déguisée en donnée déclarée.",
-      "Complétion des champs jamais demandés (série de bac, compétences, centres d'intérêt, préférences professionnelles, environnement) dans un fichier SÉPARÉ, `profils_completes.json`, dont chaque champ fabriqué est marqué `generee` et qui est exclu par construction de toute évaluation."
-    ],
-    "limites": [
-      "VOLUME — 86 réponses, dont 68 seulement exploitables pour une mesure. Sur 16 parcours, cela fait quelques unités par classe : tout intervalle de confiance calculé sur cette base sera très large, et doit être annoncé comme tel.",
-      "AUTO-SÉLECTION — 71 étudiants pour 15 professionnels, et une nette sur-représentation de l'informatique (23 IGGLIA, 10 ISAIA, 8 ESIIA, 6 IMTICIA sur 68 exploitables). Plusieurs parcours ne comptent qu'une ou deux réponses. C'est exactement le biais que le §5 du sujet annonçait.",
-      "NATURE DE L'ÉTIQUETTE — l'étiquette est le parcours *choisi*, pas le parcours qui *convenait*. Un modèle entraîné dessus reproduit les biais d'orientation passés. La satisfaction déclarée (1–5) permet de nuancer, mais l'enquête ne demandait pas quel parcours aurait mieux convenu — la question la plus précieuse du sujet, présente dans notre propre questionnaire, manque ici.",
-      "BIAIS DE RECONSTRUCTION — les professionnels se replacent plusieurs années en arrière ; leurs réponses sur le profil d'alors sont une reconstruction, pas une mesure d'époque.",
-      "PROFONDEUR DU PROFIL — l'enquête n'a demandé que les matières préférées et une note globale. Un profil réel n'expose donc au modèle que 1 à 4 traits, là où les profils synthétiques d'entraînement en portent davantage. Cet écart de richesse est en soi un facteur de chute de performance à distinguer d'une vraie erreur de généralisation lors de ML-7.",
-      "AUCUN TRAIT POUR LES PROFESSIONNELS — le questionnaire tiers ne leur demandait pas leur profil d'avant les études. Les 15 réponses professionnelles n'apportent donc que l'étiquette et le métier exercé, et sortent du jeu d'évaluation faute de traits déclarés. C'est la population que le sujet juge la plus précieuse, et c'est celle dont nous tirons le moins.",
-      "COLLECTE NON MENÉE PAR NOUS — le questionnaire diffusé n'est pas le nôtre. Ni son mode de diffusion, ni sa période, ni la façon dont les répondants ont été sollicités ne nous sont connus, ce qui empêche d'évaluer certains biais de recrutement."
-    ]
-  },
   "notre_enquete": {
     "source": "Notre propre enquête, diffusée via le Google Form généré par `generer_google_form.gs` à partir de `questionnaire.md`. Importée par `python -m src.enquete_import <csv> --orientia`.",
     "populations_visees": [

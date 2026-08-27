@@ -3,6 +3,7 @@
 
 import pytest
 
+from src import orchestrator
 from src.orchestrator import traiter_demande
 from src.schemas import OrientationInput, ProfilCandidat, RecommandationDecision
 
@@ -207,3 +208,77 @@ def test_recommandation_neutre_n_est_pas_affectee_par_le_controle_de_sortie(monk
     reponse = traiter_demande(OrientationInput(message="Question"))
 
     assert reponse.decision.action == "recommandation"
+
+
+# --- « Ne lève jamais » : la promesse est absolue (ORCH-3, audit) -------------
+
+
+def test_une_sortie_llm_non_conforme_est_degradee_pas_propagee(monkeypatch):
+    """Non-régression. `agent._valider_reponse_finale()` lève une
+    `ValidationError` quand la réponse finale est un JSON valide mais
+    incomplet. L'orchestrateur ne rattrapait que `LLMError` : l'exception
+    traversait tout le pipeline et ressortait en **HTTP 500 nu**, alors que ce
+    module, `api.traiter()` et le ticket ORCH-3 promettent tous trois qu'aucune
+    erreur nue n'atteint l'utilisateur."""
+    from src import agent
+
+    class _Part:
+        function_call = None
+
+    class _Reponse:
+        candidates = [type("C", (), {"content": type("K", (), {"parts": [_Part()]})()})()]
+        parsed = None
+        text = '{"resume": "sortie tronquee"}'  # conforme au JSON, pas au schéma
+
+    monkeypatch.setattr(
+        orchestrator,
+        "check_injection",
+        lambda *a, **k: {
+            "danger": False,
+            "raison": None,
+            "couche": None,
+            "verification_llm": "ok",
+        },
+    )
+    monkeypatch.setattr(orchestrator, "retrieve_context", lambda *a, **k: [])
+    monkeypatch.setattr(agent, "llm_call_with_tools", lambda *a, **k: _Reponse())
+
+    reponse = orchestrator.traiter_demande(
+        OrientationInput(message="Quel parcours ?", profil=ProfilCandidat())
+    )
+
+    assert reponse.decision.action == "escalade_conseiller"
+    assert reponse.decision.incertitude_declaree is True
+    # Le type réel reste diagnosticable dans l'explication.
+    assert "ValidationError" in reponse.decision.explication
+
+
+def test_le_profil_courant_est_isole_entre_requetes_concurrentes():
+    """Non-régression. Le profil vivait dans une variable de module, alors que
+    FastAPI sert les endpoints synchrones dans un pool de threads : deux
+    demandes simultanées s'écrasaient. Mesuré — une requête déclarant la série
+    « D » voyait ses outils lire « A », celle de l'autre requête. Un candidat
+    se serait fait vérifier son admissibilité sur le profil d'un inconnu."""
+    import threading
+    import time
+
+    from src import tools
+
+    tools.initialiser_corpus()
+    lu = {}
+
+    def requete(nom, serie, pause):
+        tools.definir_profil_courant(ProfilCandidat(serie_bac=serie))
+        time.sleep(pause)  # simule la latence d'un appel LLM
+        lu[nom] = tools._profil().serie_bac
+
+    lente = threading.Thread(target=requete, args=("A", "D", 0.20))
+    rapide = threading.Thread(target=requete, args=("B", "A", 0.02))
+    lente.start()
+    time.sleep(0.02)
+    rapide.start()
+    lente.join()
+    rapide.join()
+
+    assert lu["A"] == "D"
+    assert lu["B"] == "A"

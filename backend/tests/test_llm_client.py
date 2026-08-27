@@ -1,9 +1,16 @@
-"""Tests hors réseau du client LLM : extraction du délai de reprise, garde-fou
-sur la clé API absente, et branchement du hook d'observabilité."""
+"""Tests hors réseau du client LLM : reprise, observabilité et budget cumulé."""
 
 import pytest
 
-from src.llm_client import LLMError, _delai_suggere, _get_client, set_log_llm_call
+from src.llm_client import (
+    BudgetTempsDepasse,
+    LLMError,
+    _appeler_avec_reprise,
+    _delai_suggere,
+    _get_client,
+    limiter_temps_llm,
+    set_log_llm_call,
+)
 
 
 def test_delai_suggere_extrait_la_valeur_de_l_api():
@@ -37,3 +44,56 @@ def test_set_log_llm_call_branche_le_hook():
     assert len(appels) == 1
 
     set_log_llm_call(None)  # ne pas polluer les autres tests
+
+
+def test_budget_reduit_le_timeout_http_au_temps_restant(monkeypatch):
+    import src.llm_client as llm_client_module
+
+    timeouts_recus = []
+
+    class _Models:
+        @staticmethod
+        def generate_content(**kwargs):
+            return "ok"
+
+    class _Client:
+        models = _Models()
+
+    monkeypatch.setattr(llm_client_module, "_attendre_son_tour", lambda: None)
+    monkeypatch.setattr(
+        llm_client_module,
+        "_get_client",
+        lambda timeout_ms=None: timeouts_recus.append(timeout_ms) or _Client(),
+    )
+    instants = iter([100.0, 103.0])
+    monkeypatch.setattr(llm_client_module.time, "monotonic", lambda: next(instants))
+
+    with limiter_temps_llm(5.0):
+        assert _appeler_avec_reprise("contenu", object()) == "ok"
+
+    assert timeouts_recus == [2000]
+
+
+def test_reprise_est_refusee_si_son_attente_depasse_le_budget(monkeypatch):
+    import src.llm_client as llm_client_module
+
+    sommeils = []
+
+    class _Models:
+        @staticmethod
+        def generate_content(**kwargs):
+            raise RuntimeError("504 DEADLINE_EXCEEDED")
+
+    class _Client:
+        models = _Models()
+
+    monkeypatch.setattr(llm_client_module, "_attendre_son_tour", lambda: None)
+    monkeypatch.setattr(llm_client_module, "_get_client", lambda timeout_ms=None: _Client())
+    monkeypatch.setattr(llm_client_module.time, "sleep", lambda duree: sommeils.append(duree))
+    monkeypatch.setattr(llm_client_module.time, "monotonic", lambda: 100.0)
+
+    with limiter_temps_llm(1.0):
+        with pytest.raises(BudgetTempsDepasse):
+            _appeler_avec_reprise("contenu", object())
+
+    assert sommeils == []

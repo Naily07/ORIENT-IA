@@ -145,11 +145,17 @@ comportement attendu de `orchestrator._decision_repli()`.
   `DOC-DOMAINE-INFORMATIQUE_TELECOM`, comptés comme du bruit par la métrique stricte
   alors qu'ils portent sur le bon parcours. Compromis accepté : sans ces fiches, une
   question factuelle sur les matières d'un parcours restait sans réponse.
-- **Le modèle ML n'a été validé que sur des données synthétiques** (voir
-  `backend/src/ml/donnees_synthetiques.py`) : les scores d'adéquation mesurés ici
-  reflètent la capacité du modèle à retrouver les hypothèses de génération, pas une
-  validation sur de vrais candidats. Ce point reste bloqué sur l'enquête réelle
-  (DATA-4/DATA-7, ML-7), comme documenté depuis le bloc ML.
+- **Le modèle ML est entraîné sur des données synthétiques, et l'écart de
+  généralisation est désormais mesuré, plus supposé.** Les scores élevés du split
+  synthétique (voir `backend/src/ml/donnees_synthetiques.py`) reflètent la capacité
+  du modèle à retrouver les hypothèses de génération, pas une validation sur de vrais
+  candidats. Confronté aux 79 profils réels de l'enquête, gelés et jamais vus à
+  l'entraînement (ML-7), le modèle de production tombe à **1,3 % de top-1** et
+  **7,6 % de top-3**, rang médian de la bonne classe **11** — et le garde-fou
+  d'exploitabilité juge **56 des 79 profils** trop pauvres pour être classés. La
+  cause est identifiée : l'enquête ne recueille que 1 à 4 matières préférées et une
+  note combinée maths/info, très en-deçà des cinq dimensions d'un profil
+  synthétique. Chiffres complets dans `eval_results_ml.json`.
 - **Dépendance au réseau et au Free Tier Gemini**, illustrée ci-dessus par les 2 échecs
   transitoires — un facteur de risque à connaître avant la démonstration finale (voir
   la feuille de route : prévoir une capture d'écran ou une vidéo de secours).

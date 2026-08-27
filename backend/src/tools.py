@@ -23,6 +23,17 @@ corpus directement : une requête de graphe déterministe, pas un appel LLM.
 en liste vide si le graphe n'est pas initialisé — cet enrichissement est un
 bonus par rapport au score du modèle ML, jamais une condition pour répondre.
 
+**Traçabilité des réponses issues d'un `Parcours`/`Mention` (AGT-6).** Chaque
+outil qui répond à partir d'un `Parcours` ou d'une `Mention` résolus (
+`_fiche_parcours` et apparentés : `verifier_prerequis`, `identifier_debouches`,
+`expliquer_recommandation`, `rechercher_formation`) remonte le `source_id`
+porté par ce modèle (registre DATA-2, `src.sources`). Sans cela, une réponse
+fondée sur ces outils structurés, plutôt que sur le RAG, ne pouvait plus citer
+sa source alors qu'elle est bien disponible — défaut trouvé à l'évaluation
+post-fusion (`backend/tests/eval_analyse.md`, EVAL-17). Voir
+`agent._source_ids_des_outils`, qui les collecte pour élargir l'ensemble des
+sources que l'agent est autorisé à citer.
+
 **Le profil du candidat n'est jamais un paramètre du function calling.**
 Demander au LLM de ressaisir un profil entier en argument JSON l'inviterait à
 en inventer ou en oublier des champs — invérifiable. Le profil est fixé une
@@ -321,8 +332,14 @@ def rechercher_formation(mot_cle: str) -> dict:
         return {"statut": "aucun_resultat", "message": f"Aucune formation pour « {mot_cle} »."}
     return {
         "statut": "trouve",
-        "mentions": [{"id": m.id, "nom": m.nom, "niveau": m.niveau} for m in mentions],
-        "parcours": [{"id": p.id, "nom": p.nom, "mention_id": p.mention_id} for p in parcours],
+        "mentions": [
+            {"id": m.id, "nom": m.nom, "niveau": m.niveau, "source_id": m.source_id}
+            for m in mentions
+        ],
+        "parcours": [
+            {"id": p.id, "nom": p.nom, "mention_id": p.mention_id, "source_id": p.source_id}
+            for p in parcours
+        ],
     }
 
 
@@ -338,7 +355,16 @@ def _mention_de(parcours) -> dict | None:
     if parcours is None:
         return None
     mention = next((m for m in _base().mentions if m.id == parcours.mention_id), None)
-    return {"id": mention.id, "nom": mention.nom, "niveau": mention.niveau} if mention else None
+    return (
+        {
+            "id": mention.id,
+            "nom": mention.nom,
+            "niveau": mention.niveau,
+            "source_id": mention.source_id,
+        }
+        if mention
+        else None
+    )
 
 
 def _fiche_parcours(parcours) -> dict:
@@ -346,6 +372,11 @@ def _fiche_parcours(parcours) -> dict:
         "id": parcours.id,
         "nom": parcours.nom,
         "mention": _mention_de(parcours),
+        # Identifiant du registre des sources (DATA-2) : remonté jusqu'à
+        # l'agent pour qu'une réponse fondée sur cet outil structuré, et non
+        # sur le RAG, reste citable dans `RecommandationDecision.sources`
+        # (AGT-6, cf. `agent._source_ids_des_outils`).
+        "source_id": parcours.source_id,
         # Même source que `verifier_prerequis` : le graphe (ONTO-3). Deux
         # chemins distincts pour répondre à « quels sont les prérequis de ce
         # parcours ? » finiraient par diverger, et l'agent peut appeler les
@@ -421,6 +452,7 @@ def verifier_prerequis(parcours: str) -> dict:
         return {
             "statut": "trouve",
             "parcours": p.id,
+            "source_id": p.source_id,  # AGT-6 : citable même sans prérequis connu
             "prerequis": [],
             "compatible": None,
             "message": "Aucun prérequis d'admission connu pour ce parcours.",
@@ -435,6 +467,7 @@ def verifier_prerequis(parcours: str) -> dict:
         return {
             "statut": "information_manquante",
             "parcours": p.id,
+            "source_id": p.source_id,
             "prerequis": descriptions,
             "compatible": None,
             "message": (
@@ -450,6 +483,7 @@ def verifier_prerequis(parcours: str) -> dict:
     return {
         "statut": "trouve",
         "parcours": p.id,
+        "source_id": p.source_id,
         "prerequis": descriptions,
         "serie_bac_declaree": serie_declaree,
         "compatible": compatible,
@@ -485,6 +519,7 @@ def identifier_debouches(parcours: str) -> dict:
         return {
             "statut": "information_manquante",
             "parcours": p.id,
+            "source_id": p.source_id,
             "message": (
                 "Débouchés précis non encore collectés pour ce parcours "
                 "(voir BACKLOG.md, DATA-1)."
@@ -492,7 +527,12 @@ def identifier_debouches(parcours: str) -> dict:
         }
     corpus = _base()
     noms = [m.nom for m in corpus.metiers if m.id in p.debouches]
-    return {"statut": "trouve", "parcours": p.id, "debouches": noms or p.debouches}
+    return {
+        "statut": "trouve",
+        "parcours": p.id,
+        "source_id": p.source_id,
+        "debouches": noms or p.debouches,
+    }
 
 
 def _raisonnement_graphe(parcours: str) -> list[dict]:
@@ -529,6 +569,7 @@ def expliquer_recommandation(parcours: str) -> dict:
     resultat = {
         "statut": "trouve",
         "parcours": p.id,
+        "source_id": p.source_id,
         "score_adequation": score,
         "profil_exploitable": analyse.profil_exploitable,
         "points_forts": identifier_points_forts(profil),

@@ -58,6 +58,33 @@ def test_comparer_parcours_introuvable(corpus):
     assert resultat["statut"] == "aucun_resultat"
 
 
+# --- Traçabilité des sources des outils structurés (AGT-6) -------------------
+
+
+def test_fiche_parcours_remonte_le_source_id(corpus):
+    """EVAL-17 : un outil structuré doit pouvoir citer sa source (`Parcours.source_id`,
+    registre DATA-2), pas seulement le RAG."""
+    resultat = tools.comparer_parcours("IGGLIA", "TEH")
+    assert resultat["parcours_a"]["source_id"] == "FORM-IGGLIA-JOUET"
+    assert resultat["parcours_b"]["source_id"] is None  # TEH n'en a pas dans le corpus jouet
+
+
+def test_verifier_prerequis_remonte_le_source_id(corpus):
+    tools.definir_profil_courant(ProfilCandidat(serie_bac="D"))
+    resultat = tools.verifier_prerequis("IGGLIA")
+    assert resultat["source_id"] == "FORM-IGGLIA-JOUET"
+
+
+def test_identifier_debouches_remonte_le_source_id(corpus):
+    resultat = tools.identifier_debouches("IGGLIA")
+    assert resultat["source_id"] == "FORM-IGGLIA-JOUET"
+
+
+def test_rechercher_formation_remonte_le_source_id(corpus):
+    resultat = tools.rechercher_formation("IGGLIA")
+    assert resultat["parcours"][0]["source_id"] == "FORM-IGGLIA-JOUET"
+
+
 # --- verifier_prerequis ---------------------------------------------------
 
 
@@ -250,6 +277,12 @@ def test_expliquer_recommandation_retourne_des_points_forts(corpus):
     resultat = tools.expliquer_recommandation("IGGLIA")
     assert "points_forts" in resultat
     assert isinstance(resultat["points_forts"], list)
+
+
+def test_expliquer_recommandation_remonte_le_source_id(corpus):
+    tools.definir_profil_courant(ProfilCandidat(competences_declarees=["programmation"]))
+    resultat = tools.expliquer_recommandation("IGGLIA")
+    assert resultat["source_id"] == "FORM-IGGLIA-JOUET"
 
 
 def test_expliquer_recommandation_ajoute_le_raisonnement_du_graphe(corpus):

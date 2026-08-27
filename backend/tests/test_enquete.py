@@ -158,3 +158,92 @@ def test_les_profils_completes_sont_tous_exclus_de_l_evaluation():
     if not completes:
         pytest.skip("profils complétés non générés")
     assert jeu_evaluation(completes) == []
+
+
+# --- Notre propre formulaire ---------------------------------------------------
+
+
+def test_sigle_extrait_du_format_de_notre_formulaire():
+    from src.enquete_import import _sigle_depuis_choix
+
+    assert _sigle_depuis_choix(
+        "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle"
+    ) == "IGGLIA"
+
+
+def test_formation_hors_ispm_n_est_pas_une_etiquette():
+    """Réponse réelle, mais hors du périmètre des 16 parcours du modèle."""
+    from src.enquete_import import _sigle_depuis_choix
+
+    assert _sigle_depuis_choix("Une formation hors ISPM") is None
+
+
+def test_aucune_competence_n_est_pas_comptee_comme_un_trait():
+    """« Aucune en particulier » est une absence déclarée : la compter
+    gonflerait artificiellement l'exploitabilité d'un profil."""
+    from src.enquete_import import _valeurs_multiples
+
+    assert _valeurs_multiples("Aucune en particulier") == []
+    assert _valeurs_multiples("Programmation, Aucune en particulier") == ["Programmation"]
+
+
+def test_nos_reponses_sont_toutes_declarees_jamais_fabriquees():
+    """Notre questionnaire demande tous les champs : aucune complétion n'est
+    nécessaire, donc aucune contamination possible du jeu d'évaluation."""
+    reponses = charger_reponses("reponses_orientia.json")
+    if not reponses:
+        pytest.skip("réponses de notre formulaire non importées")
+
+    for reponse in reponses:
+        assert reponse.champs_generes == [], f"{reponse.id} contient un champ fabriqué"
+
+
+def test_nos_reponses_portent_des_profils_plus_riches_que_l_enquete_tierce():
+    """Le point qui justifie de ne pas fusionner les deux collectes : à
+    volume bien plus faible, notre questionnaire produit des profils que le
+    modèle peut réellement exploiter."""
+    from src.ml.features import analyser_couverture
+
+    notres = jeu_evaluation(charger_reponses("reponses_orientia.json"))
+    tierces = jeu_evaluation(charger_reponses("reponses_anonymisees.json"))
+    if not notres or not tierces:
+        pytest.skip("les deux collectes ne sont pas importées")
+
+    exploitables_notres = sum(1 for r in notres if analyser_couverture(r.profil).exploitable)
+    assert exploitables_notres == len(notres), "toutes nos réponses doivent être exploitables"
+
+    part_tierce = sum(
+        1 for r in tierces if analyser_couverture(r.profil).exploitable
+    ) / len(tierces)
+    assert part_tierce < 0.5, "l'enquête tierce reste majoritairement trop pauvre"
+
+
+# --- Registres de collecte (DATA-5) -------------------------------------------
+
+
+def test_les_deux_registres_sont_charges_et_documentent_leurs_limites():
+    from src.enquete import charger_registres_collecte
+
+    registres = charger_registres_collecte()
+    assert set(registres) == {"enquete_tierce", "notre_enquete"}
+    for nom, registre in registres.items():
+        assert registre.limites, f"{nom} doit nommer ses limites (§5 du sujet)"
+        assert registre.texte_consentement
+
+
+def test_les_chiffres_du_registre_correspondent_aux_donnees():
+    """Un registre qui annoncerait d'autres chiffres que les fichiers livrés
+    serait pire qu'absent."""
+    from src.enquete import charger_registres_collecte
+
+    registres = charger_registres_collecte()
+    correspondances = {
+        "enquete_tierce": "reponses_anonymisees.json",
+        "notre_enquete": "reponses_orientia.json",
+    }
+    for cle, fichier in correspondances.items():
+        reponses = charger_reponses(fichier)
+        if not reponses:
+            continue
+        assert registres[cle].reponses_recues == len(reponses)
+        assert registres[cle].reponses_retenues == len(jeu_evaluation(reponses))

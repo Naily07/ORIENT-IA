@@ -1,14 +1,31 @@
 """Import des réponses d'enquête réelles vers notre schéma (DATA-7).
 
-    python -m src.enquete_import <chemin_du_csv>
+    python -m src.enquete_import <csv>              # enquête tierce
+    python -m src.enquete_import <csv> --orientia   # notre formulaire
 
-Transforme un export brut de formulaire en `list[ReponseEnquete]`, en traçant
-la provenance de chaque champ. Reproductible : relancé sur le même CSV, il
-produit le même fichier (le générateur pseudo-aléatoire est amorcé sur
-l'identifiant de la réponse, pas sur l'horloge).
+Deux collectes, deux importeurs, et surtout **deux fichiers de sortie qui ne
+sont jamais fusionnés** : les moyenner produirait un chiffre unique
+impossible à interpréter, puisque les questionnaires ne demandaient pas les
+mêmes choses.
 
-Origine des données actuellement importées
-------------------------------------------
+| | Notre enquête | Enquête tierce |
+|---|---|---|
+| Réponses exploitables | 14 | 68 |
+| Traits par profil (médiane) | **7** | 1 |
+| Profils réellement exploitables par le modèle | **14/14** | 23/68 |
+| Série de bac déclarée | **14/14** | 0/68 |
+| Parcours représentés | 5/16 | **14/16** |
+
+Les deux sont complémentaires et le resteront : la nôtre a la profondeur, la
+leur la couverture. Aucune ne remplace l'autre.
+
+Transforme un export brut en `list[ReponseEnquete]`, en traçant la provenance
+de chaque champ. Reproductible : relancé sur le même CSV, il produit le même
+fichier (le générateur pseudo-aléatoire est amorcé sur l'identifiant de la
+réponse, pas sur l'horloge).
+
+Origine de l'enquête tierce
+---------------------------
 Enquête menée par une équipe tierce sur le même sujet ISPM, publiée sous
 licence MIT dans `source externe`. 86 réponses, 71 étudiants et
 15 professionnels — exactement les deux populations que le §5 du sujet exige,
@@ -282,6 +299,158 @@ def importer_csv(chemin: Path, completer: bool = True) -> list[ReponseEnquete]:
     return reponses
 
 
+# --- Import de NOTRE formulaire (DATA-4) --------------------------------------
+# Colonnes de l'export Google Forms, par position. **Pas par nom** : l'export
+# duplique les intitulés entre les deux sections (« Série de votre
+# baccalauréat » apparaît deux fois), et `csv.DictReader` écrase alors
+# silencieusement la première occurrence.
+
+COLONNES_ORIENTIA = {
+    "population": 2,
+    "etudiant": {
+        "serie_bac": 3, "parcours": 4, "matieres": 5, "matieres_libres": 6,
+        "competences": 7, "interets": 8, "environnement": 9,
+        "satisfaction": 10, "referait": 11, "alternative": 12,
+    },
+    "professionnel": {
+        "serie_bac": 13, "parcours": 14, "metier": 15, "matieres": 16,
+        "matieres_libres": 17, "competences": 18, "interets": 19,
+        "environnement": 20, "adequation": 21, "alternative": 22,
+    },
+}
+
+HORS_ISPM = "hors ispm"
+AUCUNE_COMPETENCE = "aucune en particulier"
+
+
+def _sigle_depuis_choix(valeur: str) -> str | None:
+    """Extrait le sigle d'un choix « IGGLIA — Informatique de Gestion… ».
+
+    Retourne `None` pour « Une formation hors ISPM » : la réponse est réelle
+    mais sort du périmètre des 16 parcours que le modèle connaît.
+    """
+    texte = (valeur or "").strip()
+    if not texte or HORS_ISPM in _normaliser(texte):
+        return None
+    sigle = texte.split("—")[0].strip().split()[0] if texte else ""
+    return sigle if sigle in PARCOURS_CONNUS else _resoudre_parcours(texte)
+
+
+def _cellule(ligne: list[str], bloc: dict, nom: str) -> str:
+    """Valeur d'une colonne repérée par position, ou chaîne vide.
+
+    Une fonction plutôt qu'une fermeture dans la boucle : capturer la ligne
+    courante dans une closure est un piège classique (la fermeture voit la
+    dernière valeur si son appel est différé) que `ruff` signale à raison.
+    """
+    position = bloc.get(nom)
+    if position is None or position >= len(ligne):
+        return ""
+    return ligne[position].strip()
+
+
+def _valeurs_multiples(brut: str) -> list[str]:
+    """Cases à cocher Google Forms : valeurs séparées par des virgules.
+
+    « Aucune en particulier » est une absence déclarée, pas une compétence :
+    la conserver ferait compter un trait qui n'en est pas un dans le calcul
+    d'exploitabilité (`features.CouvertureProfil`).
+    """
+    return [
+        v.strip() for v in (brut or "").split(",")
+        if v.strip() and _normaliser(v).strip() != AUCUNE_COMPETENCE
+    ]
+
+
+def importer_csv_orientia(chemin: Path) -> list[ReponseEnquete]:
+    """Importe l'export de **notre** formulaire (`questionnaire.md`).
+
+    Différence essentielle avec l'enquête tierce : notre questionnaire demande
+    tous les champs du profil. **Rien n'est fabriqué ici** — chaque valeur est
+    `declaree`, et l'ensemble des réponses étiquetées est directement
+    exploitable pour ML-7.
+
+    Anomalie de routage traitée : les 15 premières réponses ont été collectées
+    avec un saut de page mal posé (voir `generer_google_form.gs`), qui faisait
+    enchaîner les étudiants sur la section professionnelle. Pour un répondant
+    déclaré étudiant, seule la section étudiante est lue — c'est celle vers
+    laquelle il a été légitimement routé, et la seule dont les questions
+    correspondent à sa situation. Une réponse contredisait d'ailleurs sa
+    propre étiquette d'une section à l'autre.
+    """
+    with open(chemin, encoding="utf-8", newline="") as f:
+        lignes = list(csv.reader(f))
+
+    reponses: list[ReponseEnquete] = []
+    for index, ligne in enumerate(lignes[1:], start=1):
+        identifiant = f"orientia_{index:04d}"
+
+        est_etudiant = "tudiant" in (
+            ligne[COLONNES_ORIENTIA["population"]]
+            if COLONNES_ORIENTIA["population"] < len(ligne) else ""
+        )
+        population = "etudiant" if est_etudiant else "professionnel"
+        bloc = COLONNES_ORIENTIA["etudiant" if est_etudiant else "professionnel"]
+
+        brut_parcours = _cellule(ligne, bloc, "parcours")
+        parcours = _sigle_depuis_choix(brut_parcours)
+
+        matieres = _valeurs_multiples(_cellule(ligne, bloc, "matieres"))
+        matieres += _valeurs_multiples(_cellule(ligne, bloc, "matieres_libres"))
+        competences = _valeurs_multiples(_cellule(ligne, bloc, "competences"))
+        interets = _valeurs_multiples(_cellule(ligne, bloc, "interets"))
+        environnement = _cellule(ligne, bloc, "environnement") or None
+
+        provenance = {
+            nom: "declaree"
+            for nom, valeur in (
+                ("matieres_preferees", matieres),
+                ("competences_declarees", competences),
+                ("centres_interet", interets),
+                ("environnement_travail_recherche", environnement),
+                ("serie_bac", _cellule(ligne, bloc, "serie_bac")),
+            )
+            if valeur
+        }
+
+        profil = ProfilCandidat(
+            matieres_preferees=matieres,
+            competences_declarees=competences,
+            centres_interet=interets,
+            environnement_travail_recherche=environnement,
+            serie_bac=_cellule(ligne, bloc, "serie_bac") or None,
+        )
+
+        traits = len(matieres) + len(competences) + len(interets) + (1 if environnement else 0)
+        if parcours is None:
+            motif = (
+                "formation hors ISPM" if HORS_ISPM in _normaliser(brut_parcours)
+                else "parcours non résolu"
+            )
+        elif traits == 0:
+            motif = "aucun trait de profil déclaré"
+        else:
+            motif = None
+
+        reponses.append(
+            ReponseEnquete(
+                id=identifiant,
+                population=population,
+                parcours_declare=parcours,
+                parcours_brut=brut_parcours or None,
+                profil=profil,
+                provenance=provenance,
+                satisfaction=_entier_ou_none(_cellule(ligne, bloc, "satisfaction")),
+                metier_exerce=_cellule(ligne, bloc, "metier") or None,
+                adequation_formation_metier=_entier_ou_none(_cellule(ligne, bloc, "adequation")),
+                utilisable_pour_evaluation=motif is None,
+                motif_exclusion=motif,
+            )
+        )
+
+    return reponses
+
+
 def _resume(reponses: list[ReponseEnquete]) -> dict:
     utilisables = [r for r in reponses if r.utilisable_pour_evaluation]
     motifs: dict[str, int] = {}
@@ -300,12 +469,31 @@ def _resume(reponses: list[ReponseEnquete]) -> dict:
     }
 
 
+def _importer_notre_formulaire(source: Path) -> None:
+    reponses = importer_csv_orientia(source)
+    chemin = sauvegarder_reponses(
+        reponses, config.dossier_data / "enquete" / "reponses_orientia.json"
+    )
+    print(json.dumps({"reponses_orientia.json": _resume(reponses)}, ensure_ascii=False, indent=2))
+    print(f"\nÉcrit dans {chemin}")
+    print(
+        "\nTous les champs sont DÉCLARÉS : notre questionnaire les demande tous.\n"
+        "Aucune fabrication, donc tout enregistrement étiqueté est évaluable."
+    )
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(__doc__.strip().splitlines()[2])
+        print("usage: python -m src.enquete_import <csv> [--orientia]")
         raise SystemExit(1)
 
     source = Path(sys.argv[1])
+
+    # Notre propre export a une structure différente de l'enquête tierce :
+    # deux sections, intitulés dupliqués, et tous les champs collectés.
+    if "--orientia" in sys.argv:
+        _importer_notre_formulaire(source)
+        raise SystemExit(0)
 
     # DEUX fichiers, et la séparation est le cœur du sujet : compléter un
     # enregistrement le rend inévaluable, puisque les traits fabriqués

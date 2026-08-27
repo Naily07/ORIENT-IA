@@ -1,35 +1,69 @@
 {
-  "source": "Enquête menée par une équipe tierce (source externe, licence MIT) sur le même sujet ISPM. Importée par `python -m src.enquete_import`, voir l'entrée SRC-EXTERNE du registre des sources.",
-  "populations_visees": [
-    "Étudiants de l'ISPM, interrogés sur leur profil avant l'entrée en formation et leur satisfaction actuelle",
-    "Professionnels diplômés de l'ISPM, interrogés sur leur parcours suivi et le métier réellement exercé"
-  ],
-  "mode_diffusion": "Formulaire en ligne diffusé par l'équipe tierce ; le mode de diffusion précis par population ne nous est pas connu — c'est une limite de la réutilisation d'une collecte que nous n'avons pas menée.",
-  "periode_collecte": "Non documentée par l'équipe d'origine. Les horodatages des réponses figurent dans l'export brut mais n'ont pas été conservés à l'import (donnée non nécessaire, et potentiellement ré-identifiante croisée avec d'autres sources).",
-  "reponses_recues": 86,
-  "reponses_retenues": 68,
-  "reponses_ecartees": 18,
-  "repartition_populations": {
-    "etudiant": 71,
-    "professionnel": 15
+  "enquete_tierce": {
+    "source": "Enquête menée par une équipe tierce (source externe, licence MIT) sur le même sujet ISPM. Importée par `python -m src.enquete_import`, voir l'entrée SRC-EXTERNE du registre des sources.",
+    "populations_visees": [
+      "Étudiants de l'ISPM, interrogés sur leur profil avant l'entrée en formation et leur satisfaction actuelle",
+      "Professionnels diplômés de l'ISPM, interrogés sur leur parcours suivi et le métier réellement exercé"
+    ],
+    "mode_diffusion": "Formulaire en ligne diffusé par l'équipe tierce ; le mode de diffusion précis par population ne nous est pas connu — c'est une limite de la réutilisation d'une collecte que nous n'avons pas menée.",
+    "periode_collecte": "Non documentée par l'équipe d'origine. Les horodatages des réponses figurent dans l'export brut mais n'ont pas été conservés à l'import (donnée non nécessaire, et potentiellement ré-identifiante croisée avec d'autres sources).",
+    "reponses_recues": 86,
+    "reponses_retenues": 68,
+    "reponses_ecartees": 18,
+    "repartition_populations": {
+      "etudiant": 71,
+      "professionnel": 15
+    },
+    "texte_consentement": "J'accepte que mes réponses anonymisées soient utilisées dans le cadre d'un projet académique de l'ISPM (hackathon ORIENT'IA). Aucune information permettant de m'identifier ne sera collectée.",
+    "procedure_anonymisation": "Aucune donnée identifiante n'a été collectée à la source (ni nom, ni adresse e-mail, ni téléphone), et aucune donnée personnelle sensible. À l'import, les horodatages sont écartés et chaque réponse reçoit un identifiant séquentiel sans lien avec l'ordre de soumission d'origine. Un champ de texte libre (« métier exercé ») contient une auto-déclaration : une réponse y vaut littéralement « Anonyme », ce qui confirme que les répondants ont compris le cadre.",
+    "traitements_posterieurs": [
+      "Résolution de l'étiquette : le parcours est extrait des réponses libres (« Igglia 2014-2019 », « ESIIA - 2017 ») par correspondance de sigle avec frontière de mot. 79 réponses sur 86 résolues ; les 7 autres sont écartées plutôt que devinées.",
+      "Deux réponses non résolues désignent une *mention* et non un parcours (« Biotechnologie et Agronomie 2022 », « Informatique et télécommunications 2025 »). Une mention regroupant plusieurs parcours, la rattacher à l'un d'eux aurait fabriqué l'étiquette.",
+      "Conversion de l'échelle de résultats 1–5 en note /20 (1→6, 2→10, 3→13, 4→16, 5→19), reprise de la table de l'équipe d'origine pour rester comparable à ses propres résultats. Marquée `derivee` : le répondant n'a jamais donné de note sur 20.",
+      "La note globale « maths/info » est reportée sur chacune des matières que le répondant a déclaré préférer, faute de notes par matière.",
+      "La colonne de motivation en texte libre est volontairement ignorée : en extraire des centres d'intérêt exigerait une interprétation, donc une invention déguisée en donnée déclarée.",
+      "Complétion des champs jamais demandés (série de bac, compétences, centres d'intérêt, préférences professionnelles, environnement) dans un fichier SÉPARÉ, `profils_completes.json`, dont chaque champ fabriqué est marqué `generee` et qui est exclu par construction de toute évaluation."
+    ],
+    "limites": [
+      "VOLUME — 86 réponses, dont 68 seulement exploitables pour une mesure. Sur 16 parcours, cela fait quelques unités par classe : tout intervalle de confiance calculé sur cette base sera très large, et doit être annoncé comme tel.",
+      "AUTO-SÉLECTION — 71 étudiants pour 15 professionnels, et une nette sur-représentation de l'informatique (23 IGGLIA, 10 ISAIA, 8 ESIIA, 6 IMTICIA sur 68 exploitables). Plusieurs parcours ne comptent qu'une ou deux réponses. C'est exactement le biais que le §5 du sujet annonçait.",
+      "NATURE DE L'ÉTIQUETTE — l'étiquette est le parcours *choisi*, pas le parcours qui *convenait*. Un modèle entraîné dessus reproduit les biais d'orientation passés. La satisfaction déclarée (1–5) permet de nuancer, mais l'enquête ne demandait pas quel parcours aurait mieux convenu — la question la plus précieuse du sujet, présente dans notre propre questionnaire, manque ici.",
+      "BIAIS DE RECONSTRUCTION — les professionnels se replacent plusieurs années en arrière ; leurs réponses sur le profil d'alors sont une reconstruction, pas une mesure d'époque.",
+      "PROFONDEUR DU PROFIL — l'enquête n'a demandé que les matières préférées et une note globale. Un profil réel n'expose donc au modèle que 1 à 4 traits, là où les profils synthétiques d'entraînement en portent davantage. Cet écart de richesse est en soi un facteur de chute de performance à distinguer d'une vraie erreur de généralisation lors de ML-7.",
+      "AUCUN TRAIT POUR LES PROFESSIONNELS — le questionnaire tiers ne leur demandait pas leur profil d'avant les études. Les 15 réponses professionnelles n'apportent donc que l'étiquette et le métier exercé, et sortent du jeu d'évaluation faute de traits déclarés. C'est la population que le sujet juge la plus précieuse, et c'est celle dont nous tirons le moins.",
+      "COLLECTE NON MENÉE PAR NOUS — le questionnaire diffusé n'est pas le nôtre. Ni son mode de diffusion, ni sa période, ni la façon dont les répondants ont été sollicités ne nous sont connus, ce qui empêche d'évaluer certains biais de recrutement."
+    ]
   },
-  "texte_consentement": "J'accepte que mes réponses anonymisées soient utilisées dans le cadre d'un projet académique de l'ISPM (hackathon ORIENT'IA). Aucune information permettant de m'identifier ne sera collectée.",
-  "procedure_anonymisation": "Aucune donnée identifiante n'a été collectée à la source (ni nom, ni adresse e-mail, ni téléphone), et aucune donnée personnelle sensible. À l'import, les horodatages sont écartés et chaque réponse reçoit un identifiant séquentiel sans lien avec l'ordre de soumission d'origine. Un champ de texte libre (« métier exercé ») contient une auto-déclaration : une réponse y vaut littéralement « Anonyme », ce qui confirme que les répondants ont compris le cadre.",
-  "traitements_posterieurs": [
-    "Résolution de l'étiquette : le parcours est extrait des réponses libres (« Igglia 2014-2019 », « ESIIA - 2017 ») par correspondance de sigle avec frontière de mot. 79 réponses sur 86 résolues ; les 7 autres sont écartées plutôt que devinées.",
-    "Deux réponses non résolues désignent une *mention* et non un parcours (« Biotechnologie et Agronomie 2022 », « Informatique et télécommunications 2025 »). Une mention regroupant plusieurs parcours, la rattacher à l'un d'eux aurait fabriqué l'étiquette.",
-    "Conversion de l'échelle de résultats 1–5 en note /20 (1→6, 2→10, 3→13, 4→16, 5→19), reprise de la table de l'équipe d'origine pour rester comparable à ses propres résultats. Marquée `derivee` : le répondant n'a jamais donné de note sur 20.",
-    "La note globale « maths/info » est reportée sur chacune des matières que le répondant a déclaré préférer, faute de notes par matière.",
-    "La colonne de motivation en texte libre est volontairement ignorée : en extraire des centres d'intérêt exigerait une interprétation, donc une invention déguisée en donnée déclarée.",
-    "Complétion des champs jamais demandés (série de bac, compétences, centres d'intérêt, préférences professionnelles, environnement) dans un fichier SÉPARÉ, `profils_completes.json`, dont chaque champ fabriqué est marqué `generee` et qui est exclu par construction de toute évaluation."
-  ],
-  "limites": [
-    "VOLUME — 86 réponses, dont 68 seulement exploitables pour une mesure. Sur 16 parcours, cela fait quelques unités par classe : tout intervalle de confiance calculé sur cette base sera très large, et doit être annoncé comme tel.",
-    "AUTO-SÉLECTION — 71 étudiants pour 15 professionnels, et une nette sur-représentation de l'informatique (23 IGGLIA, 10 ISAIA, 8 ESIIA, 6 IMTICIA sur 68 exploitables). Plusieurs parcours ne comptent qu'une ou deux réponses. C'est exactement le biais que le §5 du sujet annonçait.",
-    "NATURE DE L'ÉTIQUETTE — l'étiquette est le parcours *choisi*, pas le parcours qui *convenait*. Un modèle entraîné dessus reproduit les biais d'orientation passés. La satisfaction déclarée (1–5) permet de nuancer, mais l'enquête ne demandait pas quel parcours aurait mieux convenu — la question la plus précieuse du sujet, présente dans notre propre questionnaire, manque ici.",
-    "BIAIS DE RECONSTRUCTION — les professionnels se replacent plusieurs années en arrière ; leurs réponses sur le profil d'alors sont une reconstruction, pas une mesure d'époque.",
-    "PROFONDEUR DU PROFIL — l'enquête n'a demandé que les matières préférées et une note globale. Un profil réel n'expose donc au modèle que 1 à 4 traits, là où les profils synthétiques d'entraînement en portent davantage. Cet écart de richesse est en soi un facteur de chute de performance à distinguer d'une vraie erreur de généralisation lors de ML-7.",
-    "AUCUN TRAIT POUR LES PROFESSIONNELS — le questionnaire tiers ne leur demandait pas leur profil d'avant les études. Les 15 réponses professionnelles n'apportent donc que l'étiquette et le métier exercé, et sortent du jeu d'évaluation faute de traits déclarés. C'est la population que le sujet juge la plus précieuse, et c'est celle dont nous tirons le moins.",
-    "COLLECTE NON MENÉE PAR NOUS — le questionnaire diffusé n'est pas le nôtre. Ni son mode de diffusion, ni sa période, ni la façon dont les répondants ont été sollicités ne nous sont connus, ce qui empêche d'évaluer certains biais de recrutement."
-  ]
+  "notre_enquete": {
+    "source": "Notre propre enquête, diffusée via le Google Form généré par `generer_google_form.gs` à partir de `questionnaire.md`. Importée par `python -m src.enquete_import <csv> --orientia`.",
+    "populations_visees": [
+      "Étudiants de l'ISPM — profil au lycée, formation suivie, satisfaction, et formation qui aurait mieux convenu",
+      "Professionnels diplômés — profil avant les études, métier exercé, adéquation, et formation qui aurait le mieux correspondu"
+    ],
+    "mode_diffusion": "Diffusion directe par l'équipe (réseaux personnels et promotions ISPM).",
+    "periode_collecte": "26 au 27 août 2026, pendant le hackathon.",
+    "reponses_recues": 15,
+    "reponses_retenues": 14,
+    "reponses_ecartees": 1,
+    "repartition_populations": {
+      "etudiant": 14,
+      "professionnel": 1
+    },
+    "texte_consentement": "J'ai lu ce qui précède et j'accepte que mes réponses anonymes soient utilisées dans le cadre de ce projet.",
+    "procedure_anonymisation": "Aucune donnée identifiante demandée (ni nom, ni e-mail, ni téléphone), et collecte des adresses e-mail désactivée dans Google Forms. À l'import, l'horodatage est écarté et l'identifiant est séquentiel.",
+    "traitements_posterieurs": [
+      "Lecture du CSV **par position** et non par nom de colonne : l'export Google Forms duplique les intitulés entre les deux sections (« Série de votre baccalauréat » apparaît deux fois), et `csv.DictReader` écraserait silencieusement la première occurrence.",
+      "Une réponse « Une formation hors ISPM » est écartée : réelle, mais hors du périmètre des 16 parcours que le modèle connaît.",
+      "« Aucune en particulier » n'est pas comptée comme une compétence : c'est une absence déclarée, la retenir gonflerait artificiellement le nombre de traits d'un profil.",
+      "Anomalie de routage corrigée à l'analyse : un saut de page mal posé dans le script de génération faisait enchaîner les étudiants sur la section professionnelle. 12 réponses sur 15 ont ainsi rempli les deux sections. Pour un répondant déclaré étudiant, seule la section étudiante est lue — celle vers laquelle il a été légitimement routé. Une réponse contredisait d'ailleurs sa propre étiquette d'une section à l'autre (ISAIA côté étudiant, IGGLIA côté professionnel)."
+    ],
+    "limites": [
+      "VOLUME — 15 réponses, 14 exploitables. À p=0,5 l'intervalle de confiance à 95 % est de ±22 points : ces réponses permettent d'affirmer que le modèle fait mieux que le hasard (6,2 % pour 16 classes), pas de chiffrer sa performance avec précision. Tout score doit être publié avec son intervalle.",
+      "COUVERTURE DES PARCOURS — seulement 5 parcours sur 16 représentés, contre 14 sur 16 pour l'enquête tierce. Aucune métrique par classe n'est possible ; seules l'exactitude globale et le top-k ont un sens.",
+      "UNE SEULE RÉPONSE PROFESSIONNELLE — la population que le sujet juge la plus précieuse est quasi absente. La question « quelle formation aurait le mieux correspondu ? », qui fournit une étiquette corrigée par l'expérience, ne repose donc que sur un cas.",
+      "AUTO-SÉLECTION — diffusion par les réseaux de l'équipe, majoritairement informatique : IGGLIA domine largement, plusieurs mentions sont absentes.",
+      "FENÊTRE DE COLLECTE COURTE — moins de 24 heures, ce qui limite mécaniquement le volume et favorise les répondants les plus proches de l'équipe.",
+      "ANOMALIE DE ROUTAGE — les 15 réponses ont été collectées avant correction du saut de page. Les données restent exploitables (voir traitements postérieurs), mais une collecte ultérieure avec le script corrigé ne serait pas produite dans des conditions strictement identiques."
+    ]
+  }
 }

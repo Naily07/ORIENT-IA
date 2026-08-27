@@ -1,0 +1,576 @@
+[
+  {
+    "id": "orientia_0001",
+    "population": "professionnel",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Physique",
+        "Sciences de la Terre"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Technologie",
+        "Robotique",
+        "Droit / justice"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": null,
+    "metier_exerce": "Développeur fullstack orienté DEVOPS",
+    "adequation_formation_metier": 4,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0002",
+    "population": "etudiant",
+    "parcours_declare": "DTJA",
+    "parcours_brut": "DTJA — Droit et Techniques Juridiques des Affaires",
+    "profil": {
+      "matieres_preferees": [
+        "Chimie",
+        "Sciences de la Terre",
+        "Langues",
+        "Histoire",
+        "Géographie"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Rédaction"
+      ],
+      "centres_interet": [
+        "Agriculture",
+        "Santé",
+        "Droit / justice"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0003",
+    "population": "etudiant",
+    "parcours_declare": "ESIIA",
+    "parcours_brut": "ESIIA — Électronique, Systèmes Informatiques et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Sciences de la Terre"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Agriculture",
+        "Nature / environnement",
+        "Recherche"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Laboratoire",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0004",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Statistiques"
+      ],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Sans préférence",
+      "serie_bac": "C",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0005",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Sciences de la Terre",
+        "EPS"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Algorithmique"
+      ],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels",
+        "Matériel informatique",
+        "Machines"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 4,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0006",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Physique",
+        "Chimie",
+        "Biologie",
+        "Sciences de la Terre",
+        "Informatique",
+        "Électronique",
+        "Gestion"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Dessin technique",
+        "Rédaction",
+        "Accueil / relation client"
+      ],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels",
+        "Matériel informatique",
+        "Construction",
+        "Ressources naturelles",
+        "Santé",
+        "Recherche",
+        "Commerce",
+        "Entrepreneuriat",
+        "Finance",
+        "Droit / justice",
+        "Culture"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 5,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0007",
+    "population": "etudiant",
+    "parcours_declare": "ICMP",
+    "parcours_brut": "ICMP — Industries Chimiques, Minières et Pétrolières",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Physique",
+        "Chimie"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Statistiques",
+        "Rédaction",
+        "Accueil / relation client"
+      ],
+      "centres_interet": [
+        "Construction",
+        "Industrie",
+        "Agriculture",
+        "Voyage"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Terrain / extérieur",
+      "serie_bac": "S",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 2,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0008",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Physique",
+        "Chimie",
+        "Langues"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Rédaction",
+        "Accueil / relation client"
+      ],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels",
+        "Robotique",
+        "Machines",
+        "Commerce",
+        "Finance",
+        "Voyage"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0009",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Informatique",
+        "Langues",
+        "Histoire",
+        "Géographie"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Technologie",
+        "Matériel informatique",
+        "Machines",
+        "Entrepreneuriat"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 4,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0010",
+    "population": "etudiant",
+    "parcours_declare": "ISAIA",
+    "parcours_brut": "ISAIA — Informatique, Statistique Appliquée et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Sciences de la Terre",
+        "Musique"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Comptabilité"
+      ],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels",
+        "Recherche"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Terrain / extérieur",
+      "serie_bac": "C",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 4,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0011",
+    "population": "etudiant",
+    "parcours_declare": null,
+    "parcours_brut": "Une formation hors ISPM",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Technologie"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": null,
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 1,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": false,
+    "motif_exclusion": "formation hors ISPM"
+  },
+  {
+    "id": "orientia_0012",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Physique",
+        "Langues",
+        "Histoire",
+        "Géographie"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Recherche",
+        "Culture"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "C",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0013",
+    "population": "etudiant",
+    "parcours_declare": "ESIIA",
+    "parcours_brut": "ESIIA — Électronique, Systèmes Informatiques et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Sciences de la Terre"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [
+        "Techniques agricoles"
+      ],
+      "centres_interet": [],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Atelier ou usine",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "competences_declarees": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 2,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0014",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Chimie"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Matériel informatique"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Bureau",
+      "serie_bac": "D",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 3,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  },
+  {
+    "id": "orientia_0015",
+    "population": "etudiant",
+    "parcours_declare": "IGGLIA",
+    "parcours_brut": "IGGLIA — Informatique de Gestion, Génie Logiciel et Intelligence Artificielle",
+    "profil": {
+      "matieres_preferees": [
+        "Mathématiques",
+        "Physique"
+      ],
+      "resultats_scolaires": {},
+      "competences_declarees": [],
+      "centres_interet": [
+        "Technologie",
+        "Logiciels",
+        "Matériel informatique",
+        "Données"
+      ],
+      "activites_projets": [],
+      "preferences_professionnelles": [],
+      "environnement_travail_recherche": "Sans préférence",
+      "serie_bac": "S",
+      "informations_manquantes": []
+    },
+    "provenance": {
+      "matieres_preferees": "declaree",
+      "centres_interet": "declaree",
+      "environnement_travail_recherche": "declaree",
+      "serie_bac": "declaree"
+    },
+    "satisfaction": 4,
+    "metier_exerce": null,
+    "adequation_formation_metier": null,
+    "utilisable_pour_evaluation": true,
+    "motif_exclusion": null
+  }
+]

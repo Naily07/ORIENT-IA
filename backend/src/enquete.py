@@ -121,14 +121,23 @@ def charger_reponses(nom_fichier: str = "reponses_anonymisees.json") -> list[Rep
         return [ReponseEnquete.model_validate(r) for r in json.load(f)]
 
 
-def charger_registre_collecte(
+def charger_registres_collecte(
     nom_fichier: str = "registre_collecte.json",
-) -> RegistreCollecte | None:
+) -> dict[str, RegistreCollecte]:
+    """Les registres de collecte, indexés par enquête.
+
+    Le fichier en contient plusieurs — une enquête tierce réutilisée et la
+    nôtre — parce que les fusionner effacerait ce qui les distingue :
+    profondeur des profils, questions posées, conditions de diffusion. Deux
+    registres honnêtes valent mieux qu'un seul qui moyennerait des collectes
+    incomparables.
+    """
     chemin = config.dossier_data / "enquete" / nom_fichier
     if not chemin.exists():
-        return None
+        return {}
     with open(chemin, encoding="utf-8") as f:
-        return RegistreCollecte.model_validate(json.load(f))
+        contenu = json.load(f)
+    return {cle: RegistreCollecte.model_validate(valeur) for cle, valeur in contenu.items()}
 
 
 def jeu_evaluation(reponses: list[ReponseEnquete] | None = None) -> list[ReponseEnquete]:

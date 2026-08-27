@@ -15,6 +15,8 @@ from src.agent import _formater_passage
 from src.rag import (
     ReponseRAG,
     _ecarter_passages_malveillants,
+    _fusionner_rrf,
+    _normaliser_lexical,
     chunker,
     generer_reponse_rag,
 )
@@ -80,6 +82,42 @@ def test_tout_le_contenu_est_present_dans_les_fragments():
     concatenation = " ".join(fragments)
     for i in range(30):
         assert f"Information capitale numero {i}." in concatenation
+
+
+# --- Recherche hybride BM25 + vectoriel (RAG-4) ------------------------------
+
+
+def test_normalisation_lexicale_gere_accents_et_pluriels():
+    assert _normaliser_lexical("Droits, statistiques et industries") == [
+        "droit",
+        "statistique",
+        "et",
+        "industrie",
+    ]
+
+
+def test_fusion_rrf_conserve_les_candidats_des_deux_moteurs():
+    vectoriels = [
+        {"identifiant": "V", "source_id": "DOC-V", "distance": 0.2},
+        {"identifiant": "COMMUN", "source_id": "DOC-C", "distance": 0.3},
+    ]
+    lexicaux = [
+        {"identifiant": "L", "source_id": "DOC-L", "score_bm25": 4.0},
+        {"identifiant": "COMMUN", "source_id": "DOC-C", "score_bm25": 3.0},
+    ]
+
+    fusion = _fusionner_rrf(vectoriels, lexicaux)
+
+    assert {fragment["identifiant"] for fragment in fusion} == {"V", "L", "COMMUN"}
+    assert fusion[0]["identifiant"] == "COMMUN"
+    assert all("score_fusion" in fragment for fragment in fusion)
+
+
+def test_mode_de_recherche_inconnu_est_refuse():
+    from src.rag import retrieve_context
+
+    with pytest.raises(ValueError, match="Mode de recherche inconnu"):
+        retrieve_context("question", mode="inexistant")
 
 
 # --- Absence de source ---------------------------------------------------

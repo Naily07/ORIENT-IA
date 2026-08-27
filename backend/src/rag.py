@@ -19,7 +19,10 @@ pédagogique ORIENT'IA.
 
 import functools
 import logging
+import math
 import re
+import unicodedata
+from collections import Counter
 
 import chromadb
 from chromadb.utils import embedding_functions
@@ -32,6 +35,19 @@ from src.models import DocumentSource
 from src.sources import statut_de_source
 
 logger = logging.getLogger(__name__)
+
+# Les mots de structure et le vocabulaire générique de l'orientation ne sont
+# pas des preuves lexicales de pertinence. Sans cette liste, une question hors
+# corpus contenant seulement « formation » ou « établissement » ferait entrer
+# un document par BM25 et détruirait le silence calibré par RAG-5.
+_MOTS_GENERIQUES = {
+    "a", "au", "aux", "avec", "ce", "ces", "combien", "comment", "dans",
+    "de", "des", "du", "elle", "en", "est", "et", "formation", "filiere",
+    "il", "la", "le", "les", "leur", "leurs", "ou", "par", "parcours",
+    "pour", "quel", "quelle", "quelles", "quels", "qui", "sur", "un", "une",
+    "etablissement", "programme", "etudier", "forme", "preparer", "prepare",
+}
+_RRF_CONSTANTE = 60
 
 
 class ReponseRAG(BaseModel):
@@ -194,6 +210,7 @@ def retrieve_context(
     categorie: str | None = None,
     k: int | None = None,
     seuil: float | None = None,
+    mode: str = "hybride",
 ) -> list[dict]:
     """Retourne les fragments pertinents, éventuellement aucun.
 
@@ -204,6 +221,9 @@ def retrieve_context(
     il retourne un passage plausible de la mauvaise catégorie, et le bon
     document devient inatteignable sans que rien ne le signale.
     """
+    if mode not in {"vectoriel", "hybride"}:
+        raise ValueError(f"Mode de recherche inconnu : {mode}")
+
     k = k or config.rag_k
     seuil = config.rag_seuil_pertinence if seuil is None else seuil
 
@@ -211,9 +231,14 @@ def retrieve_context(
     if total == 0:
         return []
 
-    resultats = _interroger(description, k, None, total)
+    # Un vivier supérieur au k final laisse la fusion lexicale remonter un bon
+    # document qui était juste sous le top-k vectoriel. Le seuil cosinus reste
+    # appliqué avant toute fusion : RAG-4 ne doit pas réintroduire le bruit que
+    # RAG-5 a précisément écarté.
+    taille_vivier = min(total, max(k * 3, 10)) if mode == "hybride" else k
+    resultats = _interroger(description, taille_vivier, None, total)
     if categorie:
-        resultats += _interroger(description, k, {"categorie": categorie}, total)
+        resultats += _interroger(description, taille_vivier, {"categorie": categorie}, total)
 
     meilleurs: dict[str, dict] = {}
     for fragment in resultats:
@@ -223,10 +248,126 @@ def retrieve_context(
         if connu is None or fragment["distance"] < connu["distance"]:
             meilleurs[fragment["identifiant"]] = fragment
 
-    retenus = _ecarter_passages_malveillants(
-        sorted(meilleurs.values(), key=lambda f: f["distance"])
-    )
+    vectoriels = sorted(meilleurs.values(), key=lambda f: f["distance"])
+    if mode == "hybride":
+        retenus = _fusionner_rrf(vectoriels, _interroger_lexical(description, total))
+    else:
+        retenus = vectoriels
+    retenus = _ecarter_passages_malveillants(retenus)
     return _diversifier(retenus, k)
+
+
+def _normaliser_lexical(texte: str) -> list[str]:
+    """Tokenisation légère, stable et indépendante d'une langue externe."""
+    sans_accents = "".join(
+        caractere
+        for caractere in unicodedata.normalize("NFKD", texte.casefold())
+        if not unicodedata.combining(caractere)
+    )
+    tokens = re.findall(r"[a-z0-9]+", sans_accents)
+    # Une racinisation volontairement étroite suffit aux écarts fréquents du
+    # corpus (droit/droits, statistique/statistiques, industrie/industries),
+    # sans prétendre être un analyseur morphologique français complet.
+    return [
+        token[:-1] if len(token) > 4 and token.endswith(("s", "x")) else token
+        for token in tokens
+    ]
+
+
+def _termes_significatifs(texte: str) -> set[str]:
+    return {
+        terme
+        for terme in _normaliser_lexical(texte)
+        if len(terme) >= 3 and terme not in _MOTS_GENERIQUES
+    }
+
+
+def _interroger_lexical(description: str, total: int) -> list[dict]:
+    """Classe tous les fragments avec BM25, sans dépendance supplémentaire.
+
+    Un fragment lexical n'est admissible que s'il partage au moins deux termes
+    significatifs avec la question, ou un sigle explicite. Cette porte est le
+    garde-fou hors corpus ; le score BM25 seul est toujours positif dès qu'un
+    mot banal apparaît des deux côtés.
+    """
+    brut = _collection().get(include=["documents", "metadatas"])
+    if not brut["ids"]:
+        return []
+
+    tokens_documents = [_normaliser_lexical(document) for document in brut["documents"]]
+    tokens_question = _normaliser_lexical(description)
+    termes_question = _termes_significatifs(description)
+    sigles_question = {
+        terme.casefold()
+        for terme in re.findall(r"\b[A-Z][A-Z0-9]{2,9}\b", description)
+    }
+    if not termes_question and not sigles_question:
+        return []
+
+    frequences_documents = Counter(
+        terme for termes in tokens_documents for terme in set(termes)
+    )
+    longueur_moyenne = sum(map(len, tokens_documents)) / len(tokens_documents)
+    k1, b = 1.5, 0.75
+    resultats = []
+
+    for identifiant, document, meta, tokens in zip(
+        brut["ids"], brut["documents"], brut["metadatas"], tokens_documents, strict=True
+    ):
+        frequences = Counter(tokens)
+        communs = termes_question & set(tokens)
+        sigle_exact = bool(sigles_question & set(tokens))
+        if len(communs) < 2 and not sigle_exact:
+            continue
+
+        score = 0.0
+        for terme in tokens_question:
+            tf = frequences.get(terme, 0)
+            if not tf:
+                continue
+            df = frequences_documents[terme]
+            idf = math.log(1 + (len(tokens_documents) - df + 0.5) / (df + 0.5))
+            denominateur = tf + k1 * (1 - b + b * len(tokens) / longueur_moyenne)
+            score += idf * (tf * (k1 + 1) / denominateur)
+        if score <= 0:
+            continue
+        resultats.append(
+            {
+                "identifiant": identifiant,
+                "contenu": document,
+                "source_id": meta["source_id"],
+                "titre": meta["titre"],
+                "categorie": meta["categorie"],
+                "distance": None,
+                "score_bm25": score,
+                "registre_source_id": meta.get("registre_source_id") or None,
+                "statut_source": statut_de_source(meta.get("registre_source_id")),
+            }
+        )
+    return sorted(resultats, key=lambda fragment: fragment["score_bm25"], reverse=True)[:total]
+
+
+def _fusionner_rrf(vectoriels: list[dict], lexicaux: list[dict]) -> list[dict]:
+    """Fusionne des rangs, jamais les scores incompatibles cosinus/BM25."""
+    fragments = {f["identifiant"]: dict(f) for f in vectoriels}
+    fragments.update(
+        {
+            f["identifiant"]: dict(f)
+            for f in lexicaux
+            if f["identifiant"] not in fragments
+        }
+    )
+    scores: Counter[str] = Counter()
+    for classement in (vectoriels, lexicaux):
+        for rang, fragment in enumerate(classement, start=1):
+            scores[fragment["identifiant"]] += 1 / (_RRF_CONSTANTE + rang)
+
+    for identifiant, fragment in fragments.items():
+        fragment["score_fusion"] = scores[identifiant]
+        lexical = next((f for f in lexicaux if f["identifiant"] == identifiant), None)
+        if lexical is not None:
+            fragment["score_bm25"] = lexical["score_bm25"]
+    return sorted(fragments.values(), key=lambda f: f["score_fusion"], reverse=True)
 
 
 def _ecarter_passages_malveillants(fragments: list[dict]) -> list[dict]:

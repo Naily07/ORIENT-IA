@@ -1,0 +1,229 @@
+{
+  "date": "2026-08-27T08:02:18.713472+00:00",
+  "mode": "hybride",
+  "corpus": {
+    "documents": 18,
+    "fragments": 18
+  },
+  "configuration": {
+    "seuil_vectoriel": 0.56,
+    "k": 5
+  },
+  "metriques": {
+    "rappel_sources": 1.0,
+    "precision_sources": 0.6694444444444444,
+    "silence_correct_hors_corpus": 1.0,
+    "compromis_rappel_silence": 1.0,
+    "cas_reussis": 16,
+    "cas_total": 16
+  },
+  "details": [
+    {
+      "id": "RAG-01",
+      "question": "Quelle filière mêle informatique de gestion et intelligence artificielle ?",
+      "sources_attendues": [
+        "DOC-IGGLIA"
+      ],
+      "sources_obtenues": [
+        "DOC-ESIIA",
+        "DOC-IGGLIA",
+        "DOC-ISAIA",
+        "DOC-IMTICIA"
+      ],
+      "rappel": 1.0,
+      "precision": 0.25,
+      "succes": true
+    },
+    {
+      "id": "RAG-02",
+      "question": "Quel parcours combine électronique et structure des ordinateurs ?",
+      "sources_attendues": [
+        "DOC-ESIIA"
+      ],
+      "sources_obtenues": [
+        "DOC-ESIIA"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-03",
+      "question": "Où étudier les statistiques appliquées à la banque et au commerce ?",
+      "sources_attendues": [
+        "DOC-ISAIA"
+      ],
+      "sources_obtenues": [
+        "DOC-CAA",
+        "DOC-ISAIA"
+      ],
+      "rappel": 1.0,
+      "precision": 0.5,
+      "succes": true
+    },
+    {
+      "id": "RAG-04",
+      "question": "Quelle formation porte sur le multimédia et les technologies de communication ?",
+      "sources_attendues": [
+        "DOC-IMTICIA"
+      ],
+      "sources_obtenues": [
+        "DOC-IMTICIA",
+        "DOC-ESIIA"
+      ],
+      "rappel": 1.0,
+      "precision": 0.5,
+      "succes": true
+    },
+    {
+      "id": "RAG-05",
+      "question": "Quel parcours prépare aux industries chimiques et minières ?",
+      "sources_attendues": [
+        "DOC-ICMP"
+      ],
+      "sources_obtenues": [
+        "DOC-ICMP",
+        "DOC-IAA",
+        "DOC-PIP",
+        "DOC-ISAIA"
+      ],
+      "rappel": 1.0,
+      "precision": 0.25,
+      "succes": true
+    },
+    {
+      "id": "RAG-06",
+      "question": "Quelle filière traite des plantes médicinales de Madagascar ?",
+      "sources_attendues": [
+        "DOC-PIP"
+      ],
+      "sources_obtenues": [
+        "DOC-PIP",
+        "DOC-TEE",
+        "DOC-TEH"
+      ],
+      "rappel": 1.0,
+      "precision": 0.3333333333333333,
+      "succes": true
+    },
+    {
+      "id": "RAG-07",
+      "question": "Quel parcours forme à l'aménagement urbain et aux infrastructures ?",
+      "sources_attendues": [
+        "DOC-GCA"
+      ],
+      "sources_obtenues": [
+        "DOC-GCA"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-08",
+      "question": "Quelle formation vise l'hôtellerie et le patrimoine culturel ?",
+      "sources_attendues": [
+        "DOC-TEH"
+      ],
+      "sources_obtenues": [
+        "DOC-TEH"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-09",
+      "question": "Quels sont les niveaux de diplôme délivrés par l'établissement ?",
+      "sources_attendues": [
+        "DOC-NIVEAUX-DIPLOMES"
+      ],
+      "sources_obtenues": [
+        "DOC-NIVEAUX-DIPLOMES"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-10",
+      "question": "Quelle série de baccalauréat faut-il pour s'inscrire ?",
+      "sources_attendues": [
+        "DOC-CONDITIONS-ADMISSION"
+      ],
+      "sources_obtenues": [
+        "DOC-CONDITIONS-ADMISSION"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-11",
+      "question": "Combien coûtent les droits d'inscription ?",
+      "sources_attendues": [
+        "DOC-CONDITIONS-ADMISSION"
+      ],
+      "sources_obtenues": [
+        "DOC-CONDITIONS-ADMISSION"
+      ],
+      "rappel": 1.0,
+      "precision": 1.0,
+      "succes": true
+    },
+    {
+      "id": "RAG-12",
+      "question": "Quel parcours mêle droit et outils informatiques ?",
+      "sources_attendues": [
+        "DOC-DTJA"
+      ],
+      "sources_obtenues": [
+        "DOC-DTJA",
+        "DOC-ISAIA",
+        "DOC-EMP",
+        "DOC-ESIIA",
+        "DOC-IGGLIA"
+      ],
+      "rappel": 1.0,
+      "precision": 0.2,
+      "succes": true
+    },
+    {
+      "id": "RAG-HC-01",
+      "question": "Quel est le programme de la filière de médecine vétérinaire ?",
+      "sources_attendues": [],
+      "sources_obtenues": [],
+      "rappel": null,
+      "precision": null,
+      "succes": true
+    },
+    {
+      "id": "RAG-HC-02",
+      "question": "Comment obtenir une bourse Erasmus pour partir au Canada ?",
+      "sources_attendues": [],
+      "sources_obtenues": [],
+      "rappel": null,
+      "precision": null,
+      "succes": true
+    },
+    {
+      "id": "RAG-HC-03",
+      "question": "Quelles sont les horaires d'ouverture de la piscine municipale ?",
+      "sources_attendues": [],
+      "sources_obtenues": [],
+      "rappel": null,
+      "precision": null,
+      "succes": true
+    },
+    {
+      "id": "RAG-HC-04",
+      "question": "Quel est le classement mondial de l'établissement en robotique ?",
+      "sources_attendues": [],
+      "sources_obtenues": [],
+      "rappel": null,
+      "precision": null,
+      "succes": true
+    }
+  ],
+  "limite": "Jeu rédigé par l'équipe à partir du corpus, sans questions réelles de candidats. La précision mesure les sources récupérées, tandis que le garde-fou des citations générées est couvert séparément par test_rag.py."
+}

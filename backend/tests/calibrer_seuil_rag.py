@@ -93,7 +93,9 @@ def _mesurer(seuil: float, k: int) -> dict:
     distances_bonnes: list[float] = []
 
     for cas in QUESTIONS_AVEC_SOURCE:
-        fragments = rag.retrieve_context(cas["question"], k=k, seuil=seuil)
+        fragments = rag.retrieve_context(
+            cas["question"], k=k, seuil=seuil, mode="vectoriel"
+        )
         sources = [f["source_id"] for f in fragments]
         trouve = cas["source_attendue"] in sources
         rappels.append(float(trouve))
@@ -106,7 +108,7 @@ def _mesurer(seuil: float, k: int) -> dict:
             )
 
     silences = [
-        1.0 if not rag.retrieve_context(q, k=k, seuil=seuil) else 0.0
+        1.0 if not rag.retrieve_context(q, k=k, seuil=seuil, mode="vectoriel") else 0.0
         for q in QUESTIONS_HORS_CORPUS
     ]
 

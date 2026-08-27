@@ -1,0 +1,3595 @@
+[
+ {
+  "parcours": "BIO",
+  "classe_imprimee": "BIO",
+  "parcours_concernes": [
+   "AEE",
+   "IAA",
+   "PIP"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/BIO/S2.jpeg",
+  "matieres": [
+   "MAT-PHYSIOLOGIEVEGETALE",
+   "MAT-FRANCAIS",
+   "MAT-PHYSIOLOGIEANIMALE",
+   "MAT-ANALYSEMATHEMATIQUE",
+   "MAT-GENETIQUE",
+   "MAT-INFORMATIQUE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-ATOMISTIQUE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-BIOLOGIECELLULAIRE",
+   "MAT-MICROBIOLOGIE",
+   "MAT-BIOLOGIEVEGETALE",
+   "MAT-ELECTRICITE",
+   "MAT-BIOCHIMIE",
+   "MAT-STATISTIQUE",
+   "MAT-BIOLOGIEANIMALE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/CAA/S2.jpeg",
+  "matieres": [
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-FRANCAIS",
+   "MAT-STRATEGIE",
+   "MAT-MATHEMATIQUESG",
+   "MAT-INFORMATIQUE",
+   "MAT-ANGLAIS",
+   "MAT-BUREAUTIQUE",
+   "MAT-MATHFI",
+   "MAT-ALLEMAND",
+   "MAT-DROIT",
+   "MAT-COMPTABILITE",
+   "MAT-STATISTIQUE",
+   "MAT-PROBABILITES",
+   "MAT-ECONOMIE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/DTJA/S2.jpeg",
+  "matieres": [
+   "MAT-DROITCONSTITUTIONNEL",
+   "MAT-HIE",
+   "MAT-FRANCAIS",
+   "MAT-INTRODUCTIONAUDROIT",
+   "MAT-INFORMATIQUE",
+   "MAT-BUREAUTIQUE",
+   "MAT-ANGLAIS",
+   "MAT-DROITCIVIL",
+   "MAT-ALLEMAND",
+   "MAT-HPE",
+   "MAT-R1",
+   "MAT-ADMINISTRATIF",
+   "MAT-ECONOMIE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION",
+   "MAT-LOGIQUE"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMII",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/EMII/S2.jpeg",
+  "matieres": [
+   "MAT-INFORMATIQUE",
+   "MAT-FRANCAIS",
+   "MAT-ELECTRICITE",
+   "MAT-MECANIQUEGENERALE",
+   "MAT-ALGEBRE",
+   "MAT-ANALYSE",
+   "MAT-RDM",
+   "MAT-DESSIN",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-AUTOCAD",
+   "MAT-MCI",
+   "MAT-MECANIQUERATIONNELLE",
+   "MAT-ELECTRONIQUE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/EMP/S2.jpeg",
+  "matieres": [
+   "MAT-HIE",
+   "MAT-FRANCAIS",
+   "MAT-STRATEGIE",
+   "MAT-INFORMATIQUE",
+   "MAT-ANALYSEMATHEMATIQUE",
+   "MAT-BUREAUTIQUE",
+   "MAT-ANGLAIS",
+   "MAT-MATHFI",
+   "MAT-MACROECONOMIE",
+   "MAT-ALLEMAND",
+   "MAT-HPE",
+   "MAT-COMPTABILITE",
+   "MAT-STATISTIQUE",
+   "MAT-PROBABILITES",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION",
+   "MAT-MICROECONOMIE"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/ESIIA/S2.jpeg",
+  "matieres": [
+   "MAT-ELECTRICITE",
+   "MAT-HTMLCSS",
+   "MAT-FRANCAIS",
+   "MAT-ELECTRONIQUE",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ANALYSE",
+   "MAT-ALGEBRE",
+   "MAT-STRUCTUREDESORDINATEURS",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MATHDISCRETES",
+   "MAT-BASESDEDONNEES",
+   "MAT-PASCAL",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-PROBABILITESSTATISTIQUES",
+   "MAT-ALGORITHMES",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/FIC/S2.jpeg",
+  "matieres": [
+   "MAT-CHOIXDINVESTISSEMENT",
+   "MAT-FRANCAIS",
+   "MAT-STRATEGIE",
+   "MAT-INFORMATIQUE",
+   "MAT-ANALYSEMATHEMATIQUE",
+   "MAT-ANGLAIS",
+   "MAT-BUREAUTIQUE",
+   "MAT-MATHFI",
+   "MAT-INSTITUTIONSFINANCIERES",
+   "MAT-DROITCOMMERCIAL",
+   "MAT-ALLEMAND",
+   "MAT-COMPTABILITEFI",
+   "MAT-STATISTIQUE",
+   "MAT-PROBABILITES",
+   "MAT-MARKETING",
+   "MAT-ECONOMIE",
+   "MAT-ORGANISATION",
+   "MAT-FINANCEDENTREPRISE"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/GCA/S2.jpeg",
+  "matieres": [
+   "MAT-INFORMATIQUE",
+   "MAT-FRANCAIS",
+   "MAT-GEOLOGIEAPPLIQUEE",
+   "MAT-RDM",
+   "MAT-MECANIQUEGENERALE",
+   "MAT-ANALYSE",
+   "MAT-ALGEBRE",
+   "MAT-MDC",
+   "MAT-DESSIN",
+   "MAT-TECHNOLOGIEDESBATIMENTS",
+   "MAT-TOPOGRAPHIE",
+   "MAT-HYDRAULIQUE",
+   "MAT-METRE",
+   "MAT-TPTOPOGRAPHIE"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/ICMP/S2.jpeg",
+  "matieres": [
+   "MAT-MINES",
+   "MAT-FRANCAIS",
+   "MAT-INFORMATIQUE",
+   "MAT-MECANIQUEGENERALE",
+   "MAT-GEODYNAMIQUEMINIERE",
+   "MAT-ALGEBRE",
+   "MAT-ANALYSE",
+   "MAT-CHIMIEMINERALE",
+   "MAT-DESSIN",
+   "MAT-AUTOCAD",
+   "MAT-RDM",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-ATOMISTIQUE"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/IGGLIA/S2.jpeg",
+  "matieres": [
+   "MAT-HTMLCSS",
+   "MAT-COMPTABILITE",
+   "MAT-FRANCAIS",
+   "MAT-MATHFI",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ALGEBRE",
+   "MAT-ANALYSE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-BASESDEDONNEES",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-MATHDISCRETES",
+   "MAT-PASCAL",
+   "MAT-PROBABILITESSTATISTIQUES",
+   "MAT-ORGANISATION",
+   "MAT-ALGORITHMES"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/IMTICIA/S2.jpeg",
+  "matieres": [
+   "MAT-SON",
+   "MAT-HTMLCSS",
+   "MAT-FRANCAIS",
+   "MAT-NTT",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ALGEBRE",
+   "MAT-ANALYSE",
+   "MAT-PAO",
+   "MAT-MATHDISCRETES",
+   "MAT-BASESDEDONNEES",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-PASCAL",
+   "MAT-TELECOM",
+   "MAT-PROBABILITESSTATISTIQUES",
+   "MAT-ALGORITHMES",
+   "MAT-TPINFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/ISAIA/S2.jpeg",
+  "matieres": [
+   "MAT-MACROECONOMIE",
+   "MAT-HTMLCSS",
+   "MAT-FRANCAIS",
+   "MAT-COMBINATOIREET",
+   "MAT-ALGEBRE",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ANALYSE",
+   "MAT-PROBABILITES",
+   "MAT-BASESDEDONNEES",
+   "MAT-MATHDISCRETES",
+   "MAT-PASCAL",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-ALGORITHMES",
+   "MAT-STATISTIQUEAPPLIQUEE",
+   "MAT-MICROECONOMIE",
+   "MAT-TPINFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TEH",
+  "parcours_concernes": [
+   "TEH"
+  ],
+  "niveau": "L1",
+  "semestre": "S2",
+  "fichier": "L1/TEH/S2.jpeg",
+  "matieres": [
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-SITESTOURISTIQUES",
+   "MAT-FRANCAIS",
+   "MAT-INFORMATIQUE",
+   "MAT-ANGLAIS",
+   "MAT-BUREAUTIQUE",
+   "MAT-TECHNIQUESDAGENCE",
+   "MAT-ENVIRONNEMENT",
+   "MAT-ECOLOGIEANIMALE",
+   "MAT-SCIENCEDESALIMENTS",
+   "MAT-FLORE",
+   "MAT-ALLEMAND",
+   "MAT-HYGIENE",
+   "MAT-NUTRITIONHUMAINE",
+   "MAT-ECONOMIE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION",
+   "MAT-ARTCULINAIRE"
+  ]
+ },
+ {
+  "parcours": "BIO",
+  "classe_imprimee": "BIO",
+  "parcours_concernes": [
+   "AEE",
+   "IAA",
+   "PIP"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/BIO/S1.jpg",
+  "matieres": [
+   "MAT-THERMOCHIMIE",
+   "MAT-BIOCHIMIE",
+   "MAT-MATHEMATIQUEANALYSE",
+   "MAT-PHYSIOLOGIEVEGETALE",
+   "MAT-CHIMIEMINERALE",
+   "MAT-BACTERIOLOGIEMEDICALE",
+   "MAT-INFORMATIQUE",
+   "MAT-BIOLOGIEANIMALE",
+   "MAT-GENETIQUE",
+   "MAT-ENZYMOLOGIE",
+   "MAT-BIOLOGIECELLULAIRE",
+   "MAT-VIROLOGIE",
+   "MAT-PHYSIOLOGIEANIMALE"
+  ]
+ },
+ {
+  "parcours": "BIO",
+  "classe_imprimee": "BIO",
+  "parcours_concernes": [
+   "AEE",
+   "IAA",
+   "PIP"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/BIO/S2.jpg",
+  "matieres": [
+   "MAT-ANALYSE",
+   "MAT-BACTERIOLOGIE",
+   "MAT-PHYSIOLOGIEVEGETALE",
+   "MAT-CHIMIE",
+   "MAT-BIOCHIMIE",
+   "MAT-INFORMATIQUE",
+   "MAT-PHYSIOA",
+   "MAT-VIROLOGIE",
+   "MAT-GENETIQUE",
+   "MAT-BIOLOGIEANIMALE",
+   "MAT-BIOLOGIECELLULAIRE",
+   "MAT-ENZYMOLOGIE",
+   "MAT-BIOTECHNOLOGIE",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-BIOLOGIEVEGETALE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/CAA/S1.jpg",
+  "matieres": [
+   "MAT-MARKETING",
+   "MAT-COMPTAFI",
+   "MAT-ANALYSEMATHEMATIQUE",
+   "MAT-ANGLAIS",
+   "MAT-INFORMATIQUE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-CAE",
+   "MAT-TECHNIQUEBANCAIRE",
+   "MAT-ORGANISATION",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIE",
+   "MAT-LSDM"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/CAA/S2.jpg",
+  "matieres": [
+   "MAT-DROITCOMMERCIAL",
+   "MAT-INFORMATIQUE",
+   "MAT-ANALYSE",
+   "MAT-TECHB",
+   "MAT-FISCALITE",
+   "MAT-ANGLAIS",
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-ALLEMAND",
+   "MAT-COMPTAFI",
+   "MAT-ECONOMIE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/DTJA/S1.jpg",
+  "matieres": [
+   "MAT-MARKETING",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-ANGLAIS",
+   "MAT-LOGIQUE",
+   "MAT-DROITDETRAVAIL",
+   "MAT-INFORMATIQUE",
+   "MAT-DROITADMINISTRATIF",
+   "MAT-DROITCOMMERCIAL",
+   "MAT-DROITPENAL",
+   "MAT-ORGANISATION",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIE",
+   "MAT-DROITDESOBLIGATIONS"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/DTJA/S2.jpg",
+  "matieres": [
+   "MAT-DROITPENAL",
+   "MAT-DROITCOMMERCIAL",
+   "MAT-INFORMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-ANGLAIS",
+   "MAT-LOGIQUE",
+   "MAT-DROITDETRAVAIL",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-DROITADMINISTRATIF",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMII",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/EMII/S1.jpg",
+  "matieres": [
+   "MAT-MCI",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-INFORMATIQUE",
+   "MAT-ELECTRONIQUE",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-MAINTENANCE",
+   "MAT-OUVRAGESMETALLIQUES",
+   "MAT-FABRICATIONMECANIQUE",
+   "MAT-AUTOCAD",
+   "MAT-MECANIQUERATIONNELLE",
+   "MAT-METALLURGIE",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-ELECTRICITEINDUSTRIELLE",
+   "MAT-DESSIN",
+   "MAT-LSDM"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMII",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/EMII/S2.jpg",
+  "matieres": [
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ELECTRONIQUE",
+   "MAT-OUVRAGESMETALLIQUES",
+   "MAT-ELECTRICITEINDUSTRIELLE",
+   "MAT-MAINTENANCE",
+   "MAT-METALLURGIE",
+   "MAT-INFORMATIQUE",
+   "MAT-FABRICATIONMECANIQUE",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-MECANIQUERATIONNELLE",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-DESSIN",
+   "MAT-AUTOCAD",
+   "MAT-MCI"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/EMP/S1.jpg",
+  "matieres": [
+   "MAT-MARKETING",
+   "MAT-COMPTAFI",
+   "MAT-ANALYSE",
+   "MAT-ANGLAIS",
+   "MAT-MACROECONOMIE",
+   "MAT-INFORMATIQUE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-TECHBANCAIRE",
+   "MAT-CAE",
+   "MAT-ECONOMETRIE",
+   "MAT-ORGANISATION",
+   "MAT-ALLEMAND",
+   "MAT-MICROECONOMIE",
+   "MAT-LSNI"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/EMP/S2.jpg",
+  "matieres": [
+   "MAT-DROITCOMMERCIAL",
+   "MAT-INFORMATIQUE",
+   "MAT-ANALYSE",
+   "MAT-TECHB",
+   "MAT-FISCALITE",
+   "MAT-MICROECONOMIE",
+   "MAT-ANGLAIS",
+   "MAT-MACROECONOMIE",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMETRIE",
+   "MAT-COMPTAFI",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/ESIIA/S1.jpg",
+  "matieres": [
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-FIBRESOPTIQUES",
+   "MAT-LANGAGEC",
+   "MAT-ASSEMBLEUR",
+   "MAT-MSI",
+   "MAT-MSE",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-ELECTRONIQUE",
+   "MAT-JAVASCRIPT",
+   "MAT-STRUCTUREDESORDINATEURS",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-ANGLAIS"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/ESIIA/S2.jpg",
+  "matieres": [
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-LANGAGEC",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-STRUCTUREDESORDINATEURS",
+   "MAT-HARDWAREENMSI",
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-JAVASCRIPT",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MSE",
+   "MAT-MSI",
+   "MAT-JAVASD",
+   "MAT-MERISE",
+   "MAT-ASSEMBLEUR",
+   "MAT-ELECTRONIQUE",
+   "MAT-QUED",
+   "MAT-MAD"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/FIC/S1.jpg",
+  "matieres": [
+   "MAT-MARKETING",
+   "MAT-ANALYSE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-ANGLAIS",
+   "MAT-MATHFI",
+   "MAT-DROITDESOCIETE",
+   "MAT-INFORMATIQUE",
+   "MAT-TECHB",
+   "MAT-COMPTABILITENATIONALE",
+   "MAT-CAE",
+   "MAT-ORGANISATION",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIE",
+   "MAT-CDS",
+   "MAT-COMPTAFI"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/FIC/S2.jpg",
+  "matieres": [
+   "MAT-DROITDESSOCIETES",
+   "MAT-INFORMATIQUE",
+   "MAT-ANALYSE",
+   "MAT-TECHB",
+   "MAT-FISCALITE",
+   "MAT-CDS",
+   "MAT-ANGLAIS",
+   "MAT-MATHFI",
+   "MAT-ALLEMAND",
+   "MAT-COMPTAFI",
+   "MAT-ECONOMIE",
+   "MAT-FINANCEPUBLIQUE",
+   "MAT-CAE",
+   "MAT-MARKETING",
+   "MAT-ORGANISATION",
+   "MAT-COMPTANAT"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/GCA/S1.jpg",
+  "matieres": [
+   "MAT-BAEL",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-INFORMATIQUE",
+   "MAT-TOPOGRAPHIE",
+   "MAT-ELECTRICITEDESBATIMENTS",
+   "MAT-METRE",
+   "MAT-CONSTRUCTIONSMETALLIQUES",
+   "MAT-GEOLOGIEAPPLIQUEE",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-MECANIQUEDESSOLS",
+   "MAT-AUTOCAD",
+   "MAT-DESSIN",
+   "MAT-ROUTES",
+   "MAT-HYDRAULIQUEROUTIERE",
+   "MAT-TECHBAT",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-ASSAINISSEMENT",
+   "MAT-ASCAR"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/GCA/S2.jpg",
+  "matieres": [
+   "MAT-ROUTE",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-METRE",
+   "MAT-BAEL",
+   "MAT-ELECBAT",
+   "MAT-INFORMATIQUE",
+   "MAT-MECANIQUEDESSOLS",
+   "MAT-ASSAINISSEMENT",
+   "MAT-GEOLOGIEAPPLIQUEE",
+   "MAT-CONSTRUCTIONSMETALLIQUES",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-DESSIN",
+   "MAT-TECHBAT",
+   "MAT-AUTOCAD",
+   "MAT-HYDRAULIQUEROUTIERE"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/ICMP/S1.jpg",
+  "matieres": [
+   "MAT-THERMOCHIMIE",
+   "MAT-PETROCHIMIE",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-INFORMATIQUE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-CHIMIEMINERALE",
+   "MAT-PETROLOGIE",
+   "MAT-AUTOCAD",
+   "MAT-METALLURGIE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-ELECTRICITEINDUSTRIELLE",
+   "MAT-DESSIN",
+   "MAT-LSDM"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/ICMP/S2.jpg",
+  "matieres": [
+   "MAT-THERMOCHIMIE",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-PETROCHIMIE",
+   "MAT-METALLURGIE",
+   "MAT-INFORMATIQUE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-RESISTANCEDESMATERIAUX",
+   "MAT-PETROLOGIE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-DESSIN",
+   "MAT-ELECTRICITEINDUSTRIELLE",
+   "MAT-CHIMIEMINERALE",
+   "MAT-AUTOCAD",
+   "MAT-QUED"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIAA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/IGGLIA/S1.jpg",
+  "matieres": [
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-LANGAGEC",
+   "MAT-COMPTABILITE",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-TECHBANCAIRE",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-CAE",
+   "MAT-JAVASCRIPT",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-ANGLAIS",
+   "MAT-ASCAR"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/IGGLIA/S2.jpg",
+  "matieres": [
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-LANGAGEC",
+   "MAT-TECHB",
+   "MAT-COMPTABILITE",
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-JAVASCRIPT",
+   "MAT-CAE",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-JAVASD",
+   "MAT-TPINFORMATIQUE",
+   "MAT-QUED"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/IMTICIA/S1.jpg",
+  "matieres": [
+   "MAT-SON",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-LANGAGEC",
+   "MAT-TAV",
+   "MAT-PAO",
+   "MAT-MAO",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-TELECOMMUNICATIONS",
+   "MAT-JAVASCRIPT",
+   "MAT-PHOTO",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-ANGLAIS",
+   "MAT-TPINFORMATIQUE",
+   "MAT-ASCAR"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/IMTICIA/S2.jpg",
+  "matieres": [
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-LANGAGEC",
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-JAVASCRIPT",
+   "MAT-TPINFORMATIQUE",
+   "MAT-TAV",
+   "MAT-AVECESLIA2",
+   "MAT-JAVASD",
+   "MAT-NTT",
+   "MAT-MERISE",
+   "MAT-PHOTO",
+   "MAT-PAO",
+   "MAT-QUET"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/ISAIA/S1.jpg",
+  "matieres": [
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-LANGAGEC",
+   "MAT-MACROECONOMIE",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-MICROECONOMIE",
+   "MAT-STRUCTURESDEDONNEES",
+   "MAT-JAVASCRIPT",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-ANGLAIS",
+   "MAT-STATAPPLIQUEES",
+   "MAT-TPINFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/ISAIA/S2.jpg",
+  "matieres": [
+   "MAT-EQUATIONSDIFFERENTIELLES",
+   "MAT-ANALYSEHARMONIQUE",
+   "MAT-LANGAGEC",
+   "MAT-MICROECONOMIE",
+   "MAT-RESEAUXINFORMATIQUES",
+   "MAT-JAVASCRIPT",
+   "MAT-MACROECONOMIE",
+   "MAT-PHP",
+   "MAT-MERISE",
+   "MAT-JAVASD",
+   "MAT-STATAPP",
+   "MAT-TPINFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TEH",
+  "parcours_concernes": [
+   "TEH"
+  ],
+  "niveau": "L2",
+  "semestre": "S1",
+  "fichier": "L2/TEH/S1.jpg",
+  "matieres": [
+   "MAT-MARKETING",
+   "MAT-ECOLOGIEANIMALE",
+   "MAT-BOTANIQUE",
+   "MAT-ANGLAIS",
+   "MAT-SCIENCESDESALIMENTS",
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-TECHNIQUESDAGENCE",
+   "MAT-INFORMATIQUE",
+   "MAT-NUTRITIONHUMAINE",
+   "MAT-ENVIRONNEMENT",
+   "MAT-SITESTOURISTIQUES",
+   "MAT-ORGANISATION",
+   "MAT-HYGIENE",
+   "MAT-ALLEMAND",
+   "MAT-GEONAT",
+   "MAT-ECONOMIE",
+   "MAT-ARTCULINAIRE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TEH",
+  "parcours_concernes": [
+   "TEH"
+  ],
+  "niveau": "L2",
+  "semestre": "S2",
+  "fichier": "L2/TEH/S2.jpg",
+  "matieres": [
+   "MAT-INFORMATIQUE",
+   "MAT-ECOLOGIEANIMALE",
+   "MAT-BOTANIQUE",
+   "MAT-SCIENCEDESALIMENTS",
+   "MAT-SITESTOURISTIQUES",
+   "MAT-TECHNIQUESDAGENCE",
+   "MAT-ANGLAIS",
+   "MAT-TECHNIQUESDACCUEIL",
+   "MAT-HYGIENE",
+   "MAT-GEONAT",
+   "MAT-ALLEMAND",
+   "MAT-NUTRITIONHUMAINE",
+   "MAT-ENVIRONNEMENT",
+   "MAT-ARTCULINAIRE",
+   "MAT-MARKETING",
+   "MAT-ECONOMIE",
+   "MAT-ORGANISATION"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/AEE/S1.jpg",
+  "matieres": [
+   "MAT-ZOOTECHNIE",
+   "MAT-ANALYSE",
+   "MAT-HYDROBIOLOGIE",
+   "MAT-AGRONOMIE",
+   "MAT-NUTRITIONANIMALE",
+   "MAT-DEVELOPPEMENTRURAL",
+   "MAT-TCC",
+   "MAT-INFORMATIQUE",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-CULTUREFOURRAGERE",
+   "MAT-IMMUNOLOGIE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-BCT",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-PHYSIOLOGIEANIMALE",
+   "MAT-STAT",
+   "MAT-INS"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/AEE/S2.jpg",
+  "matieres": [
+   "MAT-NUTRITIONANIMALE",
+   "MAT-ANALYSE",
+   "MAT-HYDROBIOLOGIE",
+   "MAT-AGRONOMIE",
+   "MAT-DEVELOPPEMENTRURAL",
+   "MAT-TCC",
+   "MAT-STAT",
+   "MAT-ZOOTECHNIE",
+   "MAT-IMMUNOLOGIE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-BCT",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-PHYSIOLOGIEANIMALE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/CAA/S1.jpg",
+  "matieres": [
+   "MAT-CDS",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-MACROECONOMIE",
+   "MAT-TECHVENTES",
+   "MAT-ALLEMAND",
+   "MAT-RBE",
+   "MAT-TCI",
+   "MAT-INFORMATIQUE",
+   "MAT-DROITDESOCIETE",
+   "MAT-FISCALITE",
+   "MAT-ECONOMIE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-IQUE",
+   "MAT-ESNI"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/CAA/S2.jpg",
+  "matieres": [
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-CDS",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-MACROECONOMIE",
+   "MAT-TECHVENTES",
+   "MAT-RECHERCHEOPERATIONNEL",
+   "MAT-FISCALITE",
+   "MAT-RBE",
+   "MAT-ALLEMAND",
+   "MAT-GESTIONDEPROJET",
+   "MAT-ECONOMIE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-NEGOCIATIONCOMMERCIALE"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/DTJA/S1.jpg",
+  "matieres": [
+   "MAT-DLF",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-CONTRATADMIN",
+   "MAT-SOCIOLOGIE",
+   "MAT-DROITDESBIENS",
+   "MAT-FIPU",
+   "MAT-DIPU",
+   "MAT-DROITDELACONCURRENCE",
+   "MAT-ALLEMAND",
+   "MAT-PROCEDUREPENAL",
+   "MAT-DPS",
+   "MAT-INFORMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-DROITSOCIAL",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-LOGIQUEAPPLIQUEAUDROIT",
+   "MAT-COMPTABILITE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/DTJA/S2.jpg",
+  "matieres": [
+   "MAT-DLF",
+   "MAT-CONTRATADMIN",
+   "MAT-SOCIOLOGIE",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-FIPU",
+   "MAT-DIPU",
+   "MAT-DROITDESBIENS",
+   "MAT-DROITDELACONCURRENCE",
+   "MAT-FISCALITE",
+   "MAT-DPS",
+   "MAT-ALLEMAND",
+   "MAT-PROCEDUREPENALE",
+   "MAT-COMPTABILITE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-DROITSOCIAL"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMII",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/EMII/S1.jpg",
+  "matieres": [
+   "MAT-INFORMATIQUE",
+   "MAT-AUTOMATIQUE",
+   "MAT-OUVRAGEMETALLIQUE",
+   "MAT-DESSIN",
+   "MAT-TDS",
+   "MAT-MMC",
+   "MAT-EDP",
+   "MAT-RDM",
+   "MAT-METALLURGIE",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-TMM",
+   "MAT-MAINTENANCE",
+   "MAT-AERONAUTIQUE",
+   "MAT-CAPTEURS",
+   "MAT-GRAFCET",
+   "MAT-FABRICATIONMECANIQUE",
+   "MAT-RIEUR",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMI",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/EMII/S2.jpg",
+  "matieres": [
+   "MAT-INFORMATIQUE",
+   "MAT-OUVRAGEMETALLIQUE",
+   "MAT-GEOMETRIEANALYTIQUE",
+   "MAT-DESSIN",
+   "MAT-MMC",
+   "MAT-TDS",
+   "MAT-AUTOMATIQUE",
+   "MAT-RDM",
+   "MAT-ELECTRONIQUE",
+   "MAT-EDP",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-MAINTENANCE",
+   "MAT-CAPTEURS",
+   "MAT-AERONAUTIQUE",
+   "MAT-TMM",
+   "MAT-FABRICATIONMECANIQUE",
+   "MAT-GRAFCET"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/EMP/S1.jpg",
+  "matieres": [
+   "MAT-TECHCOMMUNICATION",
+   "MAT-ECONOMETRIE",
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-ECONOMIEDE",
+   "MAT-TECHVENTES",
+   "MAT-ECONOMIEINDUSTRIELLE",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-DEVELOPPEMENT",
+   "MAT-RBE",
+   "MAT-ALLEMAND",
+   "MAT-TCI",
+   "MAT-INFORMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-DROITDESOCIETE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-MATHSTAT",
+   "MAT-ESNI"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/EMP/S2.jpg",
+  "matieres": [
+   "MAT-TECHCOMMUNICATION",
+   "MAT-ECONOMETRIE",
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-ECONOMIEDE",
+   "MAT-RECHERCHEOPERATIONNEL",
+   "MAT-TECHVENTES",
+   "MAT-ECONOMIEINDUSTRIELLE",
+   "MAT-DEVELOPPEMENT",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-ALLEMAND",
+   "MAT-GESTIONDEPROJET",
+   "MAT-RBE",
+   "MAT-FISCALITE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-MATHSTAT"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/ESIIA/S1.jpg",
+  "matieres": [
+   "MAT-GESTIONDEPROJETS",
+   "MAT-AUTOMATIQUE",
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-TDS",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-COMPILATEURS",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-INFORMATIQUESCIENTIFIQUEIL",
+   "MAT-LINUX",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-UIUX",
+   "MAT-ONDESETPROPAGATIONS",
+   "MAT-LANGAGECSCHARP",
+   "MAT-CAPTEURS",
+   "MAT-ELECTRONIQUE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/ESIIA/S2.jpg",
+  "matieres": [
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-CODAGE",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-COMPILATEURS",
+   "MAT-TDS",
+   "MAT-AUTOMATIQUE",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-LINUX",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-INFORMATIQUESCIENTIFIQUELL",
+   "MAT-UIUX",
+   "MAT-CAPTEURS",
+   "MAT-ONDESETPROPAGATIONS",
+   "MAT-LANGAGECSCHARP",
+   "MAT-ELECTRONIQUE"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/FIC/S1.jpg",
+  "matieres": [
+   "MAT-TECHCOMMUNICATION",
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-CDS",
+   "MAT-MACROECONOMIE",
+   "MAT-TECHVENTES",
+   "MAT-RBE",
+   "MAT-ALLEMAND",
+   "MAT-TCI",
+   "MAT-INFORMATIQUE",
+   "MAT-DROITSOCIAL",
+   "MAT-FISCALITE",
+   "MAT-ECONOMIE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/FIC/S2.jpg",
+  "matieres": [
+   "MAT-GESTIONBUDGETAIRE",
+   "MAT-CDS",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-MACROECONOMIE",
+   "MAT-TECHVENTES",
+   "MAT-RECHERCHEOPERATIONNEL",
+   "MAT-FISCALITE",
+   "MAT-RBE",
+   "MAT-ALLEMAND",
+   "MAT-GESTIONDEPROJET",
+   "MAT-ECONOMIE",
+   "MAT-MARKETINGINTERNATIONAL"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/GCA/S1.jpg",
+  "matieres": [
+   "MAT-CDS",
+   "MAT-MECASOL",
+   "MAT-INFORMATIQUE",
+   "MAT-ROUTES",
+   "MAT-ARCHITECTURE",
+   "MAT-TDS",
+   "MAT-MMC",
+   "MAT-ETUDEDEPRIX",
+   "MAT-EDP",
+   "MAT-BAEL",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-MAQUETTE",
+   "MAT-RGP",
+   "MAT-ARCHICAD",
+   "MAT-AUTOCAD",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/GCA/S2.jpg",
+  "matieres": [
+   "MAT-MECASOL",
+   "MAT-GEOMETRIEANALYTIQUE",
+   "MAT-ROUTES",
+   "MAT-INFORMATIQUE",
+   "MAT-ETUDEDEPRIX",
+   "MAT-ARCHITECTURE",
+   "MAT-CDS",
+   "MAT-MMC",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-EDP",
+   "MAT-BAEL",
+   "MAT-AUTOCAD",
+   "MAT-RGP",
+   "MAT-GEOTECHNIE",
+   "MAT-CPP"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/IAA/S1.jpg",
+  "matieres": [
+   "MAT-BIOCHIMIEALIMENTAIRE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-ANALYSE",
+   "MAT-ELEVAGE",
+   "MAT-ADDITIFSALIMENTAIRES",
+   "MAT-SCIENCEDESALIMENTS",
+   "MAT-NUTRITIONHUMAINE",
+   "MAT-INFORMATIQUE",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-GENIEFERMENTAIRE",
+   "MAT-MICROBIOLOGIEALIMENTAIRE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-BCT",
+   "MAT-LAIT",
+   "MAT-STAT",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/IAA/S2.jpg",
+  "matieres": [
+   "MAT-BIOCHIMIEALIMENTAIRE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-ELEVAGE",
+   "MAT-ANALYSE",
+   "MAT-NUTRITIONHUMAINE",
+   "MAT-SCIENCEDESALIMENTS",
+   "MAT-ADDITIFSALIMENTAIRES",
+   "MAT-STAT",
+   "MAT-GENIEFERMENTAIRE",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-MICROBIOLOGIEALIMENTAIRE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-LAIT",
+   "MAT-TPBACTERIOLOGIEALIM",
+   "MAT-BCT"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/ICMP/S1.jpg",
+  "matieres": [
+   "MAT-CHIMIEMINERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-MMC",
+   "MAT-TDS",
+   "MAT-CARTOGRAPHIE",
+   "MAT-EDP",
+   "MAT-METALLURGIE",
+   "MAT-RDM",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-GEOLOGIEDEMSCAR",
+   "MAT-IQUE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/ICMP/S2.jpg",
+  "matieres": [
+   "MAT-THERMOPHYSIQUE",
+   "MAT-CHIMIEMINERALE",
+   "MAT-GEOMETRIEANALYTIQUE",
+   "MAT-INFORMATIQUE",
+   "MAT-CARTOGRAPHIE",
+   "MAT-TDS",
+   "MAT-MMC",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-EDP",
+   "MAT-METALLURGIE",
+   "MAT-RDM",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-GEOLOGIEDEMSCAR"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/IGGLIA/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIE",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-LINUX",
+   "MAT-CDS",
+   "MAT-UIUX",
+   "MAT-LANGAGECSCHARP"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/IGGLIA/S2.jpg",
+  "matieres": [
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-CODAGE",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-ECONOMIE",
+   "MAT-LINUX",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-UIUX",
+   "MAT-CDS",
+   "MAT-LANGAGECSCHARP"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/IMTICIA/S1.jpg",
+  "matieres": [
+   "MAT-TAV",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-TDS",
+   "MAT-NTT",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-COMPILATEURS",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-LINUX",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-UIUX",
+   "MAT-ONDESETPROPAGATIONS",
+   "MAT-MUSIQUE",
+   "MAT-LANGAGECSHARP",
+   "MAT-MAO",
+   "MAT-SON",
+   "MAT-IS",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/IMTICIA/S2.jpg",
+  "matieres": [
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-TDS",
+   "MAT-COMPILATEURS",
+   "MAT-TAV",
+   "MAT-LIN",
+   "MAT-LINUX",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-UIUX",
+   "MAT-ONDESETPROPAGATIONS",
+   "MAT-LANGAGECSHARP",
+   "MAT-SON"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/ISAIA/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEINDUSTRIELLE",
+   "MAT-GESTIONDEPROJETS",
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-ECONOMIEDE",
+   "MAT-TDS",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-COMPILATEURS",
+   "MAT-DEVELOPPEMENT",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-LINUX",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-UIUX",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-LANGAGECSHARP",
+   "MAT-MATHSTAT",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/ISAIA/S2.jpg",
+  "matieres": [
+   "MAT-GESTIONDEPROJETS",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-CODAGE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-ECONOMIEDE",
+   "MAT-TDS",
+   "MAT-ECONOMIEINDUSTRIELLE",
+   "MAT-COMPILATEURS",
+   "MAT-DEVELOPPEMENT",
+   "MAT-THEORIEDESNOMBRES",
+   "MAT-LINUX",
+   "MAT-INFORMATIQUESCIENTIFIQUE",
+   "MAT-ALGORITHMIQUEAVANCEE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-UIUX",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-LANGAGECSHARP",
+   "MAT-MATHSTAT"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/PIP/S1.jpg",
+  "matieres": [
+   "MAT-PHARMACOLOGIE",
+   "MAT-PHARMACOTECHNIE",
+   "MAT-ANALYSE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-MOLECULAIRE",
+   "MAT-ANATOMIEETPHYSIOLOGIEHUMAINE",
+   "MAT-PLANTESMEDICINALES",
+   "MAT-TOXICOLOGIEG",
+   "MAT-INFORMATIQUE",
+   "MAT-PHARMACOLOGIEDEGF",
+   "MAT-PHARMACOLOGIEGENERALE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-PHYSIOLOGIENUTRITIONNELLE",
+   "MAT-BIOCHIMIEMEDICALE",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-IMMUNOLOGIE",
+   "MAT-MICROBIOLOGIEMEDICALE",
+   "MAT-PHYSIOLOGIEMEDICALE",
+   "MAT-STAT",
+   "MAT-INS"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/PIP/S2.jpg",
+  "matieres": [
+   "MAT-PHARMACOLOGIEMOLECULAIRE",
+   "MAT-PHARMACOTECHNIE",
+   "MAT-ANALYSE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-ANATOMIEETPHYSIOLOGIEHUMAINE",
+   "MAT-PLANTESMEDICINALES",
+   "MAT-TOXICOLOGIEG",
+   "MAT-STAT",
+   "MAT-PHYSIOPATHOLOGIE",
+   "MAT-THERMOPHYSIQUE",
+   "MAT-PHYSIOLOGIENUTRITIONNELLE",
+   "MAT-PHARMACOLOGIEDEGF",
+   "MAT-PHARMACOLOGIEGENERALE",
+   "MAT-IMMUNOLOGIE",
+   "MAT-TRAITEMENTDESEAUX",
+   "MAT-BIOCHIMIEMEDICALE",
+   "MAT-MICROBIOLOGIEMEDICALE",
+   "MAT-PHYSIOLOGIEMEDICALE",
+   "MAT-TPBACTERIOLOGIE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TEH",
+  "parcours_concernes": [
+   "TEH"
+  ],
+  "niveau": "L3",
+  "semestre": "S1",
+  "fichier": "L3/TEH/S1.jpg",
+  "matieres": [
+   "MAT-GDRN",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-CIVILISATIONAPPLIQUEE",
+   "MAT-RECHERCHEPARTICIPATIVE",
+   "MAT-ARTCULINAIRE",
+   "MAT-GESTIONHOTELIERE",
+   "MAT-ECOTOURISME",
+   "MAT-ENVIRONNEMENT",
+   "MAT-ALLEMAND",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-TECHNORESTAU",
+   "MAT-INFORMATIQUE",
+   "MAT-DROITDESOCIETE",
+   "MAT-ECOMARINE",
+   "MAT-MARKETINGINTERNATIONAL",
+   "MAT-GEOGRAPHIEREGIONALE",
+   "MAT-COMPTABILITE",
+   "MAT-BOTANIQUE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TEH",
+  "parcours_concernes": [
+   "TEH"
+  ],
+  "niveau": "L3",
+  "semestre": "S2",
+  "fichier": "L3/TEH/S2.jpg",
+  "matieres": [
+   "MAT-RECHERCHEPARTICIPATIVE",
+   "MAT-GDRN",
+   "MAT-CIVILISATIONAPPLIQUEE",
+   "MAT-TECHCOMMUNICATION",
+   "MAT-ARTCULINAIRE",
+   "MAT-ENVIRONNEMENT",
+   "MAT-GESTIONHOTELIERE",
+   "MAT-ECOTOURISME",
+   "MAT-ECOMARINE",
+   "MAT-TECHNORESTAU",
+   "MAT-ALLEMAND",
+   "MAT-BOTANIQUE",
+   "MAT-COMPTABILITE",
+   "MAT-GEOGRAPHIEREGIONALE",
+   "MAT-MARKETINGINTERNATIONAL"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/AEE/S1.jpg",
+  "matieres": [
+   "MAT-BCT",
+   "MAT-MPI",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-AGRONOMIETROPICALE",
+   "MAT-IMMUNOCLINIQUE",
+   "MAT-PISCICULTURE",
+   "MAT-CULTUREINDUSTRIELLE",
+   "MAT-SERRICULTURE",
+   "MAT-ENTOMOLOGIE",
+   "MAT-EXPERIMENTATIONBIOMETRIQUE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-PHYTOPATHOLOGIE",
+   "MAT-APICULTURE",
+   "MAT-CULTURESDESPLANTESLEGUMINEUSES",
+   "MAT-AVICULTURE",
+   "MAT-PETITSRUMINANTS",
+   "MAT-HYDROLOGIEAPPLIQUEE"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/AEE/S2.jpg",
+  "matieres": [
+   "MAT-BCT",
+   "MAT-MPI",
+   "MAT-PETITSRUMINANTS",
+   "MAT-AGRONOMIETROPICALE",
+   "MAT-CULTURESDESPLANTESLEGUMINEUSES",
+   "MAT-CULTUREINDUSTRIELLE",
+   "MAT-PISCICULTURE",
+   "MAT-SERRICULTURE",
+   "MAT-CULTUREVIVRIERE",
+   "MAT-EXPERIMENTATIONBIOMETRIQUE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-APICULTURE",
+   "MAT-AVICULTURE",
+   "MAT-INFORMATIQUE",
+   "MAT-HYDROLOGIEAPPLIQUEE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/CAA/S1.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-SOCIOLOGIE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/CAA/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIERURALE",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-SOCIOLOGIE",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-INFORMATIQUE",
+   "MAT-FINANCEMATHEMATIQUE"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/DTJA/S1.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-REGIMESMATRIMONIAUX",
+   "MAT-PROCEDURECIVILE",
+   "MAT-DROITFONCIER",
+   "MAT-DPI",
+   "MAT-SCIENCESPOLITIQUES",
+   "MAT-VOIEDEXECUTION",
+   "MAT-DROITDESSOCIETES",
+   "MAT-DROITDELACOMMUNICATION",
+   "MAT-FISCALITE",
+   "MAT-DROITDESURETE",
+   "MAT-SOCIOLOGIE",
+   "MAT-CONTRATADMINISTRATIF",
+   "MAT-DIPU",
+   "MAT-DROITDESDOUANES",
+   "MAT-ARBITRAGE",
+   "MAT-DROITDESASSURANCES"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/DTJA/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIERURALE",
+   "MAT-ALLEMAND",
+   "MAT-REGIMESMATRIMONIAUX",
+   "MAT-MARKETING",
+   "MAT-DROITSDESSOCIETES",
+   "MAT-DROITDESSURETES",
+   "MAT-DPI",
+   "MAT-SCIENCESPOLITIQUES",
+   "MAT-DROITDELACOMMUNICATION",
+   "MAT-VOIEDEXECUTION",
+   "MAT-PROCEDUREPENALE",
+   "MAT-SOCIOLOGIE",
+   "MAT-DIPU",
+   "MAT-INFORMATIQUE",
+   "MAT-DROITDESDOUANES"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMII",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/EMII/S1.jpg",
+  "matieres": [
+   "MAT-VIBRATION",
+   "MAT-ELASTICITEETPLASTICITE",
+   "MAT-AERONAUTIQUE",
+   "MAT-PYTHON",
+   "MAT-TECHNOLOGIEFROID",
+   "MAT-METALLURGIE",
+   "MAT-AUTOMATIQUE",
+   "MAT-MAINTENANCEAVION",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-THERMODYNAMIQUE",
+   "MAT-MECANIQUEAPPLIQUEE",
+   "MAT-GRAFCET",
+   "MAT-ELEMENTSFINIS"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMI",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/EMII/S2.jpg",
+  "matieres": [
+   "MAT-MAINTENANCEAVION",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-MOTEURACOMBUSTIONINTERNE",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-TECHNOLOGIEFERROVIAIRE",
+   "MAT-GSM",
+   "MAT-MICROCONTROLEUR",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-ELECTRONIQUEDEPUISSANCE",
+   "MAT-VIBRATION",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-METALLURGIE"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/EMP/S1.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-SOCIOLOGIE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/EMP/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIERURALE",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-SOCIOLOGIE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-INFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/ESIIA/S1.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-RNA",
+   "MAT-GPI",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-AUTOMATIQUE",
+   "MAT-LINUX",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-ALGORITHMEAVANCEE",
+   "MAT-UML",
+   "MAT-ELECTRONIQUE",
+   "MAT-CODAGE",
+   "MAT-ONDESETPROPAGATIONS"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/ESIIA/S2.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-PROCESSUSSTOCHASTIQUE",
+   "MAT-GPI",
+   "MAT-RNA",
+   "MAT-AUTOMATIQUE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-LINUX",
+   "MAT-GLCIA",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-CODAGE",
+   "MAT-ELECTRONIQUE",
+   "MAT-ONDESETPROPAGATIONS",
+   "MAT-ALGORITHMIQUEAVANCEE"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/FIC/S1.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-FISCALITE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-SOCIOLOGIE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/FIC/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIERURALE",
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-MARKETING",
+   "MAT-CDS",
+   "MAT-RBE",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-TECHNIQUEDEVENTE",
+   "MAT-DCI",
+   "MAT-GESTIONPREVISIONNELLE",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-SOCIOLOGIE",
+   "MAT-ECONOMIEMONETAIRE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-INFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/GCA/S1.jpg",
+  "matieres": [
+   "MAT-AMENAGEMENT",
+   "MAT-ELASTICITEETPLASTICITE",
+   "MAT-AMENAGEMENTAGRICOLE",
+   "MAT-PYTHON",
+   "MAT-AEROPORTUAIRE",
+   "MAT-OSSATURESBOIS",
+   "MAT-CDS",
+   "MAT-METIERDESBATIMENTS",
+   "MAT-BAEL",
+   "MAT-FONDATION",
+   "MAT-HYDROLOGIE",
+   "MAT-MAINTENANCEDES",
+   "MAT-BETONPRECONTRAINT",
+   "MAT-MECANIQUESDESSOLS",
+   "MAT-ELEMENTSFINIS",
+   "MAT-BATIMENTS"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/GCA/S2.jpg",
+  "matieres": [
+   "MAT-AMENAGEMENTAEROPORTUAIRE",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-ROUTE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-PONT",
+   "MAT-AMENAGEMENTPORTUAIRE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-CALCULDESSTRUCTURES",
+   "MAT-GESTIONDECHANTIER",
+   "MAT-AMENAGEMENTHYDROAGRICOLE"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/IAA/S1.jpg",
+  "matieres": [
+   "MAT-BCT",
+   "MAT-MPI",
+   "MAT-FRUITSETLEGUMES",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-ADDITIFSALIMENTAIRES",
+   "MAT-PAT",
+   "MAT-TOXICOLOGIEALIMENTAIRE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-TECHNOLOGIEDESPROTEINES",
+   "MAT-SUCRE",
+   "MAT-MATIERESGRASSES",
+   "MAT-VIANDES",
+   "MAT-CHIMIEANALYTIQUE"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/IAA/S2.jpg",
+  "matieres": [
+   "MAT-BCT",
+   "MAT-PAT",
+   "MAT-MPI",
+   "MAT-TECHNOLOGIEDESPROTEINES",
+   "MAT-ADDITIFSALIMENTAIRES",
+   "MAT-TOXICOLOGIEALIMENTAIRE",
+   "MAT-SUCRE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-FRUITSETLEGUMES",
+   "MAT-MATIERESGRASSES",
+   "MAT-VIANDES",
+   "MAT-INFORMATIQUE",
+   "MAT-CHIMIEANALYTIQUE"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/ICMP/S1.jpg",
+  "matieres": [
+   "MAT-MPI",
+   "MAT-ELASTICITEETPLASTICITE",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-PYTHON",
+   "MAT-TECHNOLOGIESDES",
+   "MAT-METALLURGIE",
+   "MAT-CHROMATOGRAPHIE",
+   "MAT-MATERIAUX",
+   "MAT-SCIENCESETTECHNIQUE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-PETROLIERE",
+   "MAT-MINEAVANCEE",
+   "MAT-TECHNIQUEDEPROSPECTION"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/ICMP/S2.jpg",
+  "matieres": [
+   "MAT-MPI",
+   "MAT-ELASTICITEETPLASTICITE",
+   "MAT-PYTHON",
+   "MAT-TECHNIQUEDEPROSPECTION",
+   "MAT-SCIENCESETTECHNIQUEPETROLIERE",
+   "MAT-TECHNOLOGIESDESMATERIAUX",
+   "MAT-CHROMATOGRAPHIECHIMIEANALYTIQUE",
+   "MAT-METALLURGIE",
+   "MAT-CHIMIEINDUSTRIELLE",
+   "MAT-CHIMIEORGANIQUE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-MINEAVANCEE"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/IGGLIA/S1.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-RNA",
+   "MAT-GPI",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-LINUX",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-ALGORITHMEAVANCEE",
+   "MAT-UML",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-CODAGE",
+   "MAT-ISN"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/IGGLIA/S2.jpg",
+  "matieres": [
+   "MAT-CYBERSECURITE",
+   "MAT-ANGLAIS",
+   "MAT-GLCIA",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-THEORIEDESJEUX",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-SMA",
+   "MAT-MARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-DEVELOPPEMENTNATIVENET",
+   "MAT-DEEPLEARNING",
+   "MAT-METHODOLOGIEDERECHERCHESCIENTIFIQUE",
+   "MAT-CAR"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/IMTICIA/S1.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-RNA",
+   "MAT-GPI",
+   "MAT-SON",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-MODELISATIONGRAPHIQUE",
+   "MAT-LINUX",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-ALGORITHMEAVANCEE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-UML",
+   "MAT-MAO",
+   "MAT-MUSIQUE",
+   "MAT-CODAGE",
+   "MAT-ONDESETPROPAGATIONS"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/IMTICIA/S2.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-PROCESSUSSTOCHASTIQUE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-GPI",
+   "MAT-RNA",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-LINUX",
+   "MAT-GLCIA",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-CODAGE",
+   "MAT-ALGORITHMIQUEAVANCEE"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/ISAIA/S1.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-RNA",
+   "MAT-GPI",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-LINUX",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-ALGORITHMEAVANCEE",
+   "MAT-UML",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-CODAGE"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/ISAIA/S2.jpg",
+  "matieres": [
+   "MAT-GAFI",
+   "MAT-SGBDR",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-PROCESSUSSTOCHASTIQUE",
+   "MAT-GPI",
+   "MAT-RNA",
+   "MAT-ECONOMIEMATHEMATIQUE",
+   "MAT-CRYPTOGRAPHIE",
+   "MAT-LINUX",
+   "MAT-GLCIA",
+   "MAT-INTELLIGENCEARTIFICIELLE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-FINANCEMATHEMATIQUE",
+   "MAT-CODAGE",
+   "MAT-ALGORITHMIQUEAVANCEE"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/PIP/S1.jpg",
+  "matieres": [
+   "MAT-MPI",
+   "MAT-BACTERIOLOGIEMEDICALE",
+   "MAT-BIOCOMPUTATIONNELLE",
+   "MAT-SEMEIOLOGIEBIOCHIMIQUE",
+   "MAT-PHYSIOPATHOLOGIE",
+   "MAT-GENIEINDUSTRIEL",
+   "MAT-IMMUNOCLINIQUE",
+   "MAT-IMMUNOPATHOLOGIE",
+   "MAT-PHARMACOLOGIEMOLECULAIREETCELLULAIRE",
+   "MAT-PHARMACOTECHNIE",
+   "MAT-PHARMACOCINETIQUE",
+   "MAT-BIOLNFORMATIQUE",
+   "MAT-PHARMACOLOGIEDESGRANDESFONCTIONS",
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-TOXICODYNAMIE"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/PIP/S2.jpg",
+  "matieres": [
+   "MAT-MPI",
+   "MAT-BACTERIOLOGIEMEDICALE",
+   "MAT-SEMEIOLOGIEBIOCHIMIQUE",
+   "MAT-IMMUNOCLINIQUE",
+   "MAT-GENIEINDUSTRIEL",
+   "MAT-PHYSIOPATHOLOGIE",
+   "MAT-PHYTOCHIMIE",
+   "MAT-IMMUNOPATHOLOGIE",
+   "MAT-PHARMACOLOGIEMOLECULAIREETCELLULAIRE",
+   "MAT-PHARMACOCINETIQUE",
+   "MAT-BIOINFORMATIQUE",
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-PHARMACOLOGIEDESGRANDESFONCTIONS",
+   "MAT-PHARMACOTECHNIE",
+   "MAT-INFORMATIQUE",
+   "MAT-TOXICODYNAMIE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TOUR",
+  "parcours_concernes": [
+   "TEE",
+   "TEH"
+  ],
+  "niveau": "M1",
+  "semestre": "S1",
+  "fichier": "M1/TEH/S1.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-CIVILISATIONAPPLIQUEE",
+   "MAT-GEOGRAPHIEHISTOIRE",
+   "MAT-ECOLOGIEMARINE",
+   "MAT-ECOTOURISME",
+   "MAT-GDRN",
+   "MAT-ENVIRONNEMENT",
+   "MAT-SOCIOLOGIE",
+   "MAT-ARTCULINAIRE",
+   "MAT-BOTANIQUE"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TOUR",
+  "parcours_concernes": [
+   "TEE",
+   "TEH"
+  ],
+  "niveau": "M1",
+  "semestre": "S2",
+  "fichier": "M1/TEH/S2.jpg",
+  "matieres": [
+   "MAT-ALLEMAND",
+   "MAT-ECONOMIEBLEU",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARKETING",
+   "MAT-GDRN",
+   "MAT-CIVILISATIONAPPLIQUEE",
+   "MAT-GEOGRAPHIENATIONALE",
+   "MAT-ECOLOGIEMARINE",
+   "MAT-ECOTOURISME",
+   "MAT-ENVIRONNEMENT",
+   "MAT-SOCIOLOGIE",
+   "MAT-ARTCULINAIRE",
+   "MAT-INFORMATIQUE",
+   "MAT-BOTANIQUE"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/AEE/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-PROTECTIONINTEGREEDESCULTURESETDENREES",
+   "MAT-AGROECOLOGIE",
+   "MAT-ANGLAIS",
+   "MAT-METHODOLOGIEDESRECHERCHES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-EXPERIMENTALES",
+   "MAT-VULGARISATIONAGRICOLEETANIMATIONRURALE",
+   "MAT-AGRICULTUREBIOLOGIQUE",
+   "MAT-CULTUREINDUSTRIELLEDEXPORTATION",
+   "MAT-ELEVAGEBOVIN",
+   "MAT-MANAGEMENT",
+   "MAT-CREVETTICULTURE",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-PORCICULTURE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-ARBORICULTUREFRUITIERE"
+  ]
+ },
+ {
+  "parcours": "AEE",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "AEE"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/AEE/S2.jpg",
+  "matieres": [
+   "MAT-AGROECOLOGIE",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-METHODOLOGIEDESRECHERCHES",
+   "MAT-EXPERIMENTALES",
+   "MAT-VULGARISATIONAGRICOLEET",
+   "MAT-ETUDEDIMPACT",
+   "MAT-AGRICULTUREBIOLOGIQUE",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-ANIMATIONRURALE",
+   "MAT-CULTUREINDUSTRIELLE",
+   "MAT-ARBORICULTUREFRUITIERE",
+   "MAT-DEXPORTATION",
+   "MAT-PROTECTIONINTEGREEDES",
+   "MAT-ELEVAGEBOVIN",
+   "MAT-MANAGEMENT",
+   "MAT-CULTURESETDENREES",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-CREVETTICULTURE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-PORCICULTURE",
+   "MAT-CULTURESDERENTES"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/CAA/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEDE",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-MARKETING",
+   "MAT-LENVIRONNEMENT",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-DCI",
+   "MAT-CDSII",
+   "MAT-MARCHEPUBLIC",
+   "MAT-ECONOMIERURALE",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-MANAGEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "CAA",
+  "classe_imprimee": "CAA",
+  "parcours_concernes": [
+   "CAA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/CAA/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-MARKETING",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-GESTIONDEPROJETDEDEVELOPPEMENT",
+   "MAT-DCI",
+   "MAT-CDSII",
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-NEUROMARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ECONOMIERURALE",
+   "MAT-LERECTEU"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/DTJA/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEDE",
+   "MAT-GESTIONDESAFFAIRES",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-MARKETING",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-LENVIRONNEMENT",
+   "MAT-PUBLIQUES",
+   "MAT-DROITDELAPROCEDURE",
+   "MAT-COLLECTIVE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-ECONOMIERURALE",
+   "MAT-MANAGEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-DROITDELENVIRONNEMENT",
+   "MAT-DROITFONCIER",
+   "MAT-DROITMINIER",
+   "MAT-CONTRATDENTREPRISE",
+   "MAT-EUR"
+  ]
+ },
+ {
+  "parcours": "DTJA",
+  "classe_imprimee": "DTJA",
+  "parcours_concernes": [
+   "DTJA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/DTJA/S2.jpg",
+  "matieres": [
+   "MAT-GESTIONDESAFFAIRESPUBLIQUES",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-MARKETING",
+   "MAT-GEOPOLITIQUE",
+   "MAT-CONTRATDENTREPRISE",
+   "MAT-DROITDELAPROCEDURECOLLECTIVE",
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-DROITMINIER",
+   "MAT-DROITFONCIER",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ECONOMIERURALE"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMI",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/EMII/S1.jpg",
+  "matieres": [
+   "MAT-METALLURGIE",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-ANGLAIS",
+   "MAT-MAINTENANCEAVION",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-ETUDEDIMPACT",
+   "MAT-VIBRATION",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-MOTEURACOMBUSTION",
+   "MAT-MARCHEPUBLIC",
+   "MAT-TECHNOLOGIEFERROVIAIRE",
+   "MAT-MANAGEMENT",
+   "MAT-ELECTRONIQUEDEPUISSANCE",
+   "MAT-INTERNE",
+   "MAT-MICROCONTROLEUR",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-GSM"
+  ]
+ },
+ {
+  "parcours": "EMII",
+  "classe_imprimee": "EMI",
+  "parcours_concernes": [
+   "EMII"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/EMII/S2.jpg",
+  "matieres": [
+   "MAT-MAINTENANCEAVION",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-MOTEURACOMBUSTIONINTERNE",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-TECHNOLOGIEFERROVIAIRE",
+   "MAT-GSM",
+   "MAT-MICROCONTROLEUR",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-ELECTRONIQUEDEPUISSANCE",
+   "MAT-VIBRATION",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-METALLURGIE"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/EMP/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEDE",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-MARKETING",
+   "MAT-LENVIRONNEMENT",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-DCI",
+   "MAT-CDSII",
+   "MAT-MARCHEPUBLIC",
+   "MAT-ECONOMIERURALE",
+   "MAT-NEUROMARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "EMP",
+  "classe_imprimee": "EMP",
+  "parcours_concernes": [
+   "EMP"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/EMP/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-MARKETING",
+   "MAT-GESTIONDEPROJETDE",
+   "MAT-DCI",
+   "MAT-CDSII",
+   "MAT-DEVELOPPEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-ECONOMIERURALE",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/ESIIA/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-GLCIA",
+   "MAT-CYBERSECURITE",
+   "MAT-ANGLAIS",
+   "MAT-MACHINELEARNINGI",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-MARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-ELECTRONIQUEDEPUISSANCE",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-GSM",
+   "MAT-DEEPLEARNING",
+   "MAT-ANALYSEORIENTEEOBJET",
+   "MAT-MICROCONTROLEUR",
+   "MAT-EUR"
+  ]
+ },
+ {
+  "parcours": "ESIIA",
+  "classe_imprimee": "ESIIA",
+  "parcours_concernes": [
+   "ESIIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/ESIIA/S2.jpg",
+  "matieres": [
+   "MAT-CYBERSECURITE",
+   "MAT-ANGLAIS",
+   "MAT-GLCIA",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-THEORIEDESJEUX",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-GSM",
+   "MAT-MICROCONTROLEUR",
+   "MAT-SMA",
+   "MAT-MARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-ELECTRONIQUEDEPUISSANCE",
+   "MAT-DEVELOPPEMENTNATIVENET",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-DEEPLEARNING",
+   "MAT-METHODOLOGIEDERECHERCHESCIENTIFIQUE",
+   "MAT-CONTRATINFORMATIQUE"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/FIC/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-MARKETING",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-DCI",
+   "MAT-CDSII",
+   "MAT-MARCHEPUBLIC",
+   "MAT-ECONOMIERURALE",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-MANAGEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-ANALYSEFINANCIERE"
+  ]
+ },
+ {
+  "parcours": "FIC",
+  "classe_imprimee": "FIC",
+  "parcours_concernes": [
+   "FIC"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/FIC/S2.jpg",
+  "matieres": [
+   "MAT-ECONOMIEINTERNATIONALE",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-MARKETING",
+   "MAT-DCI",
+   "MAT-GESTIONDEPROJETDEDEVELOPPEMENT",
+   "MAT-CDSII",
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-NEUROMARKETING",
+   "MAT-ANALYSEFINANCIERE",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ECONOMIERURALE",
+   "MAT-SNL"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/GCA/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-AMENAGEMENT",
+   "MAT-ANGLAIS",
+   "MAT-HYDROAGRICOLE",
+   "MAT-AEROPORTUAIRE",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-ROUTE",
+   "MAT-ROBOBAT",
+   "MAT-CALCULDESSTRUCTURES",
+   "MAT-PONT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-GESTIONDECHANTIER",
+   "MAT-MANAGEMENT",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-REVITMODELISATION",
+   "MAT-INFORMATIQUE",
+   "MAT-AMENAGEMENTPORTUAIRE",
+   "MAT-ARCHITECTURALE",
+   "MAT-MADA"
+  ]
+ },
+ {
+  "parcours": "GCA",
+  "classe_imprimee": "GCA",
+  "parcours_concernes": [
+   "GCA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/GCA/S2.jpg",
+  "matieres": [
+   "MAT-AMENAGEMENTAEROPORTUAIRE",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-TPELEMENTSFINIS",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-ROUTE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-PONT",
+   "MAT-AMENAGEMENTPORTUAIRE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-CALCULDESSTRUCTURES",
+   "MAT-GESTIONDECHANTIER",
+   "MAT-AMENAGEMENTHYDROAGRICOLE"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/IAA/S1.jpg",
+  "matieres": [
+   "MAT-TECHNOLOGIEET",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-METHODOLOGIEDES",
+   "MAT-ANGLAIS",
+   "MAT-TECHNOLOGIEDESPECTINES",
+   "MAT-TRANSFORMATIONDUCAFEET",
+   "MAT-RECHERCHES",
+   "MAT-CACAO",
+   "MAT-EXPERIMENTALES",
+   "MAT-ETUDEDIMPACT",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-MANAGEMENT",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-EMBALLAGEALIMENTAIRE",
+   "MAT-ECONOMIEGENERALE"
+  ]
+ },
+ {
+  "parcours": "IAA",
+  "classe_imprimee": "IAA",
+  "parcours_concernes": [
+   "IAA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/IAA/S2.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-ANGLAIS",
+   "MAT-TECHNOLOGIEDESPECTINES",
+   "MAT-METHODOLOGIEDESRECHERCHES",
+   "MAT-EXPERIMENTALES",
+   "MAT-ETUDEDIMPACT",
+   "MAT-GENIEINDUSTRIELALIMENTAIRE",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-TECHNOLOGIEET",
+   "MAT-MANAGEMENT",
+   "MAT-TRANSFORMATIONDUCAFEET",
+   "MAT-CACAO",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-EMBALLAGEALIMENTAIRE",
+   "MAT-ECONOMIEGENERALE"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/ICMP/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-METALLURGIE",
+   "MAT-CHIMIEVERTE",
+   "MAT-ANGLAIS",
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-TECHNOLOGIEDESMATERIAUX",
+   "MAT-RESSOURCESMINIERES",
+   "MAT-PHYSIQUENUCLEAIRE",
+   "MAT-MANAGEMENT",
+   "MAT-TPSYSTEMEDINFORMATION",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-GEOGRAPHIQUE",
+   "MAT-DROITMINIER"
+  ]
+ },
+ {
+  "parcours": "ICMP",
+  "classe_imprimee": "ICMP",
+  "parcours_concernes": [
+   "ICMP"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/ICMP/S2.jpg",
+  "matieres": [
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-TPSYSTEMEDINFORMATIONGEOGRAPHIQUE",
+   "MAT-MECANIQUEDESFLUIDES",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-CHIMIEVERTE",
+   "MAT-QHSE",
+   "MAT-TPINFORMATIQUE",
+   "MAT-RESSOURCESMINIERES",
+   "MAT-MANAGEMENT",
+   "MAT-PHYSIQUENUCLEAIRE",
+   "MAT-DROITMINIER",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-INFORMATIQUE",
+   "MAT-TECHNOLOGIEDESMATERIAUX",
+   "MAT-METALLURGIE",
+   "MAT-SNI"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/IGGLIA/S1.jpg",
+  "matieres": [
+   "MAT-GLCIA",
+   "MAT-ANGLAIS",
+   "MAT-CYBERSECURITE",
+   "MAT-MACHINELEARNINGL",
+   "MAT-ODIA",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-MARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-CONTRATINFORMATIQUE",
+   "MAT-DEEPLEARNING",
+   "MAT-ANALYSEORIENTEEOBJET"
+  ]
+ },
+ {
+  "parcours": "IGGLIA",
+  "classe_imprimee": "IGGIIA",
+  "parcours_concernes": [
+   "IGGLIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/IGGLIA/S2.jpg",
+  "matieres": [
+   "MAT-CYBERSECURITE",
+   "MAT-ANGLAIS",
+   "MAT-GLCIA",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-THEORIEDESJEUX",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-SMA",
+   "MAT-MARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-DEVELOPPEMENTNATIVENET",
+   "MAT-DEEPLEARNING",
+   "MAT-METHODOLOGIEDERECHERCHESCIENTIFIQUE",
+   "MAT-CAR"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/IMTICIA/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-GLCIA",
+   "MAT-CYBERSECURITE",
+   "MAT-ANGLAIS",
+   "MAT-MACHINELEARNINGII",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-MARKETING",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-MANAGEMENT",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-TECHNIQUEAUDIOVISUELLE",
+   "MAT-DEEPLEARNING",
+   "MAT-ANALYSEORIENTEEOBJET",
+   "MAT-MUSIQUEMAO"
+  ]
+ },
+ {
+  "parcours": "IMTICIA",
+  "classe_imprimee": "IMTICIA",
+  "parcours_concernes": [
+   "IMTICIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/IMTICIA/S2.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-GLCIA",
+   "MAT-ANGLAIS",
+   "MAT-CYBERSECURITE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-THEORIEDESJEUX",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-TECHNIQUEAUDIOVISUELLE",
+   "MAT-MUSIQUEMAO",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-MANAGEMENT",
+   "MAT-MARKETING",
+   "MAT-SMA",
+   "MAT-METHODOLOGIEDERECHERCHE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-DEEPLEARNING",
+   "MAT-DEVELOPPEMENTNATIVENET",
+   "MAT-SCIENTIFIQUE",
+   "MAT-CONTRATINFORMATIQUE",
+   "MAT-LESDATESDESTRAVAUXPRATIQUESDINFORMATIQUE",
+   "MAT-ULTERIEUREMENT"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "ISAIA",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/ISAIA/S1.jpg",
+  "matieres": [
+   "MAT-GLCIA",
+   "MAT-ANGLAIS",
+   "MAT-CYBERSECURITE",
+   "MAT-MACHINELEARNINGIL",
+   "MAT-INFORMATIQUEDECISIONNELLE",
+   "MAT-ODIA",
+   "MAT-PROGRAMMATIONLOGIQUE",
+   "MAT-INFORMATIQUEQUANTIQUE",
+   "MAT-MARKETING",
+   "MAT-STRUCTURESDESORDINATEURS",
+   "MAT-RECHERCHEOPERATIONNELLE",
+   "MAT-MANAGEMENT",
+   "MAT-CONTRATINFORMATIQUE",
+   "MAT-DEEPLEARNING",
+   "MAT-ANALYSEORIENTEEOBJET",
+   "MAT-MAD"
+  ]
+ },
+ {
+  "parcours": "ISAIA",
+  "classe_imprimee": "AEE",
+  "parcours_concernes": [
+   "ISAIA"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/ISAIA/S2.jpg",
+  "matieres": [
+   "MAT-AGROECOLOGIE",
+   "MAT-ANGLAIS",
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-METHODOLOGIEDESRECHERCHES",
+   "MAT-EXPERIMENTALES",
+   "MAT-VULGARISATIONAGRICOLEET",
+   "MAT-ETUDEDIMPACT",
+   "MAT-AGRICULTUREBIOLOGIQUE",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-ANIMATIONRURALE",
+   "MAT-CULTUREINDUSTRIELLE",
+   "MAT-ARBORICULTUREFRUITIERE",
+   "MAT-DEXPORTATION",
+   "MAT-PROTECTIONINTEGREEDES",
+   "MAT-ELEVAGEBOVIN",
+   "MAT-MANAGEMENT",
+   "MAT-CULTURESETDENREES",
+   "MAT-SECURITEALIMENTAIRE",
+   "MAT-CREVETTICULTURE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-PORCICULTURE",
+   "MAT-CULTURESDERENTES"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/PIP/S1.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-INDUSTRIEPHARMACEUTIQUE",
+   "MAT-METHODOLOGIEDESRECHERCHESEXPERIMENTALES",
+   "MAT-ANGLAIS",
+   "MAT-ETHNOPHARMACOLOGIE",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-VIROLOGIEMEDICALE",
+   "MAT-PHYTOCHIMIE",
+   "MAT-PHARMACOCINETIQUE",
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-MANAGEMENT",
+   "MAT-PHYSIOPATHOLOGIE",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-PHARMACOLOGIEMOLECULAIREETCELLULAIRELL",
+   "MAT-EUR"
+  ]
+ },
+ {
+  "parcours": "PIP",
+  "classe_imprimee": "PIP",
+  "parcours_concernes": [
+   "PIP"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/PIP/S2.jpg",
+  "matieres": [
+   "MAT-COMPTABILITEGENERALE",
+   "MAT-ANGLAIS",
+   "MAT-ETHNOPHARMACOLOGIE",
+   "MAT-METHODOLOGIEDESRECHERCHES",
+   "MAT-EXPERIMENTALES",
+   "MAT-ETUDEDIMPACT",
+   "MAT-VIROLOGIEMEDICALE",
+   "MAT-ENVIRONNEMENTAL",
+   "MAT-INDUSTRIEPHARMACEUTIQUE",
+   "MAT-PHYSIOPATHOLOGIE",
+   "MAT-CHIMIEANALYTIQUE",
+   "MAT-MANAGEMENT",
+   "MAT-PHYTOCHIMIE",
+   "MAT-PHARMACOLOGIEMOLECULAIREET",
+   "MAT-ECONOMIEGENERALE",
+   "MAT-PHARMACOCINETIQUE",
+   "MAT-CELLULAIREII"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TOUR",
+  "parcours_concernes": [
+   "TEE",
+   "TEH"
+  ],
+  "niveau": "M2",
+  "semestre": "S1",
+  "fichier": "M2/TEH/S1.jpg",
+  "matieres": [
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-GESTIONDURABLEDESRESSOURCESNATURELLES",
+   "MAT-MARKETING",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-ECOTOURISME",
+   "MAT-ENVIRONNEMENT",
+   "MAT-ECOLOGIEMARINE",
+   "MAT-NEUROMARKETING",
+   "MAT-ECONOMIERURALE",
+   "MAT-MARCHEPUBLIC",
+   "MAT-MANAGEMENT",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-DROITDELENVIRONNEMENT",
+   "MAT-ARTCULINAIRE",
+   "MAT-CIVILISATIONAPPLIQUEEAUTOURISMEI"
+  ]
+ },
+ {
+  "parcours": "TEH",
+  "classe_imprimee": "TOUR",
+  "parcours_concernes": [
+   "TEE",
+   "TEH"
+  ],
+  "niveau": "M2",
+  "semestre": "S2",
+  "fichier": "M2/TEH/S2.jpg",
+  "matieres": [
+   "MAT-GESTIONDURABLEDESRESSOURCESNATURELLES",
+   "MAT-GESTIONDENTREPRISE",
+   "MAT-POLITIQUEECONOMIQUE",
+   "MAT-MARKETING",
+   "MAT-CIVILISATIONAPPLIQUEEAU",
+   "MAT-ETUDEDIMPACTENVIRONNEMENTAL",
+   "MAT-TYPOLOGIEDELENVIRONNEMENT",
+   "MAT-ENVIRONNEMENT",
+   "MAT-TOURISMEIII",
+   "MAT-ARTCULINAIRE",
+   "MAT-ECONOMIEDELENVIRONNEMENT",
+   "MAT-MARCHEPUBLIC",
+   "MAT-NEUROMARKETING",
+   "MAT-MANAGEMENT",
+   "MAT-ECOLOGIEMARINE",
+   "MAT-ECOTOURISME",
+   "MAT-PSYCHOSOCIOLOGIE",
+   "MAT-ECONOMIERURALE"
+  ]
+ }
+]

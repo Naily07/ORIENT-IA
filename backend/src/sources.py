@@ -9,6 +9,7 @@ contrôle qu'aucune entrée du corpus ne référence une source absente du
 registre.
 """
 
+import functools
 import json
 from datetime import date
 from typing import Literal
@@ -42,6 +43,25 @@ def charger_registre_sources(
         return []
     with open(chemin, encoding="utf-8") as f:
         return [EntreeRegistreSource.model_validate(e) for e in json.load(f)]
+
+
+@functools.lru_cache(maxsize=1)
+def _index_registre() -> dict[str, EntreeRegistreSource]:
+    """Registre indexé par identifiant, chargé une fois par processus."""
+    return {entree.id: entree for entree in charger_registre_sources()}
+
+
+def statut_de_source(source_id: str | None) -> StatutSource | None:
+    """Statut déclaré d'une source du registre, ou `None` si inconnue.
+
+    Permet au reste du pipeline (RAG, agent) de distinguer une information
+    officielle d'une information externe **au moment de la citer**. Sans cela,
+    la règle non négociable du §4 (« une information non vérifiée ne devra pas
+    être présentée comme une information officielle ») ne serait vérifiable
+    qu'à la main, en relisant le registre.
+    """
+    entree = _index_registre().get(source_id) if source_id else None
+    return entree.statut if entree else None
 
 
 def verifier_provenance(

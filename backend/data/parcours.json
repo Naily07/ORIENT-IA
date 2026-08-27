@@ -79,7 +79,13 @@
       "MAT-CONTRATINFORMATIQUE",
       "MAT-ANALYSEORIENTEEOBJET"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-DEVELOPPEUR-WEB-MOBILE",
+      "MET-INGENIEUR-GENIE-LOGICIEL",
+      "MET-CONSULTANT-IA",
+      "MET-ADMINISTRATEUR-DE-BASE-DE-DONNEES",
+      "MET-CHEF-DE-PROJET-INFORMATIQUE"
+    ]
   },
   {
     "id": "ESIIA",
@@ -170,7 +176,12 @@
       "MAT-METHODOLOGIEDERECHERCHESCIENTIFIQUE",
       "MAT-CONTRATINFORMATIQUE"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-ELECTRONIQUE",
+      "MET-ADMINISTRATEUR-RESEAUX-TELECOMS",
+      "MET-INGENIEUR-SYSTEMES-EMBARQUES",
+      "MET-SPECIALISTE-IOT-IA-MATERIELLE"
+    ]
   },
   {
     "id": "IMTICIA",
@@ -266,7 +277,12 @@
       "MAT-LESDATESDESTRAVAUXPRATIQUESDINFORMATIQUE",
       "MAT-ULTERIEUREMENT"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-DEVELOPPEUR-MULTIMEDIA-WEB",
+      "MET-DESIGNER-UI-UX",
+      "MET-INGENIEUR-TELECOM-TIC",
+      "MET-SPECIALISTE-MEDIA-NUMERIQUE-IA"
+    ]
   },
   {
     "id": "ISAIA",
@@ -369,7 +385,12 @@
       "MAT-PORCICULTURE",
       "MAT-CULTURESDERENTES"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-DATA-SCIENTIST-DATA-ANALYST",
+      "MET-INGENIEUR-EN-STATISTIQUE-APPLIQUEE",
+      "MET-ACTUAIRE",
+      "MET-ANALYSTE-QUANTITATIF-BANQUES-ASSURANCES"
+    ]
   },
   {
     "id": "EMII",
@@ -440,7 +461,12 @@
       "MAT-MOTEURACOMBUSTION",
       "MAT-INTERNE"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-ELECTROMECANIQUE",
+      "MET-RESPONSABLE-DE-MAINTENANCE-INDUSTRIELLE",
+      "MET-INGENIEUR-EN-AUTOMATISME-ROBOTIQUE",
+      "MET-CHEF-DE-PROJET-INDUSTRIEL"
+    ]
   },
   {
     "id": "ICMP",
@@ -518,7 +544,12 @@
       "MAT-QHSE",
       "MAT-TPINFORMATIQUE"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-PROCEDES-CHIMIQUES",
+      "MET-INGENIEUR-MINIER",
+      "MET-INGENIEUR-PETROLIER",
+      "MET-RESPONSABLE-QUALITE-SECURITE-INDUSTRIELLE"
+    ]
   },
   {
     "id": "GCA",
@@ -609,7 +640,13 @@
       "MAT-ARCHITECTURALE",
       "MAT-MADA"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-GENIE-CIVIL",
+      "MET-ARCHITECTE-PROJETEUR",
+      "MET-CONDUCTEUR-DE-TRAVAUX",
+      "MET-EXPERT-EN-BTP",
+      "MET-URBANISTE"
+    ]
   },
   {
     "id": "CAA",
@@ -684,7 +721,12 @@
       "MAT-ECONOMIEDELENVIRONNEMENT",
       "MAT-LERECTEU"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-RESPONSABLE-MARKETING-COMMERCIAL",
+      "MET-MANAGER-DES-VENTES",
+      "MET-CHEF-DE-PRODUIT",
+      "MET-CONSULTANT-EN-STRATEGIE-D-ENTREPRISE"
+    ]
   },
   {
     "id": "FIC",
@@ -757,7 +799,12 @@
       "MAT-GESTIONDEPROJETDEDEVELOPPEMENT",
       "MAT-SNL"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-COMPTABLE-CHEF-COMPTABLE",
+      "MET-AUDITEUR-FINANCIER",
+      "MET-CONTROLEUR-DE-GESTION",
+      "MET-DIRECTEUR-FINANCIER-CFO"
+    ]
   },
   {
     "id": "DTJA",
@@ -844,7 +891,12 @@
       "MAT-DROITDELAPROCEDURECOLLECTIVE",
       "MAT-ECONOMIEDELENVIRONNEMENT"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-JURISTE-D-ENTREPRISE",
+      "MET-CONSEILLER-JURIDIQUE",
+      "MET-SPECIALISTE-CONTENTIEUX-CONTRATS",
+      "MET-CONSULTANT-EN-DROIT-DES-AFFAIRES"
+    ]
   },
   {
     "id": "EMP",
@@ -920,7 +972,12 @@
       "MAT-ECONOMIEDELENVIRONNEMENT",
       "MAT-SNI"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-CHEF-DE-PROJET-ONG-ENTREPRISES",
+      "MET-ANALYSTE-ECONOMIQUE",
+      "MET-CONSULTANT-EN-DEVELOPPEMENT",
+      "MET-RESPONSABLE-PLANIFICATION"
+    ]
   },
   {
     "id": "IAA",
@@ -1002,7 +1059,12 @@
       "MAT-METHODOLOGIEDESRECHERCHES",
       "MAT-GENIEINDUSTRIELALIMENTAIRE"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-AGROALIMENTAIRE",
+      "MET-RESPONSABLE-QUALITE-SECURITE-ALIMENTAIRE",
+      "MET-CHEF-DE-PRODUCTION-ALIMENTAIRE",
+      "MET-CHERCHEUR-EN-R-D-ALIMENTAIRE"
+    ]
   },
   {
     "id": "PIP",
@@ -1093,7 +1155,12 @@
       "MAT-PHARMACOLOGIEMOLECULAIREET",
       "MAT-CELLULAIREII"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-PHARMACOLOGUE",
+      "MET-RESPONSABLE-LABO-PHARMACEUTIQUE",
+      "MET-CHERCHEUR-EN-PHYTO-MEDICAMENTS",
+      "MET-CONTROLEUR-DE-QUALITE-MEDICAMENTEUSE"
+    ]
   },
   {
     "id": "AEE",
@@ -1187,7 +1254,12 @@
       "MAT-CULTURESETDENREES",
       "MAT-CULTURESDERENTES"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-INGENIEUR-AGRONOME",
+      "MET-CONSEILLER-AGRICOLE",
+      "MET-PROMOTEUR-AGRI-BUSINESS",
+      "MET-CHEF-D-EXPLOITATION-AGRICOLE-ELEVAGE"
+    ]
   },
   {
     "id": "TEE",
@@ -1228,7 +1300,12 @@
       "MAT-TYPOLOGIEDELENVIRONNEMENT",
       "MAT-TOURISMEIII"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-GUIDE-ECOTOURISTIQUE",
+      "MET-GESTIONNAIRE-DE-RESERVES-PARCS",
+      "MET-CHEF-DE-PROJET-ECOTOURISME",
+      "MET-CONSULTANT-ENVIRONNEMENT-TOURISME"
+    ]
   },
   {
     "id": "TEH",
@@ -1295,6 +1372,11 @@
       "MAT-TYPOLOGIEDELENVIRONNEMENT",
       "MAT-TOURISMEIII"
     ],
-    "debouches": []
+    "debouches": [
+      "MET-MANAGER-D-HOTEL-RESORT",
+      "MET-DIRECTEUR-DE-RESTAURATION",
+      "MET-ORGANISATEUR-D-EVENEMENTS-MICE",
+      "MET-AGENT-DE-VOYAGES-TOUR-OPERATEUR"
+    ]
   }
 ]

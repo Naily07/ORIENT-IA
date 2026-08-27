@@ -1,5 +1,19 @@
 [
   {
+    "id": "SRC-GUIDE-FILIERES-GENERE",
+    "titre": "Guide de correspondance Bac ↔ filières ISPM (débouchés par filière), généré automatiquement",
+    "url": "fichier local généré automatiquement (grand modèle de langage), sans URL d'origine vérifiable",
+    "date_consultation": "2026-08-27",
+    "statut": "externe",
+    "donnees_extraites": [
+      "Intitulés de débouchés (métiers) par filière, pour les 16 parcours"
+    ],
+    "limites": [
+      "Généré automatiquement, sans confirmation auprès de l'ISPM — ces intitulés ne doivent pas être présentés comme une information officielle avant relecture humaine (§4)",
+      "Non intégré au corpus de production : voir backend/data/a_valider/metiers_candidats.json (candidats), qui n'est chargé ni par charger_corpus_formations() ni par aucun outil de l'agent tant qu'il n'a pas été relu et fusionné à la main dans metiers.json/parcours.json"
+    ]
+  },
+  {
     "id": "SRC-ISPM-ACCUEIL",
     "titre": "ISPM — Page d'accueil",
     "url": "https://ispm-edu.com/",

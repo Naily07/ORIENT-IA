@@ -49,6 +49,7 @@ def corpus_coherent() -> CorpusFormations:
                 competences=["COMP-PROG"],
                 prerequis=["PREREQ-SCIENTIFIQUE"],
                 debouches=["METIER-DEV"],
+                source_id="FORM-IGGLIA-JOUET",
             ),
             Parcours(
                 id="TEH",

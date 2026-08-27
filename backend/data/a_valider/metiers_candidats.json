@@ -1,0 +1,502 @@
+{
+  "a_valider": true,
+  "avertissement": "Candidats de métiers (débouchés) extraits d'une source externe générée automatiquement, non confirmée par l'ISPM (voir registre_sources.json, SRC-GUIDE-FILIERES-GENERE). Ne pas fusionner dans metiers.json ou parcours.json[].debouches sans relecture humaine (règle §4).",
+  "metiers": [
+    {
+      "id": "MET-INGENIEUR-AGRONOME",
+      "nom": "Ingénieur Agronome",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSEILLER-AGRICOLE",
+      "nom": "Conseiller Agricole",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-PROMOTEUR-AGRI-BUSINESS",
+      "nom": "Promoteur Agri-business",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-D-EXPLOITATION-AGRICOLE-ELEVAGE",
+      "nom": "Chef d'Exploitation Agricole/Élevage",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-MARKETING-COMMERCIAL",
+      "nom": "Responsable Marketing / Commercial",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-MANAGER-DES-VENTES",
+      "nom": "Manager des Ventes",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PRODUIT",
+      "nom": "Chef de Produit",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSULTANT-EN-STRATEGIE-D-ENTREPRISE",
+      "nom": "Consultant en Stratégie d'Entreprise",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-JURISTE-D-ENTREPRISE",
+      "nom": "Juriste d'Entreprise",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSEILLER-JURIDIQUE",
+      "nom": "Conseiller Juridique",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-SPECIALISTE-CONTENTIEUX-CONTRATS",
+      "nom": "Spécialiste Contentieux & Contrats",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSULTANT-EN-DROIT-DES-AFFAIRES",
+      "nom": "Consultant en Droit des Affaires",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-ELECTROMECANIQUE",
+      "nom": "Ingénieur Électromécanique",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-DE-MAINTENANCE-INDUSTRIELLE",
+      "nom": "Responsable de Maintenance Industrielle",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-EN-AUTOMATISME-ROBOTIQUE",
+      "nom": "Ingénieur en Automatisme & Robotique",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PROJET-INDUSTRIEL",
+      "nom": "Chef de Projet Industriel",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PROJET-ONG-ENTREPRISES",
+      "nom": "Chef de Projet (ONG / Entreprises)",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ANALYSTE-ECONOMIQUE",
+      "nom": "Analyste Économique",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSULTANT-EN-DEVELOPPEMENT",
+      "nom": "Consultant en Développement",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-PLANIFICATION",
+      "nom": "Responsable Planification",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-ELECTRONIQUE",
+      "nom": "Ingénieur Électronique",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ADMINISTRATEUR-RESEAUX-TELECOMS",
+      "nom": "Administrateur Réseaux & Télécoms",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-SYSTEMES-EMBARQUES",
+      "nom": "Ingénieur Systèmes Embarqués",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-SPECIALISTE-IOT-IA-MATERIELLE",
+      "nom": "Spécialiste IoT / IA matérielle",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-COMPTABLE-CHEF-COMPTABLE",
+      "nom": "Comptable / Chef Comptable",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-AUDITEUR-FINANCIER",
+      "nom": "Auditeur Financier",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONTROLEUR-DE-GESTION",
+      "nom": "Contrôleur de Gestion",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DIRECTEUR-FINANCIER-CFO",
+      "nom": "Directeur Financier (CFO)",
+      "secteur": "Droit et Techniques des Affaires",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-GENIE-CIVIL",
+      "nom": "Ingénieur Génie Civil",
+      "secteur": "Génie Civil et Architecture",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ARCHITECTE-PROJETEUR",
+      "nom": "Architecte / Projeteur",
+      "secteur": "Génie Civil et Architecture",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONDUCTEUR-DE-TRAVAUX",
+      "nom": "Conducteur de Travaux",
+      "secteur": "Génie Civil et Architecture",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-EXPERT-EN-BTP",
+      "nom": "Expert en BTP",
+      "secteur": "Génie Civil et Architecture",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-URBANISTE",
+      "nom": "Urbaniste",
+      "secteur": "Génie Civil et Architecture",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-AGROALIMENTAIRE",
+      "nom": "Ingénieur Agroalimentaire",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-QUALITE-SECURITE-ALIMENTAIRE",
+      "nom": "Responsable Qualité & Sécurité Alimentaire",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PRODUCTION-ALIMENTAIRE",
+      "nom": "Chef de Production Alimentaire",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHERCHEUR-EN-R-D-ALIMENTAIRE",
+      "nom": "Chercheur en R&D Alimentaire",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-PROCEDES-CHIMIQUES",
+      "nom": "Ingénieur Procédés Chimiques",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-MINIER",
+      "nom": "Ingénieur Minier",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-PETROLIER",
+      "nom": "Ingénieur Pétrolier",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-QUALITE-SECURITE-INDUSTRIELLE",
+      "nom": "Responsable Qualité & Sécurité Industrielle",
+      "secteur": "Génie Industriel",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DEVELOPPEUR-WEB-MOBILE",
+      "nom": "Développeur Web/Mobile",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-GENIE-LOGICIEL",
+      "nom": "Ingénieur Génie Logiciel",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSULTANT-IA",
+      "nom": "Consultant IA",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ADMINISTRATEUR-DE-BASE-DE-DONNEES",
+      "nom": "Administrateur de Base de Données",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PROJET-INFORMATIQUE",
+      "nom": "Chef de projet informatique",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DEVELOPPEUR-MULTIMEDIA-WEB",
+      "nom": "Développeur Multimédia / Web",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DESIGNER-UI-UX",
+      "nom": "Designer UI/UX",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-TELECOM-TIC",
+      "nom": "Ingénieur Télécom & TIC",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-SPECIALISTE-MEDIA-NUMERIQUE-IA",
+      "nom": "Spécialiste Média Numérique & IA",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DATA-SCIENTIST-DATA-ANALYST",
+      "nom": "Data Scientist / Data Analyst",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-EN-STATISTIQUE-APPLIQUEE",
+      "nom": "Ingénieur en Statistique Appliquée",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ACTUAIRE",
+      "nom": "Actuaire",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ANALYSTE-QUANTITATIF-BANQUES-ASSURANCES",
+      "nom": "Analyste Quantitatif (Banques/Assurances)",
+      "secteur": "Informatique et Télécommunications",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-INGENIEUR-PHARMACOLOGUE",
+      "nom": "Ingénieur Pharmacologue",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-RESPONSABLE-LABO-PHARMACEUTIQUE",
+      "nom": "Responsable Labo Pharmaceutique",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHERCHEUR-EN-PHYTO-MEDICAMENTS",
+      "nom": "Chercheur en Phyto-médicaments",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONTROLEUR-DE-QUALITE-MEDICAMENTEUSE",
+      "nom": "Contrôleur de Qualité Médicamenteuse",
+      "secteur": "Biotechnologie et Agronomie",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-GUIDE-ECOTOURISTIQUE",
+      "nom": "Guide Écotouristique",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-GESTIONNAIRE-DE-RESERVES-PARCS",
+      "nom": "Gestionnaire de Réserves / Parcs",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CHEF-DE-PROJET-ECOTOURISME",
+      "nom": "Chef de Projet Écotourisme",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-CONSULTANT-ENVIRONNEMENT-TOURISME",
+      "nom": "Consultant Environnement & Tourisme",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-MANAGER-D-HOTEL-RESORT",
+      "nom": "Manager d'Hôtel / Resort",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-DIRECTEUR-DE-RESTAURATION",
+      "nom": "Directeur de Restauration",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-ORGANISATEUR-D-EVENEMENTS-MICE",
+      "nom": "Organisateur d'Événements (MICE)",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    },
+    {
+      "id": "MET-AGENT-DE-VOYAGES-TOUR-OPERATEUR",
+      "nom": "Agent de Voyages / Tour Opérateur",
+      "secteur": "Tourisme",
+      "source_id": "SRC-GUIDE-FILIERES-GENERE"
+    }
+  ],
+  "debouches_par_parcours": {
+    "AEE": [
+      "MET-INGENIEUR-AGRONOME",
+      "MET-CONSEILLER-AGRICOLE",
+      "MET-PROMOTEUR-AGRI-BUSINESS",
+      "MET-CHEF-D-EXPLOITATION-AGRICOLE-ELEVAGE"
+    ],
+    "CAA": [
+      "MET-RESPONSABLE-MARKETING-COMMERCIAL",
+      "MET-MANAGER-DES-VENTES",
+      "MET-CHEF-DE-PRODUIT",
+      "MET-CONSULTANT-EN-STRATEGIE-D-ENTREPRISE"
+    ],
+    "DTJA": [
+      "MET-JURISTE-D-ENTREPRISE",
+      "MET-CONSEILLER-JURIDIQUE",
+      "MET-SPECIALISTE-CONTENTIEUX-CONTRATS",
+      "MET-CONSULTANT-EN-DROIT-DES-AFFAIRES"
+    ],
+    "EMII": [
+      "MET-INGENIEUR-ELECTROMECANIQUE",
+      "MET-RESPONSABLE-DE-MAINTENANCE-INDUSTRIELLE",
+      "MET-INGENIEUR-EN-AUTOMATISME-ROBOTIQUE",
+      "MET-CHEF-DE-PROJET-INDUSTRIEL"
+    ],
+    "EMP": [
+      "MET-CHEF-DE-PROJET-ONG-ENTREPRISES",
+      "MET-ANALYSTE-ECONOMIQUE",
+      "MET-CONSULTANT-EN-DEVELOPPEMENT",
+      "MET-RESPONSABLE-PLANIFICATION"
+    ],
+    "ESIIA": [
+      "MET-INGENIEUR-ELECTRONIQUE",
+      "MET-ADMINISTRATEUR-RESEAUX-TELECOMS",
+      "MET-INGENIEUR-SYSTEMES-EMBARQUES",
+      "MET-SPECIALISTE-IOT-IA-MATERIELLE"
+    ],
+    "FIC": [
+      "MET-COMPTABLE-CHEF-COMPTABLE",
+      "MET-AUDITEUR-FINANCIER",
+      "MET-CONTROLEUR-DE-GESTION",
+      "MET-DIRECTEUR-FINANCIER-CFO"
+    ],
+    "GCA": [
+      "MET-INGENIEUR-GENIE-CIVIL",
+      "MET-ARCHITECTE-PROJETEUR",
+      "MET-CONDUCTEUR-DE-TRAVAUX",
+      "MET-EXPERT-EN-BTP",
+      "MET-URBANISTE"
+    ],
+    "IAA": [
+      "MET-INGENIEUR-AGROALIMENTAIRE",
+      "MET-RESPONSABLE-QUALITE-SECURITE-ALIMENTAIRE",
+      "MET-CHEF-DE-PRODUCTION-ALIMENTAIRE",
+      "MET-CHERCHEUR-EN-R-D-ALIMENTAIRE"
+    ],
+    "ICMP": [
+      "MET-INGENIEUR-PROCEDES-CHIMIQUES",
+      "MET-INGENIEUR-MINIER",
+      "MET-INGENIEUR-PETROLIER",
+      "MET-RESPONSABLE-QUALITE-SECURITE-INDUSTRIELLE"
+    ],
+    "IGGLIA": [
+      "MET-DEVELOPPEUR-WEB-MOBILE",
+      "MET-INGENIEUR-GENIE-LOGICIEL",
+      "MET-CONSULTANT-IA",
+      "MET-ADMINISTRATEUR-DE-BASE-DE-DONNEES",
+      "MET-CHEF-DE-PROJET-INFORMATIQUE"
+    ],
+    "IMTICIA": [
+      "MET-DEVELOPPEUR-MULTIMEDIA-WEB",
+      "MET-DESIGNER-UI-UX",
+      "MET-INGENIEUR-TELECOM-TIC",
+      "MET-SPECIALISTE-MEDIA-NUMERIQUE-IA"
+    ],
+    "ISAIA": [
+      "MET-DATA-SCIENTIST-DATA-ANALYST",
+      "MET-INGENIEUR-EN-STATISTIQUE-APPLIQUEE",
+      "MET-ACTUAIRE",
+      "MET-ANALYSTE-QUANTITATIF-BANQUES-ASSURANCES"
+    ],
+    "PIP": [
+      "MET-INGENIEUR-PHARMACOLOGUE",
+      "MET-RESPONSABLE-LABO-PHARMACEUTIQUE",
+      "MET-CHERCHEUR-EN-PHYTO-MEDICAMENTS",
+      "MET-CONTROLEUR-DE-QUALITE-MEDICAMENTEUSE"
+    ],
+    "TEE": [
+      "MET-GUIDE-ECOTOURISTIQUE",
+      "MET-GESTIONNAIRE-DE-RESERVES-PARCS",
+      "MET-CHEF-DE-PROJET-ECOTOURISME",
+      "MET-CONSULTANT-ENVIRONNEMENT-TOURISME"
+    ],
+    "TEH": [
+      "MET-MANAGER-D-HOTEL-RESORT",
+      "MET-DIRECTEUR-DE-RESTAURATION",
+      "MET-ORGANISATEUR-D-EVENEMENTS-MICE",
+      "MET-AGENT-DE-VOYAGES-TOUR-OPERATEUR"
+    ]
+  }
+}

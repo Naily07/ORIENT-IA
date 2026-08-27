@@ -1,8 +1,8 @@
 {
-  "date": "2026-08-27T02:56:01.575461+00:00",
+  "date": "2026-08-27T09:07:16.039644+00:00",
   "taille_jeu_de_donnees": 800,
   "taille_test": 200,
-  "avertissement": "Évaluation sur données synthétiques uniquement (voir donnees_synthetiques.py) : mesure la capacité du modèle à retrouver les hypothèses de génération, pas sa capacité à orienter de vrais candidats. La validation sur l'enquête réelle (ML-7) reste à faire une fois DATA-4/DATA-7 disponibles.",
+  "avertissement": "Les sections ci-dessous (hors `generalisation_reelle_ml_7`) évaluent sur données synthétiques uniquement (voir donnees_synthetiques.py) : elles mesurent la capacité du modèle à retrouver les hypothèses de génération, pas sa capacité à orienter de vrais candidats. `generalisation_reelle_ml_7` apporte cette seconde mesure, sur un échantillon réel mais réduit — lire son propre avertissement avant de la traiter comme définitive.",
   "modele_de_production_calibre": {
     "exactitude": 0.995,
     "precision_macro": 0.9951923076923077,
@@ -1724,5 +1724,27 @@
     },
     "profils_de_test_avec_serie_bac_declaree": 0,
     "lecture": "Mesuré à travers ml.outils.analyser_profil : vocabulaire ouvert, garde-fou d'exploitabilité et règles d'admission compris. 0 profil(s) de test sur 200 déclarent une série de baccalauréat : les règles d'admission (ml/hybride.py) ne s'appliquent qu'à ceux-là et sont donc inertes sur ce jeu, faute d'une série générée par donnees_synthetiques.py. L'écart attendu entre estimateur et chemin de production ne sera mesurable qu'une fois l'enquête réelle disponible (DATA-4, ML-7) — c'est une limite du jeu synthétique, pas une absence d'effet des règles, dont l'effet est démontré à part dans backend/tests/ml/test_hybride.py."
+  },
+  "generalisation_reelle_ml_7": {
+    "disponible": true,
+    "taille": 79,
+    "classement": {
+      "effectif": 79,
+      "top_1": 0.012658227848101266,
+      "top_3": 0.0759493670886076,
+      "mrr": 0.1408969370994687,
+      "ndcg_3": 0.04761847477396096,
+      "rang_median_bonne_classe": 11.0,
+      "profils_juges_inexploitables": 56,
+      "parcours_absents_du_classement": 0
+    },
+    "stabilite_des_recommandations": {
+      "profils_compares": 24,
+      "perturbation": "retrait d'un trait déclaré au hasard",
+      "top_1_inchange": 1.0,
+      "selection_presentee_inchangee": 1.0,
+      "top_3_fixe_inchange": 1.0
+    },
+    "lecture": "79 profils réels (enquête de terrain), étiquette de parcours reconnue, jamais vus à l'entraînement — mesuré avec le modèle de production réellement servi (ml.outils.analyser_profil), sans substitution. L'étiquette est le parcours effectivement suivi par le répondant, indépendamment de sa satisfaction déclarée : un score bas ici peut aussi bien révéler une limite du modèle qu'un candidat qui s'est réorienté après coup. Échantillon de taille réduite et concentré sur quelques mentions — voir backend/data/enquete/registre_collecte.md pour les biais constatés avant de sur-interpréter un écart avec les chiffres synthétiques ci-dessus."
   }
 }

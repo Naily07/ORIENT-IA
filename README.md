@@ -1,6 +1,6 @@
 # ORIENT'IA
 
-ORIENT'IA est un assistant d'aide à l'orientation vers les 16 parcours de l'ISPM. Il combine un modèle de classement supervisé, des règles d'admission, un corpus sourcé, une recherche RAG et un agent conversationnel. Les recommandations restent indicatives et doivent être confirmées par un conseiller pédagogique ou l'administration.
+ORIENT'IA est un assistant d'aide à l'orientation vers les 16 parcours de l'ISPM. Il combine un modèle de classement supervisé, des règles d'admission, un corpus sourcé, une recherche RAG et un agent conversationnel. Le profil du candidat se construit au fil de l'échange à partir de ce qu'il déclare explicitement — matières, compétences, série du baccalauréat, métiers visés — jamais d'une inférence sur son style d'écriture, et reste modifiable à la main dans le panneau « Mon profil ». Les recommandations restent indicatives et doivent être confirmées par un conseiller pédagogique ou l'administration.
 
 ## Version à jour et déploiements
 
@@ -13,7 +13,7 @@ La branche principale contenant la version à jour du projet est **`develop`**.
 
 ### Prérequis
 
-- Python 3.11 ou supérieur ;
+- Python 3.11 ou supérieur (inutile si l'API tourne dans Docker, voir plus bas) ;
 - Node.js 20 ou supérieur et npm ;
 - une clé Google AI Studio pour les réponses conversationnelles (`GEMINI_API_KEY`).
 
@@ -57,9 +57,30 @@ ou :
 ./run.sh
 ```
 
-Le frontend candidat est disponible sur <http://localhost:3000/chat>, le backoffice sur <http://localhost:3000/admin>, l'API sur <http://localhost:8000> et son état sur <http://localhost:8000/health>.
+Le frontend candidat est disponible sur <http://localhost:3000/chat>, le backoffice sur <http://localhost:3000/admin>, l'API sur <http://localhost:8000> et son état sur <http://localhost:8000/health>. avec le mot de passe admin : admin1234
 
 Pour utiliser l'ancienne interface Streamlit : `./run.sh --frontend streamlit` ou `.\run.ps1 -Frontend streamlit`, puis ouvrir <http://localhost:8501>.
+
+### Exécution de l'API avec Docker
+
+Pour lancer l'API sans installer Python ni créer l'environnement virtuel, le `Dockerfile` à la racine construit une image autonome. Les dépendances de l'API, le modèle d'embedding ONNX (~80 Mo) et l'index RAG sont cuits pendant le build : le conteneur démarre à froid sans rien télécharger ni ré-indexer. C'est aussi l'image utilisée pour le déploiement de l'API.
+
+```powershell
+docker build -t orientia-api .
+docker run --rm -p 8000:8000 --env-file .env orientia-api
+```
+
+Le build ne demande aucun secret ; `GEMINI_API_KEY` n'est lue qu'au démarrage du conteneur, d'où le `--env-file .env` (le fichier `.env` créé à l'installation). L'API répond alors sur <http://localhost:8000>, son état sur <http://localhost:8000/health>.
+
+L'image ne contient **que le backend**. Pour l'interface candidat, lancer le frontend à côté, dans un autre terminal :
+
+```powershell
+cd frontend-next
+npm ci
+npm run dev
+```
+
+`frontend-next/.env.example` pointe déjà `API_URL` vers <http://localhost:8000> ; le copier vers `.env.local` lorsque le frontend est lancé ainsi, sans `run.ps1`/`run.sh`.
 
 ## Vérification
 
@@ -134,3 +155,5 @@ DOCS/                 dossier de remise et documentation transversale
 ## Confidentialité et portée
 
 Ne jamais committer `.env`, les journaux, l'index Chroma ou un export contenant des identifiants. Les données d'enquête publiées ont été anonymisées, mais les petits effectifs conservent un risque de ré-identification indirecte. Le modèle apprend principalement sur des profils synthétiques : ses scores mesurent d'abord la cohérence avec les hypothèses de génération, pas la réussite future d'une personne.
+
+Le profil n'est alimenté que par des déclarations explicites du candidat : aucun trait n'est déduit du ton ou du style d'écriture, et aucun attribut personnel sensible (genre, âge, origine, santé…) n'est retenu, ni dans le panneau ni dans l'extraction faite à partir du chat.

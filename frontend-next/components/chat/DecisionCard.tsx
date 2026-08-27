@@ -12,6 +12,7 @@ import {
 import { libelleAction, type TonaliteAction } from "@/lib/actions-labels";
 import { formaterScore } from "@/lib/format-score";
 import { admissibiliteAVerifier, scoreEstCreux, type Marqueurs } from "@/lib/markers";
+import { profilRenseigne } from "@/lib/profil";
 import type { OrientationReponse, RecommandationParcours } from "@/lib/types";
 
 const TONALITE_CLASSES: Record<TonaliteAction, string> = {
@@ -92,6 +93,17 @@ export function DecisionCard({
   const sources = decision.sources ?? [];
   const outils = Array.from(new Set(decision.outils_utilises ?? []));
 
+  // Le modèle a été consulté mais n'a produit aucun classement à montrer : le
+  // profil déclaré ne portait pas assez de traits reconnus pour qu'un score
+  // d'adéquation dise quoi que ce soit de ce candidat (backend :
+  // `_masquer_classement_non_informatif`). Plutôt qu'un podium vide ou, pire,
+  // un « TEE 7 % » trompeur, on invite à compléter le profil.
+  const modeleConsulteSansClassement =
+    parcours.length === 0 && outils.includes("analyser_profil_ml");
+  // `reponse.profil` peut manquer sur une réponse mise en cache avant l'ajout du
+  // champ : on ne montre alors pas le variant « profil vide ».
+  const profilVide = reponse.profil ? !profilRenseigne(reponse.profil) : false;
+
   // `decision.reponse` est rempli par l'agent dans la quasi-totalité des cas ;
   // repli sur le résumé si jamais il manque.
   const texte = (decision.reponse || decision.resume || "").trim();
@@ -124,6 +136,17 @@ export function DecisionCard({
             </p>
           </div>
         )}
+
+      {modeleConsulteSansClassement && (
+        <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-200">
+          <HelpCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <p>
+            {profilVide
+              ? "Le modèle n'a pas pu calculer de score : renseignez « Mon profil » (matières, compétences, série du bac) pour une recommandation chiffrée."
+              : "Le modèle n'a pas assez d'éléments reconnus pour un score fiable : complétez « Mon profil » pour affiner la recommandation."}
+          </p>
+        </div>
+      )}
 
       {parcours.length > 0 && (
         <div className="space-y-2">

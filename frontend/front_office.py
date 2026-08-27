@@ -179,6 +179,47 @@ def _carte_parcours(candidat: dict, rang: int) -> None:
             st.write(justification or "—")
 
 
+_LIBELLES_PROFIL = {
+    "matieres_preferees": "Matières préférées",
+    "competences_declarees": "Compétences",
+    "centres_interet": "Centres d'intérêt",
+    "activites_projets": "Activités et projets",
+    "preferences_professionnelles": "Métiers ou domaines visés",
+    "environnement_travail_recherche": "Environnement de travail",
+    "serie_bac": "Série du baccalauréat",
+    "resultats_scolaires": "Notes scolaires",
+}
+
+
+def _afficher_profil_retenu(profil: dict) -> None:
+    """Montre le profil effectivement utilisé, complété de ce que le candidat a
+    déclaré dans son message (`backend/src/extraction_profil.py`).
+
+    Rend le remplissage automatique visible et vérifiable : le candidat voit ce
+    qui a été retenu de sa phrase, et peut le corriger au tour suivant."""
+    lignes: list[str] = []
+    for champ, libelle in _LIBELLES_PROFIL.items():
+        valeur = profil.get(champ)
+        if not valeur:
+            continue
+        if isinstance(valeur, list):
+            rendu = ", ".join(str(v) for v in valeur)
+        elif isinstance(valeur, dict):
+            rendu = ", ".join(f"{matiere} : {note}" for matiere, note in valeur.items())
+        else:
+            rendu = str(valeur)
+        lignes.append(f"- **{libelle}** : {rendu}")
+
+    if not lignes:
+        return
+    with st.expander("Profil retenu pour cette réponse", expanded=False):
+        st.caption(
+            "Complété de ce que vous avez indiqué dans votre message. "
+            "Modifiez les champs ci-dessus si besoin."
+        )
+        st.markdown("\n".join(lignes))
+
+
 def _afficher_decision(reponse: dict) -> None:
     decision = reponse["decision"]
     libelle, icone, couleur = ACTIONS.get(
@@ -201,10 +242,24 @@ def _afficher_decision(reponse: dict) -> None:
         )
 
     parcours = decision.get("parcours_recommandes") or []
+    outils = decision.get("outils_utilises") or []
     if parcours:
         st.markdown("#### Parcours suggérés")
         for rang, candidat in enumerate(parcours[:5], start=1):
             _carte_parcours(candidat, rang)
+    elif "analyser_profil_ml" in outils:
+        # Le modèle a été consulté mais n'a produit aucun classement montrable :
+        # trop peu de traits déclarés rattachés à son vocabulaire (backend :
+        # `_masquer_classement_non_informatif`). On invite à compléter le profil
+        # plutôt que d'afficher un score sans information.
+        st.info(
+            "Le modèle n'a pas pu calculer de score d'adéquation : le profil déclaré "
+            "ne comporte pas assez d'éléments qu'il reconnaît. Complétez les champs de "
+            "profil (matières, compétences, série du bac) pour une recommandation chiffrée.",
+            icon="📝",
+        )
+
+    _afficher_profil_retenu(reponse.get("profil") or {})
 
     manquantes = decision.get("informations_manquantes") or []
     if manquantes:

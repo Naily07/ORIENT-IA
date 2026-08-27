@@ -444,6 +444,48 @@ def _forcer_consultation_du_modele_ml(
     return decision, [*outils_utilises, "analyser_profil_ml"]
 
 
+def _masquer_classement_non_informatif(
+    profil: ProfilCandidat, decision: RecommandationDecision
+) -> RecommandationDecision:
+    """Retire le classement de parcours quand le modèle n'a pas pu exploiter le profil.
+
+    **Le défaut que ça corrige.** Sur un profil dont trop peu de traits ont pu
+    être rattachés au vocabulaire du modèle (`features.analyser_couverture`), les
+    probabilités retombent sur la distribution a priori des 16 parcours : TEE,
+    AEE, TEH ressortent une fraction de point au-dessus de l'uniforme, sans
+    aucun rapport avec le candidat. `analyser_profil` marque déjà ces scores
+    d'un avertissement et met la confiance à zéro — mais le classement, lui,
+    restait dans `parcours_recommandes`, affiché comme un podium (« TEE 7 % »)
+    et exhibé par `_verifier_coherence_prose_classement`, qui ajoutait alors à
+    la réponse une phrase du type « d'après le modèle, c'est TEE qui obtient le
+    meilleur score » — en contradiction frontale avec une prose par ailleurs
+    pertinente.
+
+    L'autorité sur « ce profil est-il exploitable ? » est le compte déterministe
+    de `analyser_couverture`, pas un champ rédigé par le modèle (même principe
+    que `_forcer_consultation_du_modele_ml`). Quand il répond non, on vide le
+    classement : il n'y a rien à classer. La confiance reste basse, l'escalade
+    se déclenche en aval comme avant, et la réponse ne montre plus un chiffre
+    qui ne veut rien dire.
+    """
+    if not decision.parcours_recommandes:
+        return decision
+    if analyser_couverture(profil).exploitable:
+        return decision
+    return decision.model_copy(
+        update={
+            "parcours_recommandes": [],
+            "incertitude_declaree": True,
+            "explication": (
+                f"{decision.explication}\n[Contrôle automatique] Classement de parcours "
+                "retiré : trop peu de traits déclarés ont pu être rattachés au vocabulaire "
+                "du modèle pour qu'un score d'adéquation porte une information sur ce "
+                "candidat."
+            ),
+        }
+    )
+
+
 def _parcours_cites(texte: str) -> list[str]:
     """Sigles de parcours nommés dans un texte, dans l'ordre d'apparition.
 
@@ -650,6 +692,10 @@ def _appliquer_controles_deterministes(
     decision, outils_utilises = _forcer_consultation_du_modele_ml(
         profil, decision, outils_utilises
     )
+    # Un profil que le modèle n'a pas su exploiter ne porte pas de classement :
+    # on le retire avant les contrôles suivants, qui n'ont alors plus de podium
+    # fantôme à confronter à la prose.
+    decision = _masquer_classement_non_informatif(profil, decision)
     # Après la consultation forcée : `parcours_recommandes` porte alors le
     # classement réel du modèle, ce à quoi la prose doit être confrontée.
     decision = _verifier_coherence_prose_classement(decision)

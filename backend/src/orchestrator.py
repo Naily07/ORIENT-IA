@@ -40,10 +40,16 @@ from typing import Any
 
 from src.agent import run_agent
 from src.config import config
+from src.extraction_profil import extraire_profil_declare
 from src.guardrails import check_injection, masquer_donnees_sensibles
 from src.llm_client import LLMError, limiter_temps_llm
 from src.rag import retrieve_context
-from src.schemas import OrientationInput, OrientationReponse, RecommandationDecision
+from src.schemas import (
+    OrientationInput,
+    OrientationReponse,
+    ProfilCandidat,
+    RecommandationDecision,
+)
 from src.securite import verifier_sortie
 
 logger = logging.getLogger(__name__)
@@ -121,6 +127,53 @@ def _executer_en_parallele(*fonctions):
         for fonction in fonctions
     ]
     return [future.result() for future in futures]
+
+
+def _completer_profil_entree(
+    entree: OrientationInput, trace_id: str
+) -> tuple[ProfilCandidat, list[str], str | None]:
+    """Complète le profil reçu des éléments que le candidat a déclarés dans son
+    message (`src.extraction_profil`).
+
+    Étape **optionnelle** au même titre que la recherche documentaire : son
+    échec laisse le profil de l'appelant intact et n'interrompt jamais la
+    demande. Séparée pour pouvoir tourner dans le pool de
+    `_executer_en_parallele` sans muter d'état partagé.
+
+    Retourne `(profil, champs_complétés, dégradation)`.
+    """
+    try:
+        profil, champs = extraire_profil_declare(
+            entree.message, entree.historique, entree.profil, trace_id=trace_id
+        )
+        return profil, champs, None
+    except LLMError as e:
+        logger.warning("Complétion du profil indisponible (trace_id=%s) : %s", trace_id, e)
+        return entree.profil, [], f"complétion du profil dégradée ({type(e).__name__})"
+    except Exception as e:  # noqa: BLE001 — aucune étape optionnelle ne fait échouer la demande
+        logger.exception("Complétion du profil en échec (trace_id=%s)", trace_id)
+        return entree.profil, [], f"complétion du profil indisponible ({type(e).__name__})"
+
+
+def _mentionner_profil_complete(
+    decision: RecommandationDecision, champs_completes: list[str]
+) -> RecommandationDecision:
+    """Ajoute à la réponse une phrase disant ce qui a été noté au profil.
+
+    L'utilisateur voit les champs se remplir dans le panneau « Mon profil » ;
+    cette phrase rend le geste explicite dans le fil de la conversation, et lui
+    rappelle qu'il peut corriger. Rien n'est ajouté si aucun champ n'a bougé."""
+    if not champs_completes or not decision.reponse.strip():
+        return decision
+    if len(champs_completes) == 1:
+        liste = champs_completes[0]
+    else:
+        liste = ", ".join(champs_completes[:-1]) + " et " + champs_completes[-1]
+    phrase = (
+        f"\n\nJ'ai noté au passage, dans votre profil, ce que vous avez indiqué "
+        f"({liste}). Vous pouvez le corriger dans le panneau « Mon profil »."
+    )
+    return decision.model_copy(update={"reponse": decision.reponse + phrase})
 
 
 def _verifier_injection_entree(message: str, trace_id: str) -> tuple[dict, str | None]:
@@ -260,7 +313,13 @@ def _finaliser(
     contexte: list[dict] | None,
     decision: RecommandationDecision,
     depart: float,
+    profil: ProfilCandidat | None = None,
 ) -> OrientationReponse:
+    # Le profil renvoyé est celui **effectivement utilisé** : celui de l'appelant,
+    # complété de ce que le candidat a déclaré dans son message. Repli sur le
+    # profil d'entrée quand la complétion n'a pas eu lieu (message dangereux,
+    # budget dépassé avant l'étape).
+    profil_effectif = profil if profil is not None else entree.profil
     latence_ms = round((time.monotonic() - depart) * 1000)
     if _log_trace is not None:
         try:
@@ -270,11 +329,11 @@ def _finaliser(
                 contexte,
                 decision,
                 latence_ms,
-                profil=entree.profil,
+                profil=profil_effectif,
             )
         except Exception:  # noqa: BLE001 — une trace illisible ne doit pas faire perdre la décision
             logger.exception("Écriture de trace impossible (trace_id=%s)", trace_id)
-    return OrientationReponse(trace_id=trace_id, decision=decision)
+    return OrientationReponse(trace_id=trace_id, decision=decision, profil=profil_effectif)
 
 
 # --- Pipeline complet (ORCH-1) -----------------------------------------------
@@ -332,24 +391,29 @@ def _traiter_demande_dans_budget(
     trace_id = str(uuid.uuid4())
     degradations: list[str] = []
 
-    # 1+2. Garde-fous d'entrée et recherche documentaire, en parallèle.
+    # 1+2+3. Garde-fous d'entrée, recherche documentaire et complétion du profil,
+    # en parallèle.
     #
-    # Les deux étapes sont indépendantes (voir `_executer_en_parallele`) :
-    # seul l'**usage** du résultat de la recherche documentaire reste
-    # conditionné au verdict des garde-fous, exactement comme avant. Sur un
-    # message jugé dangereux, `contexte` est calculé (par un thread du pool,
-    # en parallèle) mais **jamais utilisé** ci-dessous : ni transmis à
-    # l'agent (celui-ci n'est même pas appelé), ni journalisé, ni renvoyé —
-    # `_finaliser` reçoit `None`, inchangé. Le principe « aucun outil ni
-    # recommandation sur une tentative de manipulation » (voir l'en-tête du
-    # module) reste donc respecté dans son effet observable ; ce qui change
-    # est qu'un calcul purement local (embeddings ONNX + Chroma, aucun appel
-    # réseau ni écriture) est parfois mené puis jeté plutôt que jamais lancé.
-    (risque, echec_injection), (contexte, echec_rag) = _executer_en_parallele(
+    # Les trois étapes sont indépendantes (voir `_executer_en_parallele`) : seul
+    # l'**usage** des résultats de la recherche documentaire et de la complétion
+    # du profil reste conditionné au verdict des garde-fous. Sur un message jugé
+    # dangereux, `contexte` et `profil_complete` sont calculés (par des threads
+    # du pool) mais **jamais utilisés** : l'agent n'est pas appelé, la décision
+    # d'escalade renvoie `entree.profil` inchangé. Le principe « aucun outil ni
+    # recommandation sur une tentative de manipulation » reste respecté dans son
+    # effet observable ; ce qui change est qu'un calcul (embeddings ONNX + Chroma
+    # pour le RAG, un appel LLM cadré pour la complétion) est parfois mené puis
+    # jeté plutôt que jamais lancé.
+    (
+        (risque, echec_injection),
+        (contexte, echec_rag),
+        (profil_complete, champs_completes, echec_profil),
+    ) = _executer_en_parallele(
         lambda: _verifier_injection_entree(entree.message, trace_id),
         lambda: _etape_optionnelle(
             "recherche documentaire", lambda: retrieve_context(entree.message), [], depart
         ),
+        lambda: _completer_profil_entree(entree, trace_id),
     )
     if echec_injection:
         degradations.append(echec_injection)
@@ -357,6 +421,11 @@ def _traiter_demande_dans_budget(
     if risque["danger"]:
         decision = _escalade_injection(entree.message, risque)
         return _finaliser(trace_id, entree, None, decision, depart)
+
+    # Le message n'est pas une manipulation : le profil complété peut servir.
+    profil_effectif = profil_complete
+    if echec_profil:
+        degradations.append(echec_profil)
 
     historique_sain, note_historique = _historique_sain(entree)
     if note_historique:
@@ -368,7 +437,7 @@ def _traiter_demande_dans_budget(
     if echec_rag:
         degradations.append(echec_rag)
 
-    # 3. Agent avec outils.
+    # 4. Agent avec outils.
     if _budget_epuise(depart):
         degradations.append(
             f"agent sauté (budget de {config.orchestrateur_budget_s:.0f} s dépassé)"
@@ -377,7 +446,7 @@ def _traiter_demande_dans_budget(
     else:
         try:
             decision = run_agent(
-                entree.message, entree.profil, contexte, trace_id, historique_sain
+                entree.message, profil_effectif, contexte, trace_id, historique_sain
             )
         except LLMError as e:
             logger.warning("Agent indisponible (trace_id=%s) : %s", trace_id, e)
@@ -399,7 +468,12 @@ def _traiter_demande_dans_budget(
             degradations.append(f"agent en échec ({type(e).__name__})")
             decision = _decision_repli(f"{type(e).__name__}: {e}")
 
-    # 4. Contrôles déterministes finaux.
+    # 5. Contrôles déterministes finaux.
+    #
+    # `_mentionner_profil_complete` d'abord : la phrase ajoutée à la réponse
+    # traverse ensuite le contrôle de sortie comme le reste, et une réponse
+    # retenue pour revue humaine (qui remplace tout le texte) ne la traîne pas.
+    decision = _mentionner_profil_complete(decision, champs_completes)
     decision = _appliquer_plafond_de_confiance(decision, degradations)
     decision = _appliquer_controle_de_sortie(decision)
-    return _finaliser(trace_id, entree, contexte, decision, depart)
+    return _finaliser(trace_id, entree, contexte, decision, depart, profil_effectif)

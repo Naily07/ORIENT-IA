@@ -1,0 +1,34 @@
+# Contexte de build minimal : seule l'API (backend/) entre dans l'image.
+
+# Frontends — déployés séparément, jamais dans l'image backend.
+frontend/
+frontend-next/
+
+# Environnements et caches
+**/__pycache__/
+**/*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Sorties locales régénérées dans l'image (ou hors périmètre runtime)
+backend/chroma_db/
+backend/logs/
+backend/data/matieres_brut.json
+backend/data/ml/*.joblib
+
+# Hors image de service
+.git/
+.github/
+DOCS/
+backend/notebooks/
+.vscode/
+.claude/
+.playwright-mcp/
+*.md
+run.sh
+run.ps1
+.env

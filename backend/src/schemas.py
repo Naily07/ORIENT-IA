@@ -173,16 +173,47 @@ class RecommandationDecision(BaseModel):
 # --- Entrée/sortie de l'orchestrateur -----------------------------------------
 
 
+# Nombre de tours précédents transmis à l'agent. Au-delà, le prompt enfle sans
+# gain : une question de suivi porte sur ce qui vient d'être dit, pas sur le
+# début de la conversation. Borner ici plutôt que côté client évite qu'un
+# appelant fasse gonfler le coût d'un appel à volonté.
+MAX_TOURS_HISTORIQUE = 6
+# Un tour est un échange court ; tronquer protège du prompt gonflé par un
+# copier-coller massif dans la zone de saisie.
+MAX_CARACTERES_PAR_TOUR = 1500
+
+
+class TourConversation(BaseModel):
+    """Un échange déjà joué, tel que le client le rejoue à chaque requête.
+
+    Le pipeline reste **sans état côté serveur** : c'est l'appelant qui porte
+    la conversation et la renvoie. Aucune session n'est stockée, donc rien à
+    expirer ni à ré-identifier — ce qui est aussi ce que le §5 demande.
+    """
+
+    question: str = Field(max_length=MAX_CARACTERES_PAR_TOUR)
+    reponse: str = Field(default="", max_length=MAX_CARACTERES_PAR_TOUR)
+
+
 class OrientationInput(BaseModel):
     """Corps de `POST /orientation/traiter`.
 
     `profil` est celui construit jusqu'ici par l'appelant (frontend ou
     session de conversation) : l'orchestrateur ne le reconstruit pas à partir
     de `message`, il l'utilise tel quel et laisse l'agent décider si des
-    informations manquent encore (`action="demande_information"`)."""
+    informations manquent encore (`action="demande_information"`).
+
+    `historique` porte les tours précédents. Sans lui, « quelles matières dans
+    cette filière ? » était insoluble : l'agent ne voyait que la question
+    isolée, ne savait pas de quelle filière on parlait, et répondait qu'aucune
+    n'avait été précisée — un défaut observé en démonstration.
+    """
 
     message: str
     profil: ProfilCandidat = Field(default_factory=ProfilCandidat)
+    historique: list[TourConversation] = Field(
+        default_factory=list, max_length=MAX_TOURS_HISTORIQUE
+    )
 
 
 class OrientationReponse(BaseModel):

@@ -19,10 +19,11 @@ Deux niveaux de mesure, volontairement distincts :
 """
 
 import json
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
-from src.config import config
+from src.enquete import jeu_evaluation
 from src.ml import outils
 from src.ml.donnees_synthetiques import charger_jeu_de_donnees
 from src.ml.entrainement import (
@@ -77,19 +78,18 @@ def _mesurer_chemin_de_production(exemples_test: list[dict], modele_train) -> di
         outils.imposer_modele_pour_evaluation(None)
 
 
-def _charger_jeu_test_reel() -> list[dict]:
-    """Profils réels étiquetés (DATA-5/DATA-7), filtrés sur ceux dont
-    l'étiquette de parcours a pu être résolue (`usable_pour_eval`) — un
-    répondant non rattachable à un parcours connu n'a rien à mesurer contre."""
-    chemin = config.dossier_data / "ml" / "jeu_test_reel.json"
-    if not chemin.exists():
-        return []
-    with open(chemin, encoding="utf-8") as f:
-        brut = json.load(f)
+def _charger_profils_reels() -> list[dict]:
+    """Profils réels étiquetés, tirés de **notre** enquête (DATA-5/DATA-7).
+
+    La sélection passe par `enquete.jeu_evaluation()` plutôt que par un filtre
+    local : cette fonction est le seul endroit qui décide ce qui est mesurable,
+    et elle écarte à la fois les réponses sans étiquette résolue et celles dont
+    un trait exploité par le modèle aurait été fabriqué. Refaire le filtre ici
+    laisserait les deux définitions diverger en silence.
+    """
     return [
-        {"profil": ProfilCandidat.model_validate(e["profil"]), "parcours_id": e["parcours_id"]}
-        for e in brut
-        if e.get("usable_pour_eval")
+        {"profil": reponse.profil, "parcours_id": reponse.parcours_declare}
+        for reponse in jeu_evaluation()
     ]
 
 
@@ -103,33 +103,47 @@ def _mesurer_generalisation_reelle() -> dict:
     éviter — `outils.analyser_profil` est appelé tel quel, avec le modèle
     réellement servi à un candidat.
     """
-    exemples = _charger_jeu_test_reel()
+    exemples = _charger_profils_reels()
     if not exemples:
         return {
             "disponible": False,
             "lecture": (
-                "backend/data/ml/jeu_test_reel.json absent ou vide — lancer "
-                "backend/scripts/preparer_jeu_test_reel.py --source <export.csv> "
-                "(DATA-5/DATA-7) pour le produire."
+                "Aucune réponse d'enquête exploitable — lancer "
+                "`python -m src.enquete_import <export.csv>` depuis backend/ pour "
+                "importer les réponses de notre formulaire (DATA-5/DATA-7)."
             ),
         }
+    etiquettes = [e["parcours_id"] for e in exemples]
+    occurrences = Counter(etiquettes)
+    parcours_majoritaire, effectif_majoritaire = occurrences.most_common(1)[0]
+
     return {
         "disponible": True,
         "taille": len(exemples),
+        # Sans ce repère, une exactitude s'interprète contre le hasard (1/16),
+        # ce qui flatte tout modèle sur un échantillon déséquilibré. La vraie
+        # question est : fait-on mieux que répondre toujours la même chose ?
+        "baseline_classe_majoritaire": {
+            "parcours": parcours_majoritaire,
+            "exactitude": effectif_majoritaire / len(exemples),
+            "repartition": dict(occurrences),
+        },
         "classement": evaluer_chemin_de_production(exemples, outils.analyser_profil),
         "stabilite_des_recommandations": mesurer_stabilite_des_recommandations(
             exemples, outils.analyser_profil
         ),
         "lecture": (
-            f"{len(exemples)} profils réels (enquête de terrain), étiquette de parcours "
+            f"{len(exemples)} profils réels issus de notre enquête, étiquette de parcours "
             "reconnue, jamais vus à l'entraînement — mesuré avec le modèle de production "
             "réellement servi (ml.outils.analyser_profil), sans substitution. L'étiquette "
             "est le parcours effectivement suivi par le répondant, indépendamment de sa "
             "satisfaction déclarée : un score bas ici peut aussi bien révéler une limite du "
-            "modèle qu'un candidat qui s'est réorienté après coup. Échantillon de taille "
-            "réduite et concentré sur quelques mentions — voir "
-            "backend/data/enquete/registre_collecte.md pour les biais constatés avant de "
-            "sur-interpréter un écart avec les chiffres synthétiques ci-dessus."
+            "modèle qu'un candidat qui s'est réorienté après coup. "
+            "**Le repère qui compte n'est pas le hasard mais la classe majoritaire** : "
+            "l'échantillon est concentré sur IGGLIA, et une règle qui répondrait toujours "
+            "ce parcours obtiendrait déjà un score élevé. À cette taille, deux profils "
+            "pèsent une quinzaine de points — ne pas conclure d'un écart faible. Voir "
+            "backend/data/enquete/registre_collecte.json pour les biais constatés."
         ),
     }
 

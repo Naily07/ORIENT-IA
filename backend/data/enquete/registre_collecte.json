@@ -1,6 +1,6 @@
 {
   "notre_enquete": {
-    "source": "Notre propre enquête, diffusée via le Google Form généré par `generer_google_form.gs` à partir de `questionnaire.md`. Importée par `python -m src.enquete_import <csv> --orientia`.",
+    "source": "Notre propre enquête, diffusée via le Google Form généré par `generer_google_form.gs` à partir de `questionnaire.md`. Importée par `python -m src.enquete_import <csv>`.",
     "populations_visees": [
       "Étudiants de l'ISPM — profil au lycée, formation suivie, satisfaction, et formation qui aurait mieux convenu",
       "Professionnels diplômés — profil avant les études, métier exercé, adéquation, et formation qui aurait le mieux correspondu"
@@ -24,7 +24,7 @@
     ],
     "limites": [
       "VOLUME — 15 réponses, 14 exploitables. À p=0,5 l'intervalle de confiance à 95 % est de ±22 points : ces réponses permettent d'affirmer que le modèle fait mieux que le hasard (6,2 % pour 16 classes), pas de chiffrer sa performance avec précision. Tout score doit être publié avec son intervalle.",
-      "COUVERTURE DES PARCOURS — seulement 5 parcours sur 16 représentés, contre 14 sur 16 pour l'enquête tierce. Aucune métrique par classe n'est possible ; seules l'exactitude globale et le top-k ont un sens.",
+      "COUVERTURE DES PARCOURS — seulement 5 parcours sur 16 représentés. Aucune métrique par classe n'est possible ; seules l'exactitude globale et le top-k ont un sens.",
       "UNE SEULE RÉPONSE PROFESSIONNELLE — la population que le sujet juge la plus précieuse est quasi absente. La question « quelle formation aurait le mieux correspondu ? », qui fournit une étiquette corrigée par l'expérience, ne repose donc que sur un cas.",
       "AUTO-SÉLECTION — diffusion par les réseaux de l'équipe, majoritairement informatique : IGGLIA domine largement, plusieurs mentions sont absentes.",
       "FENÊTRE DE COLLECTE COURTE — moins de 24 heures, ce qui limite mécaniquement le volume et favorise les répondants les plus proches de l'équipe.",

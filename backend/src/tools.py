@@ -435,9 +435,9 @@ def fiche_parcours_publique(identifiant: str) -> dict | None:
     être devant lui sans dépendre de ce choix."""
     try:
         parcours = _parcours_par_id_ou_nom(identifiant)
+        return _fiche_parcours(parcours) if parcours else None
     except OutilIndisponible:
         return None
-    return _fiche_parcours(parcours) if parcours else None
 
 
 def comparer_parcours(parcours_a: str, parcours_b: str) -> dict:

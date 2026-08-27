@@ -36,8 +36,10 @@ packages = ["src", "src.ml"]
 line-length = 100
 target-version = "py311"
 # Sans ce réglage, ruff ne reconnaît plus `src` comme premier-parti et fusionne
-# son groupe d'imports avec les bibliothèques tierces.
-src = ["backend"]
+# son groupe d'imports avec les bibliothèques tierces. `frontend` y figure pour
+# la même raison : ses modules (`noyau`, `front_office`, `back_office`) sont
+# importés à plat, sans préfixe de paquet.
+src = ["backend", "frontend"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

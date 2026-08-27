@@ -1,18 +1,16 @@
 {
-  "date": "2026-08-27T03:43:58.752817+00:00",
+  "date": "2026-08-27T09:13:24.279628+00:00",
   "corpus_reel_ispm": {
     "nombre_parcours": 16,
     "detecter_incoherences": {
       "sans_graphe": "mécanisme inexistant : aucun outil de tools.py n'examinait la cohérence structurelle du corpus avant ONTO-4",
       "avec_graphe": {
         "statut": "trouve",
-        "nombre": 16,
-        "par_type": {
-          "parcours_sans_debouche": 16
-        },
-        "dont_donnees_non_collectees": 16,
+        "nombre": 0,
+        "par_type": {},
+        "dont_donnees_non_collectees": 0,
         "dont_contradictions_reelles": 0,
-        "message": "16 incohérence(s) structurelle(s) détectée(s). Les entrées marquées `donnee_manquante` signalent une information pas encore collectée (voir BACKLOG.md, DATA-1), pas une contradiction du corpus."
+        "message": "Aucune incohérence structurelle détectée dans le corpus."
       }
     },
     "lecture": "Les constats remontés sur le corpus réel sont aujourd'hui tous des données non encore collectées (débouchés, DATA-1), pas des contradictions : le champ `donnee_manquante` et le message de l'outil les distinguent explicitement pour que l'agent ne présente pas un chantier de collecte comme un défaut de fiabilité. Zéro contradiction réelle est le résultat attendu sur un corpus dont chaque entrée a été saisie avec sa source (DATA-2)."
@@ -29,6 +27,7 @@
       "avec_graphe_onto5": {
         "statut": "trouve",
         "parcours": "IGGLIA",
+        "source_id": "FORM-IGGLIA-JOUET",
         "score_adequation": 0.0625,
         "profil_exploitable": false,
         "points_forts": [],
@@ -50,7 +49,8 @@
         "champs_ajoutes": [
           "avertissement",
           "profil_exploitable",
-          "raisonnement_graphe"
+          "raisonnement_graphe",
+          "source_id"
         ],
         "nombre_de_chemins_competence_metier": 1
       }

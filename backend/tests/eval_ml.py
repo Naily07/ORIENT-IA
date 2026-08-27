@@ -22,6 +22,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from src.config import config
 from src.ml import outils
 from src.ml.donnees_synthetiques import charger_jeu_de_donnees
 from src.ml.entrainement import (
@@ -76,6 +77,63 @@ def _mesurer_chemin_de_production(exemples_test: list[dict], modele_train) -> di
         outils.imposer_modele_pour_evaluation(None)
 
 
+def _charger_jeu_test_reel() -> list[dict]:
+    """Profils réels étiquetés (DATA-5/DATA-7), filtrés sur ceux dont
+    l'étiquette de parcours a pu être résolue (`usable_pour_eval`) — un
+    répondant non rattachable à un parcours connu n'a rien à mesurer contre."""
+    chemin = config.dossier_data / "ml" / "jeu_test_reel.json"
+    if not chemin.exists():
+        return []
+    with open(chemin, encoding="utf-8") as f:
+        brut = json.load(f)
+    return [
+        {"profil": ProfilCandidat.model_validate(e["profil"]), "parcours_id": e["parcours_id"]}
+        for e in brut
+        if e.get("usable_pour_eval")
+    ]
+
+
+def _mesurer_generalisation_reelle() -> dict:
+    """ML-7 : le modèle de production mesuré sur des profils réels qu'il n'a
+    jamais vus.
+
+    Contrairement à `_mesurer_chemin_de_production`, aucune substitution de
+    modèle n'est nécessaire : ces profils ne font partie d'aucun jeu
+    d'entraînement synthétique (DATA-6), donc pas de fuite train/test à
+    éviter — `outils.analyser_profil` est appelé tel quel, avec le modèle
+    réellement servi à un candidat.
+    """
+    exemples = _charger_jeu_test_reel()
+    if not exemples:
+        return {
+            "disponible": False,
+            "lecture": (
+                "backend/data/ml/jeu_test_reel.json absent ou vide — lancer "
+                "backend/scripts/preparer_jeu_test_reel.py --source <export.csv> "
+                "(DATA-5/DATA-7) pour le produire."
+            ),
+        }
+    return {
+        "disponible": True,
+        "taille": len(exemples),
+        "classement": evaluer_chemin_de_production(exemples, outils.analyser_profil),
+        "stabilite_des_recommandations": mesurer_stabilite_des_recommandations(
+            exemples, outils.analyser_profil
+        ),
+        "lecture": (
+            f"{len(exemples)} profils réels (enquête de terrain), étiquette de parcours "
+            "reconnue, jamais vus à l'entraînement — mesuré avec le modèle de production "
+            "réellement servi (ml.outils.analyser_profil), sans substitution. L'étiquette "
+            "est le parcours effectivement suivi par le répondant, indépendamment de sa "
+            "satisfaction déclarée : un score bas ici peut aussi bien révéler une limite du "
+            "modèle qu'un candidat qui s'est réorienté après coup. Échantillon de taille "
+            "réduite et concentré sur quelques mentions — voir "
+            "backend/data/enquete/registre_collecte.md pour les biais constatés avant de "
+            "sur-interpréter un écart avec les chiffres synthétiques ci-dessus."
+        ),
+    }
+
+
 def evaluer_ml() -> dict:
     exemples = charger_jeu_de_donnees()
     X, y = preparer_jeu_entrainement(exemples)
@@ -106,11 +164,12 @@ def evaluer_ml() -> dict:
         "taille_jeu_de_donnees": len(y),
         "taille_test": len(y_test),
         "avertissement": (
-            "Évaluation sur données synthétiques uniquement (voir "
-            "donnees_synthetiques.py) : mesure la capacité du modèle à "
-            "retrouver les hypothèses de génération, pas sa capacité à "
-            "orienter de vrais candidats. La validation sur l'enquête réelle "
-            "(ML-7) reste à faire une fois DATA-4/DATA-7 disponibles."
+            "Les sections ci-dessous (hors `generalisation_reelle_ml_7`) évaluent sur "
+            "données synthétiques uniquement (voir donnees_synthetiques.py) : elles "
+            "mesurent la capacité du modèle à retrouver les hypothèses de génération, pas "
+            "sa capacité à orienter de vrais candidats. `generalisation_reelle_ml_7` "
+            "apporte cette seconde mesure, sur un échantillon réel mais réduit — lire son "
+            "propre avertissement avant de la traiter comme définitive."
         ),
         # **Le modèle réellement servi** : régression logistique calibrée.
         # C'est cette section qu'il faut lire pour juger le système ; les deux
@@ -140,6 +199,7 @@ def evaluer_ml() -> dict:
         "chemin_de_production": _mesurer_chemin_de_production(
             exemples_test, baseline_calibree
         ),
+        "generalisation_reelle_ml_7": _mesurer_generalisation_reelle(),
     }
 
 

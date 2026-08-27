@@ -387,3 +387,107 @@ class TestIndexAJour:
         index_isole.ingerer(corpus)
         index_isole._vider_collection()
         assert index_isole.empreinte_indexee() is None
+
+
+# --- Couverture des parcours nommés dans la question (EVAL-06/EVAL-09) --------
+
+_CORPUS_SIGLES = [
+    {
+        "id": "DOC-AAAA",
+        "titre": "AAAA — Analyse Appliquée aux Automatismes",
+        "categorie": "technique",
+        "contenu": "Le parcours AAAA forme aux automatismes industriels et à leur pilotage.",
+        "derniere_maj": "2026-01-01T00:00:00",
+    },
+    {
+        "id": "DOC-AAAA-MATIERES",
+        "titre": "Matières du parcours AAAA",
+        "categorie": "technique",
+        "contenu": "Automatismes, capteurs, régulation, supervision, réseaux industriels.",
+        "derniere_maj": "2026-01-01T00:00:00",
+    },
+    {
+        "id": "DOC-AAAA-DEBOUCHES",
+        "titre": "Débouchés du parcours AAAA",
+        "categorie": "technique",
+        "contenu": "Automaticien, technicien supervision, intégrateur d'automatismes.",
+        "derniere_maj": "2026-01-01T00:00:00",
+    },
+    {
+        "id": "DOC-BBBB",
+        "titre": "BBBB — Biologie et Biotechnologies",
+        "categorie": "sciences",
+        "contenu": "Le parcours BBBB forme aux biotechnologies et à l'analyse du vivant.",
+        "derniere_maj": "2026-01-01T00:00:00",
+    },
+]
+
+
+@pytest.fixture(scope="module")
+def index_sigles(tmp_path_factory):
+    """Index reprenant le schéma d'identifiants du corpus réel : une fiche
+    d'identité `DOC-<SIGLE>` et ses fiches thématiques `-MATIERES`/`-DEBOUCHES`."""
+    from src import rag
+    from src.config import config
+    from src.models import DocumentSource
+
+    config.dossier_chroma = tmp_path_factory.mktemp("chroma-sigles")
+    config.rag_collection = "test-corpus-sigles"
+    rag._collection.cache_clear()
+    rag._fiches_indexees = None
+    rag.ingerer([DocumentSource.model_validate(d) for d in _CORPUS_SIGLES])
+    yield rag
+    rag._collection.cache_clear()
+    rag._fiches_indexees = None
+
+
+@pytest.mark.index
+def test_les_fiches_thematiques_n_evincent_pas_un_parcours_nomme(index_sigles):
+    """Défaut mesuré en EVAL-06/EVAL-09 : sur « Compare X et Y », les fiches
+    matières et débouchés de X saturaient le top-k et Y — moitié de la
+    comparaison demandée — n'était pas cité du tout. `k=2` reproduit la
+    saturation sur le corpus jouet."""
+    fragments = index_sigles.retrieve_context("Compare AAAA et BBBB", k=2)
+    sources = {f["source_id"] for f in fragments}
+
+    assert "DOC-AAAA" in sources
+    assert "DOC-BBBB" in sources
+
+
+@pytest.mark.index
+def test_une_fiche_absente_du_classement_est_lue_par_identite(index_sigles):
+    """Second chemin de la garantie : quand la fiche du parcours nommé n'a même
+    pas passé le seuil de similarité, elle est lue **par identité**. Un fragment
+    repêché nommément n'a ni distance cosinus ni score BM25 — il le déclare
+    plutôt que d'exhiber un score qu'il n'a pas."""
+    selection = [{"source_id": "DOC-AAAA", "identifiant": "DOC-AAAA#0"}]
+
+    complete = index_sigles._garantir_fiches_des_parcours_nommes(
+        selection, vivier=[], description="Compare AAAA et BBBB"
+    )
+
+    repeches = [f for f in complete if f.get("recupere_par") == "identite"]
+    assert [f["source_id"] for f in repeches] == ["DOC-BBBB"]
+    assert repeches[0]["distance"] is None
+    assert repeches[0]["contenu"]
+
+
+@pytest.mark.index
+def test_la_garantie_prefere_le_vivier_deja_classe_a_une_lecture_par_identite(
+    index_sigles,
+):
+    """Quand la fiche manquante est déjà dans le vivier (classée, mais sortie du
+    top-k), c'est ce fragment-là qu'on reprend — avec son rang et son score —
+    plutôt que d'en relire un autre à l'aveugle."""
+    fragments = index_sigles.retrieve_context("Compare AAAA et BBBB", k=2)
+
+    bbbb = next(f for f in fragments if f["source_id"] == "DOC-BBBB")
+    assert bbbb.get("recupere_par") != "identite"
+
+
+@pytest.mark.index
+def test_une_question_sans_sigle_connu_n_est_pas_completee(index_sigles):
+    """La garantie ne se déclenche que sur un sigle réellement indexé : le
+    silence hors corpus (RAG-5) doit rester entier."""
+    assert index_sigles.retrieve_context("Quelle est la capitale de l'Australie ?") == []
+    assert index_sigles.retrieve_context("Parle-moi de ZZZZ et de WWWW") == []

@@ -355,7 +355,7 @@ def retrieve_context(
     else:
         retenus = vectoriels
     retenus = _ecarter_passages_malveillants(retenus)
-    return _diversifier(retenus, k)
+    return _garantir_fiches_des_parcours_nommes(_diversifier(retenus, k), retenus, description)
 
 
 def _normaliser_lexical(texte: str) -> list[str]:
@@ -526,6 +526,108 @@ def _diversifier(fragments: list[dict], k: int) -> list[dict]:
 
     # Compléter avec les fragments écartés plutôt que rendre moins que k.
     return (retenus + reserve)[:k]
+
+
+_SIGLE_DANS_LA_QUESTION = re.compile(r"\b[A-Z][A-Z0-9]{2,9}\b")
+_fiches_indexees: tuple[str, frozenset[str]] | None = None
+
+
+def _sigles_avec_fiche_didentite() -> frozenset[str]:
+    """Sigles pour lesquels l'index porte une fiche d'identité `DOC-<SIGLE>`.
+
+    Déduit de l'index lui-même plutôt que d'une liste tenue à la main : le
+    vocabulaire d'entités reconnu suit alors exactement le corpus réellement
+    indexé, sans risque de divergence. Le résultat est mémorisé tant que
+    l'empreinte du corpus ne bouge pas (`empreinte_indexee`), l'appel Chroma
+    ne se paie donc pas à chaque question.
+    """
+    global _fiches_indexees
+    empreinte = empreinte_indexee() or ""
+    if _fiches_indexees is not None and _fiches_indexees[0] == empreinte:
+        return _fiches_indexees[1]
+
+    documents = {identifiant.split("#")[0] for identifiant in _collection().get(include=[])["ids"]}
+    # `DOC-IGGLIA` est une fiche d'identité ; `DOC-IGGLIA-MATIERES`,
+    # `DOC-MENTION-INFO-TELECOM` et `DOC-DOMAINE-...` sont thématiques — un
+    # segment unique après le préfixe est le critère qui les sépare.
+    sigles = frozenset(
+        reste for document in documents
+        if document.startswith("DOC-") and "-" not in (reste := document[4:]) and reste
+    )
+    _fiches_indexees = (empreinte, sigles)
+    return sigles
+
+
+def _fiche_didentite(document_id: str) -> dict | None:
+    """Premier fragment d'un document, retrouvé **par son identité** et non par
+    similarité. Retourne `None` si le document n'est pas indexé."""
+    brut = _collection().get(where={"source_id": document_id}, include=["documents", "metadatas"])
+    if not brut["ids"]:
+        return None
+    rang = min(range(len(brut["ids"])), key=lambda i: brut["metadatas"][i].get("fragment", 0))
+    meta = brut["metadatas"][rang]
+    return {
+        "identifiant": brut["ids"][rang],
+        "contenu": brut["documents"][rang],
+        "source_id": meta["source_id"],
+        "titre": meta["titre"],
+        "categorie": meta["categorie"],
+        # Ni distance cosinus ni score BM25 : ce fragment n'a pas été classé,
+        # il a été demandé nommément. Le dire plutôt que d'inventer un score.
+        "distance": None,
+        "recupere_par": "identite",
+        "registre_source_id": meta.get("registre_source_id") or None,
+        "statut_source": statut_de_source(meta.get("registre_source_id")),
+    }
+
+
+def _garantir_fiches_des_parcours_nommes(
+    selection: list[dict], vivier: list[dict], description: str
+) -> list[dict]:
+    """Garantit la fiche d'identité de chaque parcours **nommé** dans la question.
+
+    Défaut mesuré (EVAL-06, EVAL-09) après l'enrichissement du corpus : sur
+    « Compare ISAIA et IGGLIA », les fiches matières et débouchés d'ISAIA plus
+    les fiches de mention et de domaine saturaient le top-k, et IGGLIA — moitié
+    de la comparaison demandée — n'était pas cité du tout. Sur « le plus proche
+    d'EMII : ICMP ou GCA ? », aucune fiche de parcours ne remontait. Le problème
+    n'est pas la pertinence de chaque fragment pris isolément, c'est la
+    couverture : classer par similarité seule ne garantit rien sur une question
+    qui porte explicitement sur plusieurs entités.
+
+    Règle : quand la personne nomme un parcours, sa fiche d'identité — le
+    document qui dit ce qu'*est* ce parcours — doit être sous les yeux du
+    modèle. Les fiches thématiques la complètent, elles ne la remplacent pas.
+    On la reprend d'abord dans le vivier déjà classé, sinon on la lit par
+    identité. Une question qui ne nomme aucun sigle connu n'est pas touchée :
+    le silence hors corpus (RAG-5) reste entier.
+    """
+    sigles = _sigles_avec_fiche_didentite()
+    if not sigles:
+        return selection
+    nommes = [
+        sigle
+        for sigle in sorted(sigles)
+        if sigle in {t.upper() for t in _SIGLE_DANS_LA_QUESTION.findall(description)}
+    ]
+    presents = {fragment["source_id"] for fragment in selection}
+    manquants = [f"DOC-{sigle}" for sigle in nommes if f"DOC-{sigle}" not in presents]
+    if not manquants:
+        return selection
+
+    complement = []
+    for document_id in manquants:
+        depuis_le_vivier = next(
+            (f for f in vivier if f["source_id"] == document_id and f not in selection), None
+        )
+        fragment = depuis_le_vivier or _fiche_didentite(document_id)
+        if fragment is not None:
+            complement.append(fragment)
+    # Le complément s'ajoute au top-k au lieu d'en évincer un fragment : sur une
+    # comparaison, chaque entité nommée a besoin de sa fiche *et* du contexte
+    # qui a été jugé pertinent. Le filtre anti-injection s'applique aussi à ce
+    # qui entre par identité — être nommé n'est pas un laissez-passer.
+    return selection + _ecarter_passages_malveillants(complement)
 
 
 def _interroger(description: str, k: int, filtre: dict | None, total: int) -> list[dict]:
